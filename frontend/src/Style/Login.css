@@ -1,0 +1,18 @@
+.loging{
+    height: 73vh;
+    width: 85vh;
+    margin-top: 10vh;
+    border-radius: 3%;
+}
+.sideG{
+    margin-left: -15vh;
+}
+.sideGContener{
+    top: 30vh;
+    width: 25vh;
+    left: -15vh;
+}
+.connexConteneur{
+    top: 15vh;
+    right: 7vh;
+}
