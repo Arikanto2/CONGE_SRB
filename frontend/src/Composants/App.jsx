@@ -15,7 +15,7 @@ function App() {
                 <Route
                     path="/"
                     element={
-                        <div className="App h-screen flex items-center justify-center">
+                        <div className="App h-screen flex items-center justify-center skeleton">
                             <Login />
                         </div>
                     }

@@ -5,7 +5,7 @@
     border-radius: 3%;
 }
 .sideG{
-    margin-left: -15vh;
+    margin-left: 32vh;
 }
 .sideGContener{
     top: 30vh;
@@ -57,9 +57,17 @@ input{
     
 }
 .inputConnexion:focus{
+
+    background-color: white;
+    
+
+}
+.inputConnexion1:focus{
     border-color: #3B82F6;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
-    background-color: transparent;
+    background-color: white;
+    
+
 }
 
 .btnConnexion{
@@ -78,7 +86,7 @@ input{
     
 }
 .divDefilant{
-    background-color: #BBDCE5;
+    background: linear-gradient(to right,#3B82F6, #06B6D4);
 }
 .retourConnexion{
     font-size: 10px;
