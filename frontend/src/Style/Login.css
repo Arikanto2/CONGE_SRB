@@ -1,7 +1,7 @@
 .loging{
     height: 73vh;
     width: 85vh;
-    margin-top: 10vh;
+    box-shadow: 10px 10px 15px rgba(0,0,0,0.1);
     border-radius: 3%;
 }
 .sideG{
@@ -14,5 +14,86 @@
 }
 .connexConteneur{
     top: 15vh;
-    right: 7vh;
+    right: 10vh;
+}
+.labeConnex{
+    font-family: 'Viaoda Libre', serif;
+    font-size: x-large;
+    margin-bottom: 7vh;
+}
+.labeConnex1{
+    font-family: 'Viaoda Libre', serif;
+    font-size: x-large;
+    margin-bottom: 4vh;
+}
+.inputConnexion{
+    width: 100%;
+    height: 5vh;
+    padding: 1vh;
+    border: 1px solid #D1D5DB;
+    border-radius: 5px;
+    outline: none;
+    width: 30vh;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+
+    
+    
+}
+input{
+    font-size: 12px;
+    font-family: serif;
+}
+.inputConnexion1{
+    width: 100%;
+    height: 5vh;
+    padding: 1vh;
+    border: 1px solid #D1D5DB;
+    border-radius: 5px;
+    outline: none;
+    padding-left: 5vh;
+    width: 30vh;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    
+    
+}
+.inputConnexion:focus{
+    border-color: #3B82F6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+    background-color: transparent;
+}
+
+.btnConnexion{
+    margin-top: 4vh;
+    background: linear-gradient(to right,#3B82F6, #06B6D4);
+    color: white;
+    padding: 0.5vh 2vh;
+    border-radius: 2px;
+    font-size: 13px;
+    font-family: serif;
+}
+.btnConnexion:hover{
+    color: rgb(32, 32, 32);
+    background: linear-gradient(to right,#4886e9, #3cbad0);
+    transition: all 1s;
+    
+}
+.divDefilant{
+    background-color: #BBDCE5;
+}
+.retourConnexion{
+    font-size: 10px;
+    color: #03222a;
+}
+.retourConnexion:hover{
+    font-size: 10px;
+    color: #3B82F6;
+    
+}
+option{
+    font-size: 12px;
+    font-family: serif;
+}
+select{
+    font-size: 12px;
+    font-family: serif;
 }
