@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "daisyui": "^5.1.18",
+    "@fontsource/viaoda-libre": "^5.2.8",
+    "@heroicons/react": "^2.2.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.1"

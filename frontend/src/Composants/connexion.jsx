@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { UserIcon, LockClosedIcon } from '@heroicons/react/24/solid'
 
 export default class Connexion extends Component {
   render() {
@@ -6,28 +7,38 @@ export default class Connexion extends Component {
       <div className="items-center">
         <form>
           <div>
-            <h1 className="text-3xl font-bold mb-4">Connexion!</h1>
+            <p className="labeConnex text-center mb-4">Connexion.</p>
 
-            <div>
-              <label className="text-left block mb-1">Identifiant:</label>
-              <input
-                type="text"
-                placeholder=""
-                className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+            <div className="mb-4">
+              <label className="text-left block text-m font-serif">Identifiant:</label>
+              <div className="relative">
+                <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400">
+                  <UserIcon className="w-5 h-5" />
+                </span>
+                <input
+                  type="text"
+                  placeholder=""
+                  className="inputConnexion1 bg-gray-50" 
+                />
+              </div>
             </div>
 
-            <div>
-              <label className="text-left block mb-1">Mot de passe:</label>
-              <input
-                type="password"
-                placeholder=""
-                className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 mt-2"
-              />
+            <div className="mt-4 mb-4">
+              <label className="text-left block text-m font-serif">Mot de passe:</label>
+              <div className="relative">
+                <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400">
+                  <LockClosedIcon className="w-5 h-5" />
+                </span>
+                <input
+                  type="password"
+                  placeholder=""
+                  className="inputConnexion1 bg-gray-50" 
+                />
+              </div>
             </div>
 
-            <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded">
-              Se connecter
+            <button className="btnConnexion mx-auto block">
+              se connecter
             </button>
           </div>
         </form>
