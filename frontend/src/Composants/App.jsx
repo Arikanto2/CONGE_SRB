@@ -9,7 +9,7 @@ function App() {
     <>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<div className="App h-screen flex items-center justify-center">
+          <Route path="/" element={<div className="App h-screen flex items-center justify-center skeleton">
             <Login />       
           </div>} />
           <Route path="/about" element={<Accueil/>} />

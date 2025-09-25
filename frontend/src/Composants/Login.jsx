@@ -18,11 +18,11 @@ class Login extends Component {
           </div>
 
           <div className="relative w-full">
-            <div className="absolute inset-y-0 left-0 w-56 divDefilant z-30  rounded-tr-full rounded-br-full opacity-0 pointer-events-none"></div>
-            <div className="absolute inset-0 flex items-center justify-center z-10 ">
+            <div className="absolute inset-y-0 left-0 w-56 divDefilant z-30  rounded-tr-full rounded-br-full "></div>
+            <div className="absolute inset-0 flex items-center justify-center z-10 opacity-0 pointer-events-none">
               <Inscription />
             </div>
-            <div className="absolute inset-y-0 right-0  z-20 connexConteneur opacity-0 pointer-events-none">
+            <div className="absolute inset-y-0 right-0  z-20 connexConteneur ">
               <Connexion />
             </div>
           </div>
