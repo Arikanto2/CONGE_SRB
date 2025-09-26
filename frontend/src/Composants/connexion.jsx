@@ -60,6 +60,7 @@ export default class Connexion extends Component {
             <button className="btnConnexion mx-auto block">
               se connecter
             </button>
+            <p className="block mt-2  w-fit mx-auto hover:underline transition-all duration-1000 inscriptionLink">Créer un compte</p>
           </div>
         </form>
       </div>
