@@ -5,7 +5,8 @@
     border-radius: 3%;
 }
 .sideG{
-    margin-left: 32vh;
+    margin-left: 30vh;
+    margin-top: 2vh;
 }
 .sideGContener{
     top: 30vh;
@@ -104,4 +105,13 @@ option{
 select{
     font-size: 12px;
     font-family: serif;
+}
+.inscriptionLink{
+    font-size: 10px;
+    color: #053b48;
+    cursor: pointer;
+}
+.inscriptionLink:hover{
+    color: #3B82F6;
+    
 }
