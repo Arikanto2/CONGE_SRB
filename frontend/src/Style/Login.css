@@ -22,13 +22,19 @@
     font-size: x-large;
     margin-bottom: 7vh;
 }
+.labeSRB{
+    font-family: 'Viaoda Libre', serif;
+    font-size: 18px;
+    color: #03303b;
+}
+
 .labeConnex1{
     font-family: 'Viaoda Libre', serif;
     font-size: x-large;
     margin-bottom: 4vh;
 }
 .inputConnexion{
-    width: 100%;
+    
     height: 5vh;
     padding: 1vh;
     border: 1px solid #D1D5DB;
@@ -88,6 +94,7 @@ input{
 }
 .divDefilant{
     background: linear-gradient(to right,#3B82F6, #06B6D4);
+    
 }
 .retourConnexion{
     font-size: 10px;
@@ -115,3 +122,64 @@ select{
     color: #3B82F6;
     
 }
+.logo2 {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 10%; /* ou 50% si tu veux un rond */
+}
+@keyframes defilement {
+  from { width: 14rem;  }
+  to { width: 100%;
+border-radius: 0%; }
+}
+@keyframes defilement1 {
+  from {
+    left: 0;
+    width: 100%;
+    border-bottom-right-radius: 0%;
+    border-top-right-radius: 0%;
+  }
+  to {
+    left: 100%;
+    width: 0;
+    border-bottom-left-radius: 9999px;
+    border-top-left-radius: 9999px;
+  }
+}
+@keyframes slideIn {
+    from {
+    left: 100%;
+    width: 0;
+    border-bottom-left-radius: 9999px;
+    border-top-left-radius: 9999px;
+  }
+  to {
+    left: 0;
+    width: 100%;
+    border-bottom-right-radius: 0%;
+    border-top-right-radius: 0%;
+  }
+  
+}
+
+@keyframes slideOut {
+  from {width: 100%;
+}
+  to {  
+width: 14rem;  }
+    
+}
+
+
+
+
+.animate-defilement {
+  animation: defilement 2s ease forwards;
+}
+.animate-defilement1 {
+  animation: defilement1 2s ease forwards;
+}
+.animate-slideIn { animation: slideIn 2s ease forwards; }
+.animate-slideOut { animation: slideOut 2s ease forwards; }
+

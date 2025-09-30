@@ -76,9 +76,9 @@ export default class Inscription extends Component {
                 </div>
               </div>
               <button className="btnConnexion mx-auto block">s'inscrire</button>
-              <button className="retourConnexion mx-auto mt-1 block font-serif transition duration-1000 hover:underline">
+              <p className="retourConnexion mx-auto mt-1 text-center font-serif transition duration-1000 hover:underline" onClick={this.props.activeDefil}>
                 j'ai déja un compte
-              </button>
+              </p>
             </div>
           </form>
         </div>

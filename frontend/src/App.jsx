@@ -6,6 +6,8 @@ import Profile from "./views/Profile.jsx";
 import Demande from "./views/Demande.jsx";
 import Stats from "./views/Stats.jsx";
 import Layout from "./Composants/Layout.jsx";
+
+
 import "@fontsource/viaoda-libre";
 
 function App() {
@@ -15,17 +17,13 @@ function App() {
         <Route
           path="/"
           element={
-            <div className="App skeleton flex h-screen items-center justify-center">
-              <Login />
-            </div>
+            <Login />
           }
         />
         <Route
           path="/login"
           element={
-            <div className="App skeleton flex h-screen items-center justify-center">
-              <Login />
-            </div>
+            <Login />
           }
         ></Route>
 
