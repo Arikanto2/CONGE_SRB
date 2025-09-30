@@ -1,6 +1,6 @@
 export default function Accueil() {
     return (
-        <div className="flex flex-col min-h-screen bg-base-200">
+        <div className="flex flex-col bg-base-200">
             <div className="flex w-full gap-4 p-4">
                 <div className="card flex-1 bg-base-100 shadow-xl">
                     <div className="card-body">
@@ -23,7 +23,7 @@ export default function Accueil() {
             </div>
 
             <div className="flex-1 flex flex-col items-center justify-start p-4">
-                <div className="card w-full max-w-5xl bg-base-100 shadow-xl">
+                <div className="card w-full h-full bg-base-100 shadow-xl">
                     <div className="overflow-x-auto">
                         <div className="max-h-80 overflow-y-auto">
                             <table className="table">
@@ -74,7 +74,7 @@ export default function Accueil() {
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>1</th>
+                                    <th>4</th>
                                     <td>Cy Ganderton</td>
                                     <td>Quality Control Specialist</td>
                                     <td>Blue</td>
@@ -86,22 +86,10 @@ export default function Accueil() {
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>1</th>
-                                    <td>Cy Ganderton</td>
-                                    <td>Quality Control Specialist</td>
-                                    <td>Blue</td>
-                                    <td>
-                                        <div className="flex gap-4">
-                                            <button className="btn btn-success btn-circle">✔</button>
-                                            <button className="btn btn-error btn-circle">✖</button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>1</th>
-                                    <td>Cy Ganderton</td>
-                                    <td>Quality Control Specialist</td>
-                                    <td>Blue</td>
+                                    <th>5</th>
+                                    <td>Autre Personne</td>
+                                    <td>Dev Web</td>
+                                    <td>Green</td>
                                     <td>
                                         <div className="flex gap-4">
                                             <button className="btn btn-success btn-circle">✔</button>
