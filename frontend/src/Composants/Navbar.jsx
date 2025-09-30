@@ -1,12 +1,13 @@
 import { Link } from "react-router-dom";
 import logo1 from "../assets/logo1.jpg";
+import logo2 from "../assets/logo2.jpg";
 export default function Navbar() {
     return (
         <div className="navbar bg-base-100 shadow-sm sticky top-0 z-50 px-4">
 
             <div className="flex-1 items-center flex gap-2">
                 <img src={logo1} alt="Logo 1" className="h-10 w-10 rounded-full object-contain" />
-                <img src={logo1} alt="Logo 2" className="h-10 w-10 rounded-full object-contain" />
+                <img src={logo2} alt="Logo 2" className="h-15 w-10 rounded-full object-contain" />
             </div>
 
             <div className="flex items-center gap-4">
