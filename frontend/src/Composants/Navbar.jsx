@@ -9,7 +9,6 @@ export default function Navbar() {
         <img src={logo1} alt="Logo 1" className="h-10 w-10 rounded-full object-contain" />
         <img src={logo2} alt="Logo 2" className="w-15 h-12 rounded-full object-contain" />
       </div>
-
       <div className="flex items-center gap-2">
         <div className="flex">
           <NavLink
@@ -31,6 +30,7 @@ export default function Navbar() {
             Historique
           </NavLink>
         </div>
+
 
         <div className="dropdown dropdown-end">
           <div tabIndex={0} role="button" className="avatar btn btn-ghost btn-circle">
