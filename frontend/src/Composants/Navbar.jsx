@@ -16,12 +16,6 @@ export default function Navbar() {
                 <Link to="/demande" className="btn btn-ghost hover:bg-gray-100">Congé</Link>
                 <Link to="/statistique" className="btn btn-ghost hover:bg-gray-100">Historique</Link>
 
-                <input
-                    type="text"
-                    placeholder="Search"
-                    className="input input-bordered w-24 md:w-48"
-                />
-
                 <div className="dropdown dropdown-end">
                     <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
                         <div className="w-10 rounded-full">

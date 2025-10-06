@@ -8,4 +8,6 @@ export const exampleTasks = [
     { id: 7, name: 'RANARIVO Rajovolona', start: '2025-08-20', end: '2025-08-28', status: 'mission' },
     { id: 8, name: 'RANARIVO Rajovolona', start: '2025-08-20', end: '2025-08-28', status: 'mission' },
     { id: 9, name: 'RANARIVO Rajovolona', start: '2025-08-20', end: '2025-08-28', status: 'mission' },
+    { id: 10, name: 'RAKOTOVAO Rija Naina', start: '2025-07-01', end: '2025-07-03', status: 'conge' },
+    { id: 11, name: 'RAKOTOVAO Rija Naina', start: '2025-07-01', end: '2025-07-03', status: 'conge' },
 ];
