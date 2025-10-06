@@ -4,7 +4,7 @@ import {exampleTasks} from "../data/Conge.js"
 
 export default function Stats() {
     return (
-        <div className="p-6">
+        <div>
             <GanttChart tasks={exampleTasks} dayWidth={28} />
         </div>
     );

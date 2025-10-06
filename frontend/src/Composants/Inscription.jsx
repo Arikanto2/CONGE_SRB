@@ -6,11 +6,11 @@ export default class Inscription extends Component {
       <>
         <div className="blocks-center">
           <form>
-            <div>
+            <div className="ml-6 mr-6">
               <p className="labeConnex1 text-center">Inscription</p>
               <div className="mb-2 flex gap-10">
                 <div className="flex-1">
-                  <label className="block text-left font-serif text-sm ">Identifiant :</label>
+                  <label className="block text-left font-serif text-sm ">Matricule :</label>
                   <input type="text" placeholder="" className="inputConnexion bg-gray-50 input input-info" />
                 </div>
                 <div className="flex-1">
@@ -76,7 +76,7 @@ export default class Inscription extends Component {
                 </div>
               </div>
               <button className="btnConnexion mx-auto block">s'inscrire</button>
-              <p className="retourConnexion mx-auto mt-1 text-center font-serif transition duration-1000 hover:underline" onClick={this.props.activeDefil}>
+              <p className="retourConnexion mx-auto mt-1 text-center font-serif transition duration-1000 cursor-pointer hover:underline" onClick={this.props.activeDefil}>
                 j'ai déja un compte
               </p>
             </div>
