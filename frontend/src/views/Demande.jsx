@@ -14,7 +14,7 @@ export default function Demande() {
     
     return (
       <>
-        <div className="card ml-3 mr-3 mt-7 bg-base-100 shadow-xl">
+        <div className="card ml-3 mr-3 mt-5 bg-base-100 shadow-xl">
           <div className="card-body">
             <div className="mb-4 flex items-center justify-between">
               <label className="input input-info left-0 h-10 w-60">
@@ -40,7 +40,7 @@ export default function Demande() {
                 Les congés demandés
               </p>
               <div className="right-0 flex gap-2">
-                <select className="comboDemande select select-info bg-gray-50">
+                <select className="comboDemande select select-info">
                   <option value="" disabled selected>
                     Catégorie d'absence
                   </option>
