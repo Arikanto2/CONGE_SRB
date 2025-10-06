@@ -1,4 +1,5 @@
 export default function Accueil() {
+
     const count = 50
     return (
         <div className="flex flex-col bg-base-200">
@@ -124,9 +125,71 @@ export default function Accueil() {
                             </tr>
                             </tbody>
                         </table>
+
                     </div>
-                </div>
-            </div>
+                  </td>
+                </tr>
+                {/* row 2 */}
+                <tr>
+                  <th>1</th>
+                  <td>Cy Ganderton</td>
+                  <td>Quality Control Specialist</td>
+                  <td>
+                    <div className="flex gap-4">
+                      <button className="btn btn-success btn-circle">✔</button>
+                      <button className="btn btn-error btn-circle">✖</button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <th>1</th>
+                  <td>Cy Ganderton</td>
+                  <td>Quality Control Specialist</td>
+                  <td>
+                    <div className="flex gap-4">
+                      <button className="btn btn-success btn-circle">✔</button>
+                      <button className="btn btn-error btn-circle">✖</button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <th>1</th>
+                  <td>Cy Ganderton</td>
+                  <td>Quality Control Specialist</td>
+                  <td>
+                    <div className="flex gap-4">
+                      <button className="btn btn-success btn-circle">✔</button>
+                      <button className="btn btn-error btn-circle">✖</button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <th>1</th>
+                  <td>Cy Ganderton</td>
+                  <td>Quality Control Specialist</td>
+                  <td>
+                    <div className="flex gap-4">
+                      <button className="btn btn-success btn-circle">✔</button>
+                      <button className="btn btn-error btn-circle">✖</button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <th>1</th>
+                  <td>Cy Ganderton</td>
+                  <td>Quality Control Specialist</td>
+                  <td>
+                    <div className="flex gap-4">
+                      <button className="btn btn-success btn-circle">✔</button>
+                      <button className="btn btn-error btn-circle">✖</button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-    );
+      </div>
+    </div>
+  );
 }

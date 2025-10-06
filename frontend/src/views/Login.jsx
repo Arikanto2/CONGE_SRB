@@ -49,7 +49,6 @@ class Login extends Component {
   render() {
     return (
       <>
-    
         <div className="App skeleton relative flex h-screen">
           <div className="absolute left-0 top-0 flex items-center gap-2 p-2">
             <img src={Logo2} alt="Logo SRB" className="logo2" />
