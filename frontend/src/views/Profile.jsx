@@ -1,4 +1,14 @@
+import { useState, useEffect } from "react";
 export default function Accueil() {
+  const [password, setPassword] = useState("");
+  const [confirmMDP, setConfirmMDP] = useState("");
+  const [isValid, setIsValid] = useState(true);
+
+  useEffect(() => {
+    if (confirmMDP.length > 0) {
+      setIsValid(password === confirmMDP);
+    }
+  }, [password, confirmMDP]);
   return (
     <div className="card card-xs mx-8 h-full bg-base-100 pb-3 shadow-sm">
       <div className="card-body ml-5 mr-5 h-full">
@@ -16,37 +26,50 @@ export default function Accueil() {
             </button>
             <dialog id="my_modal_3" className="modal">
               <div className="modal-box">
+                <button className="btn btn-ghost btn-sm btn-circle absolute right-2 top-2" onClick={() => document.getElementById("my_modal_3").close()}>
+                  ✕
+                </button>
                 <form method="dialog">
                   {/* if there is a button in form, it will close the modal */}
-                  <button className="btn btn-ghost btn-sm btn-circle absolute right-2 top-2">
-                    ✕
-                  </button>
+
                   <div className="blocks-center">
                     <div className="ml-6 mr-6">
                       <p className="labeConnex1 text-center">Modification du profile</p>
                       <div className="mb-2 flex gap-10">
                         <div className="flex-1">
-                          <label className="block text-left font-serif text-sm">Prénom :</label>
-                          <input
-                            type="text"
-                            placeholder=""
-                            className="inputConnexion input input-info bg-gray-50"
-                          />
-                        </div>
-                        <div className="flex-1">
                           <label className="block text-left font-serif text-sm">Nom :</label>
                           <input
+                            required
                             type="text"
                             placeholder=""
-                            className="inputConnexion input input-info bg-gray-50"
+                            className="inputConnexion validator input input-info bg-gray-50"
+                            pattern="^[A-Za-z\séùèà]+$"
+                            minlength="6"
+                            maxlength="30"
+                            title="Seules les lettres sont autorisées (6-30 caractères)"
                           />
+                          <p className="validator-hint">Seules les lettres sont autorisées</p>
+                        </div>
+                        <div className="flex-1">
+                          <label className="block text-left font-serif text-sm">Prénom :</label>
+                          <input
+                            required
+                            type="text"
+                            placeholder=""
+                            className="inputConnexion validator input input-info bg-gray-50"
+                            pattern="^[A-Za-z\séùèà]+$"
+                            minlength="2"
+                            maxlength="30"
+                            title="Seules les lettres sont autorisées (2-30 caractères)"
+                          />
+                          <p className="validator-hint">Seules les lettres sont autorisées</p>
                         </div>
                       </div>
 
                       <div className="mb-2 flex gap-10">
                         <div className="flex-1">
                           <label className="block text-left font-serif text-sm">Grade :</label>
-                          <select className="inputConnexion select select-info bg-gray-50">
+                          <select className="inputConnexion select select-info bg-gray-50" required>
                             <option value=""></option>
                             <option>L1</option>
                             <option>L2</option>
@@ -55,7 +78,7 @@ export default function Accueil() {
                         </div>
                         <div className="flex-1">
                           <label className="block text-left font-serif text-sm">Fonction :</label>
-                          <select className="inputConnexion select select-info bg-gray-50">
+                          <select className="inputConnexion select select-info bg-gray-50" required>
                             <option value=""></option>
                             <option>L1</option>
                             <option>L2</option>
@@ -66,7 +89,7 @@ export default function Accueil() {
                       <div className="mb-3 flex gap-10">
                         <div className="flex-1">
                           <label className="block text-left font-serif text-sm">Division :</label>
-                          <select className="inputConnexion select select-info bg-gray-50">
+                          <select className="inputConnexion select select-info bg-gray-50" required>
                             <option value=""></option>
                             <option>L1</option>
                             <option>L2</option>
@@ -76,16 +99,19 @@ export default function Accueil() {
                         <div className="flex-1">
                           <label className="block text-left font-serif text-sm">E-mail :</label>
                           <input
+                            required
                             type="email"
                             placeholder=""
-                            className="inputConnexion input input-info bg-gray-50"
+                            className="inputConnexion validator input input-info bg-gray-50"
                           />
+                          <div className="validator-hint">Adresse mail invalide</div>
                         </div>
                       </div>
                       <div className="mb-2 flex gap-10">
                         <div className="flex-1">
                           <label className="block text-left font-serif text-sm">Corps :</label>
                           <input
+                            required
                             type="text"
                             placeholder=""
                             className="inputConnexion input input-info bg-gray-50"
@@ -107,15 +133,17 @@ export default function Accueil() {
             </button>
             <dialog id="my_modal" className="modal">
               <div className="modal-box flex items-center justify-center p-8">
+                <button
+                  className="btn btn-ghost btn-sm btn-circle absolute right-2 top-2"
+                  onClick={() => document.getElementById("my_modal").close()}
+                >
+                  ✕
+                </button>
                 <form method="dialog" className="flex flex-col items-center justify-center">
-                  <button className="btn btn-ghost btn-sm btn-circle absolute right-2 top-2">
-                    ✕
-                  </button>
-
                   <p className="labeConnex1 mb-6 text-center text-lg">Changement du mot de passe</p>
 
-                  <div className="flex  flex-col ml-24 mr-10 gap-6">
-                    <div>
+                  <div className="ml-36 mr-10 flex flex-col">
+                    <div className="mb-5">
                       <label className="mb-1 block text-left font-serif text-sm">
                         Ancien mot de passe :
                       </label>
@@ -130,9 +158,22 @@ export default function Accueil() {
                         Nouveau mot de passe :
                       </label>
                       <input
+                        value={password}
+                        onChange={(e) => {
+                          setPassword(e.target.value);
+                        }}
                         type="password"
-                        className="inputConnexion input input-info w-full bg-gray-50"
+                        placeholder=""
+                        className="inputConnexion validator input input-info bg-gray-50"
+                        pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#\s?&]{8,}$"
+                        title="Doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial"
+                        minLength="8"
+                        maxLength="20"
                       />
+                      <p className="legendMDP validator-hint">
+                        Doit contenir au moins 8 caractères, une majuscule, une minuscule, un
+                        chiffre et un caractère spécial
+                      </p>
                     </div>
 
                     <div>
@@ -140,9 +181,14 @@ export default function Accueil() {
                         Confirmer le nouveau mot de passe :
                       </label>
                       <input
+                        value={confirmMDP}
+                        onChange={(e) => setConfirmMDP(e.target.value)}
                         type="password"
                         className="inputConnexion input input-info w-full bg-gray-50"
                       />
+                      <p className="legendMDP mt-2">
+                        {isValid ? "" : "Les mots de passe ne correspondent pas"}
+                      </p>
                     </div>
                   </div>
 

@@ -1,21 +1,13 @@
 .loging{
-    height: 73vh;
+    height: 80vh;
     width: 85vh;
     box-shadow: 10px 10px 15px rgba(0,0,0,0.1);
     border-radius: 3%;
 }
-.sideG{
-    margin-left: 30vh;
-    margin-top: 2vh;
-}
-.sideGContener{
-    top: 30vh;
-    width: 25vh;
-    left: -15vh;
-}
+
 .connexConteneur{
     top: 15vh;
-    right: 10vh;
+    right: 8vh;
 }
 .labeConnex{
     font-family: 'Viaoda Libre', serif;
@@ -78,7 +70,6 @@ input{
 }
 
 .btnConnexion{
-    margin-top: 4vh;
     background: linear-gradient(to right,#3B82F6, #06B6D4);
     color: white;
     padding: 0.5vh 2vh;
@@ -129,7 +120,7 @@ select{
     border-radius: 10%; /* ou 50% si tu veux un rond */
 }
 @keyframes defilement {
-  from { width: 14rem;  }
+  from { width: 50%;  }
   to { width: 100%;
 border-radius: 0%; }
 }
@@ -167,7 +158,7 @@ border-radius: 0%; }
   from {width: 100%;
 }
   to {  
-width: 14rem;  }
+width: 50%;  }
     
 }
 
@@ -183,3 +174,8 @@ width: 14rem;  }
 .animate-slideIn { animation: slideIn 2s ease forwards; }
 .animate-slideOut { animation: slideOut 2s ease forwards; }
 
+.legendMDP{
+    font-size: 8px;
+    color: red !important;
+    
+}
