@@ -1,19 +1,16 @@
-// --- Importation des modules nécessaires de Chart.js --- //
 import {
-    Chart as ChartJS,         // le cœur de Chart.js
-    CategoryScale,            // axe des catégories (x)
-    LinearScale,              // axe linéaire (y)
-    PointElement,             // points du graphique
-    LineElement,              // lignes reliant les points
-    Title, Tooltip, Legend,   // options d’affichage
-    Filler,                   // remplissage sous la ligne
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title, Tooltip, Legend,
+    Filler,
 } from "chart.js";
 
-// Composant React pour Chart.js
 import { Line } from "react-chartjs-2";
 import { useEffect } from "react";
 
-// --- Enregistrement des éléments utilisés par Chart.js --- //
 ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -66,47 +63,44 @@ const arrowPlugin = {
     },
 };
 
-// --- Composant principal Accueil --- //
+
 export default function Accueil() {
-    const count = 50; // nombre de jours restants
+    const count = 50;
 
     // Enregistre le plugin de flèches une seule fois
     useEffect(() => {
         ChartJS.register(arrowPlugin);
     }, []);
 
-    // --- Données du graphique --- //
     const data = {
-        // 12 mois de l’année
         labels: [
             "Jan", "Fév", "Mar", "Avr", "Mai", "Juin",
             "Juil", "Aoû", "Sep", "Oct", "Nov", "Déc",
         ],
         datasets: [
             {
-                label: "Congés pris",               // titre de la courbe
-                data: [5, 8, 12, 10, 15, 20, 25, 30, 28, 35, 40, 45], // données
-                borderColor: "rgba(37, 99, 235, 0.9)",   // couleur de la ligne
-                backgroundColor: "rgba(37, 99, 235, 0.2)", // couleur sous la ligne
+                label: "Congés pris",
+                data: [5, 8, 12, 10, 15, 20, 25, 30, 28, 35, 40, 45],
+                borderColor: "rgba(37, 99, 235, 0.9)",
+                backgroundColor: "rgba(37, 99, 235, 0.2)",
                 fill: true,                          // active le remplissage
-                pointRadius: 5,                      // taille des points
-                pointBackgroundColor: "#2563eb",     // couleur des points
-                pointBorderColor: "#fff",            // bordure blanche
-                pointHoverRadius: 7,                 // effet hover
-                tension: 0.35,                       // courbe lissée (arrondie)
+                pointRadius: 5,
+                pointBackgroundColor: "#2563eb",
+                pointBorderColor: "#fff",
+                pointHoverRadius: 7,
+                tension: 0.35,
             },
         ],
     };
 
-    // --- Options d’affichage du graphique --- //
     const options = {
-        responsive: true,              // s’adapte à la taille du conteneur
-        maintainAspectRatio: false,    // permet d’utiliser toute la hauteur du card
+        responsive: true,
+        maintainAspectRatio: false,
         plugins: {
-            legend: { display: false }, // cache la légende pour un rendu plus propre
+            legend: { display: false },
         },
         scales: {
-            y: { beginAtZero: true },   // démarre l’axe Y à 0
+            y: { beginAtZero: true },
         },
     };
 
@@ -114,24 +108,20 @@ export default function Accueil() {
         <div className="flex flex-col bg-base-200 min-h-screen">
             <h1 className="text-2xl font-bold mb-4">Bienvenue, RAZAFINDRAINIBE</h1>
             <div className="flex w-full gap-4 p-4 items-center">
-                {/* --- Carte contenant le graphique (2/3 de la largeur totale) --- */}
                 <div className="card bg-base-100 shadow-xl h-60 w-2/3">
                     <div className="card-body p-2 h-full">
-                        {/* --- Conteneur du graphique --- */}
                         <div className="h-full w-full">
-                            {/* --- Rendu du graphique Chart.js --- */}
                             <Line data={data} options={options} />
                         </div>
                     </div>
                 </div>
 
-                {/* --- Cercle d’affichage du nombre de jours restants --- */}
                 <div className="flex justify-center items-center w-1/3">
                     <div
                         className="radial-progress text-primary text-xl font-semibold flex justify-center items-center"
                         style={{
-                            "--value": 80,       // pourcentage de remplissage (visuel)
-                            "--size": "8rem",    // taille du cercle
+                            "--value": 80,
+                            "--size": "8rem",
                             "--thickness": "10px", // épaisseur du cercle
                         }}
                     >
@@ -142,15 +132,15 @@ export default function Accueil() {
 
             <div className="card mt-6 bg-base-100 shadow-xl">
                 <div className="card-body">
-                    <h2 className="card-title">Prochains congés</h2>
+                    <h2 className="card-title">Les 3 derniers demandes</h2>
                     <ul className="list-disc ml-5">
                         <li>Du 12 au 16 Octobre 2025 — <span className="text-warning">En attente</span></li>
                         <li>Du 4 au 8 Novembre 2025 — <span className="text-success">Validé</span></li>
+                        <li>Du 4 au 8 Novembre 2025 — <span className="text-error">Refusé</span></li>
                     </ul>
                 </div>
             </div>
 
-            {/* --- Tableau des congés à valider --- */}
             <div className="card ml-3 mr-3 mt-7 bg-base-100 shadow-xl">
                 <div className="card-body">
                     <div className="mb-4 flex items-center justify-between">
@@ -320,8 +310,6 @@ export default function Accueil() {
                 <button className="btn btn-outline btn-primary">Faire une demande</button>
                 <button className="btn btn-outline">Voir mon historique</button>
             </div>
-
         </div>
-
     );
 }

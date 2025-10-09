@@ -87,7 +87,6 @@ body {
   padding: 3px;
   color: white !important;
   text-align: center;
-
 }
 .menuLink{
   font-family: serif;
@@ -96,8 +95,12 @@ body {
   text-align: center;
 }
 .menuLink:hover{
-  text-decoration: underline;
-  color: #0a7692;
+  /*text-decoration: underline;*/
+    /*color: #0a7692;*/
+    background:linear-gradient(to right,#4886e9, #3cbad0);
+    border-radius: 5px;
+    padding: 3px;
+    color: white !important;
 }
 .premierL{
   font-family: 'Viaoda Libre', serif;
