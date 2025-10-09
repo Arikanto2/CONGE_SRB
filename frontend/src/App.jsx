@@ -6,6 +6,7 @@ import Profile from "./views/Profile.jsx";
 import Demande from "./views/Demande.jsx";
 import Stats from "./views/Stats.jsx";
 import Layout from "./Composants/Layout.jsx";
+import PDF from "./views/PDF.jsx";
 
 
 import "@fontsource/viaoda-libre";
@@ -31,8 +32,9 @@ function App() {
           <Route path="/Accueil" element={<Accueil />} />
           <Route path="/Profile" element={<Profile />} />
           <Route path="/Demande" element={<Demande />} />
-          <Route path="/Statistique" element={<Stats />} />
+          <Route path="/Statistique" element={<Stats />} />  
         </Route>
+        <Route path="/PDF" element={<PDF/>} />
       </Routes>
     </BrowserRouter>
   );

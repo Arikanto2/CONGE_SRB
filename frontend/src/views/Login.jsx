@@ -56,7 +56,7 @@ class Login extends Component {
           </div>
           <div className="loging relative mx-auto my-auto flex overflow-hidden bg-white">
             <div className="relative w-full">
-              <div className="divDefilant absolute inset-y-0 left-0 z-30 w-56 rounded-br-full rounded-tr-full"></div>
+              <div className="divDefilant absolute inset-y-0 left-0 z-30 w-1/2 rounded-br-full rounded-tr-full"></div>
               <div className="InscriptionConteneur pointer-events-none absolute inset-0 z-10 flex items-center justify-center opacity-0">
                 <Inscription activeDefil={this.deffilantrevrse} />
               </div>

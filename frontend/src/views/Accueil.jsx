@@ -105,6 +105,7 @@ export default function Accueil() {
     };
 
     return (
+
         <div className="flex flex-col bg-base-200 min-h-screen">
             <h1 className="text-2xl font-bold mb-4">Bienvenue, RAZAFINDRAINIBE</h1>
             <div className="flex w-full gap-4 p-4 items-center">
@@ -130,7 +131,8 @@ export default function Accueil() {
                 </div>
             </div>
 
-            <div className="card mt-6 bg-base-100 shadow-xl">
+            {/* --- Bloc : Prochains congés --- */}
+            <div className="card bg-base-100 shadow-xl mb-6">
                 <div className="card-body">
                     <h2 className="card-title">Les 3 derniers demandes</h2>
                     <ul className="list-disc ml-5">
@@ -140,11 +142,10 @@ export default function Accueil() {
                     </ul>
                 </div>
             </div>
-
             <div className="card ml-3 mr-3 mt-7 bg-base-100 shadow-xl">
                 <div className="card-body">
-                    <div className="mb-4 flex items-center justify-between">
-                        <label className="input input-info left-0 h-10 w-60">
+                    <div className="mb-5 flex items-center justify-between">
+                        <label className="input input-info h-10 w-64">
                             <svg
                                 className="h-[1em] opacity-50"
                                 xmlns="http://www.w3.org/2000/svg"
@@ -163,150 +164,68 @@ export default function Accueil() {
                             </svg>
                             <input type="search" required placeholder="Recherche..." />
                         </label>
-                        <p className="labelTitre absolute left-1/2 -translate-x-1/2 transform text-center">
+                        <p className="labelTitre text-center font-semibold">
                             Les congés à valider
                         </p>
-                        <a href="">Afficher tous</a>
+                        <a href="" className="text-primary hover:underline">Afficher tous</a>
                     </div>
 
                     <div className="conteneurTab border-base-content/5 max-h-80 overflow-x-auto overflow-y-auto rounded-box border bg-base-100">
                         <table className="table table-zebra">
                             <thead>
-                            <tr>
-                                <th></th>
-                                <th>IM</th>
-                                <th>Motif</th>
-                                <th>Durée</th>
-                                <th>Validation</th>
-                            </tr>
+                                <tr>
+                                    <th></th>
+                                    <th>IM</th>
+                                    <th>Motif</th>
+                                    <th>Durée</th>
+                                    <th>Validation</th>
+                                </tr>
                             </thead>
                             <tbody>
-                            <tr>
-                                <th>1</th>
-                                <td>Cy Ganderton</td>
-                                <td>Voyage</td>
-                                <td>3 jours</td>
-                                <td>
-                                    <div className="flex gap-4">
-                                        <button className="btn btn-success btn-circle">✔</button>
-                                        <button className="btn btn-error btn-circle">✖</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>2</th>
-                                <td>Hart Hagerty</td>
-                                <td>Maladie</td>
-                                <td>2 jours</td>
-                                <td>
-                                    <div className="flex gap-4">
-                                        <button className="btn btn-success btn-circle">✔</button>
-                                        <button className="btn btn-error btn-circle">✖</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>3</th>
-                                <td>Brice Swyre</td>
-                                <td>Formation</td>
-                                <td>5 jours</td>
-                                <td>
-                                    <div className="flex gap-4">
-                                        <button className="btn btn-success btn-circle">✔</button>
-                                        <button className="btn btn-error btn-circle">✖</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>3</th>
-                                <td>Brice Swyre</td>
-                                <td>Formation</td>
-                                <td>5 jours</td>
-                                <td>
-                                    <div className="flex gap-4">
-                                        <button className="btn btn-success btn-circle">✔</button>
-                                        <button className="btn btn-error btn-circle">✖</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>3</th>
-                                <td>Brice Swyre</td>
-                                <td>Formation</td>
-                                <td>5 jours</td>
-                                <td>
-                                    <div className="flex gap-4">
-                                        <button className="btn btn-success btn-circle">✔</button>
-                                        <button className="btn btn-error btn-circle">✖</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>3</th>
-                                <td>Brice Swyre</td>
-                                <td>Formation</td>
-                                <td>5 jours</td>
-                                <td>
-                                    <div className="flex gap-4">
-                                        <button className="btn btn-success btn-circle">✔</button>
-                                        <button className="btn btn-error btn-circle">✖</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>3</th>
-                                <td>Brice Swyre</td>
-                                <td>Formation</td>
-                                <td>5 jours</td>
-                                <td>
-                                    <div className="flex gap-4">
-                                        <button className="btn btn-success btn-circle">✔</button>
-                                        <button className="btn btn-error btn-circle">✖</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>3</th>
-                                <td>Brice Swyre</td>
-                                <td>Formation</td>
-                                <td>5 jours</td>
-                                <td>
-                                    <div className="flex gap-4">
-                                        <button className="btn btn-success btn-circle">✔</button>
-                                        <button className="btn btn-error btn-circle">✖</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>3</th>
-                                <td>Brice Swyre</td>
-                                <td>Formation</td>
-                                <td>5 jours</td>
-                                <td>
-                                    <div className="flex gap-4">
-                                        <button className="btn btn-success btn-circle">✔</button>
-                                        <button className="btn btn-error btn-circle">✖</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>3</th>
-                                <td>Brice Swyre</td>
-                                <td>Formation</td>
-                                <td>5 jours</td>
-                                <td>
-                                    <div className="flex gap-4">
-                                        <button className="btn btn-success btn-circle">✔</button>
-                                        <button className="btn btn-error btn-circle">✖</button>
-                                    </div>
-                                </td>
-                            </tr>
+                                <tr>
+                                    <th>1</th>
+                                    <td>Cy Ganderton</td>
+                                    <td>Voyage</td>
+                                    <td>3 jours</td>
+                                    <td>
+                                        <div className="flex gap-4">
+                                            <button className="btn btn-success btn-circle">✔</button>
+                                            <button className="btn btn-error btn-circle">✖</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>2</th>
+                                    <td>Hart Hagerty</td>
+                                    <td>Maladie</td>
+                                    <td>2 jours</td>
+                                    <td>
+                                        <div className="flex gap-4">
+                                            <button className="btn btn-success btn-circle">✔</button>
+                                            <button className="btn btn-error btn-circle">✖</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>3</th>
+                                    <td>Brice Swyre</td>
+                                    <td>Formation</td>
+                                    <td>5 jours</td>
+                                    <td>
+                                        <div className="flex gap-4">
+                                            <button className="btn btn-success btn-circle">✔</button>
+                                            <button className="btn btn-error btn-circle">✖</button>
+                                        </div>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
-            <div className="flex justify-center gap-4 mt-6">
+
+            {/* --- Boutons d’action --- */}
+            <div className="flex justify-center gap-6 mb-8">
                 <button className="btn btn-outline btn-primary">Faire une demande</button>
                 <button className="btn btn-outline">Voir mon historique</button>
             </div>
