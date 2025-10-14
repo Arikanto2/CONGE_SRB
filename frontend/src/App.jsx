@@ -7,6 +7,8 @@ import Demande from "./views/Demande.jsx";
 import Stats from "./views/Stats.jsx";
 import Layout from "./Composants/Layout.jsx";
 import PDF from "./views/PDF.jsx";
+import PDF1 from "./views/PDF1.jsx";
+import ViewConge from "./Composants/ViewConge.jsx"; 
 
 
 import "@fontsource/viaoda-libre";
@@ -35,6 +37,9 @@ function App() {
           <Route path="/Statistique" element={<Stats />} />  
         </Route>
         <Route path="/PDF" element={<PDF/>} />
+        <Route path="/PDF1" element={<PDF1/>} />
+        <Route path="/ViewConge" element={<ViewConge/>} />
+        
       </Routes>
     </BrowserRouter>
   );
