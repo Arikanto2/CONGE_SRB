@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from "react";
 
-// --- Fonctions utilitaires ---
 function parseDate(s) {
     if (!s) return null;
     if (s instanceof Date) return new Date(s.getFullYear(), s.getMonth(), s.getDate());
@@ -19,7 +18,6 @@ function addDays(d, n) {
     return r;
 }
 
-// --- Couleurs par défaut ---
 const DEFAULT_COLORS = {
     conge: "bg-blue-600",
     mission: "bg-green-600",
@@ -27,11 +25,10 @@ const DEFAULT_COLORS = {
     default: "bg-slate-600",
 };
 
-// --- Composant principal ---
 export default function GanttChart({ tasks = [], dayWidth = 28 }) {
     const [filterStart, setFilterStart] = useState("");
     const [filterEnd, setFilterEnd] = useState("");
-    const [maxVisibleTasks, setMaxVisibleTasks] = useState(8); // état pour le nombre de tâches visibles
+    const [maxVisibleTasks, setMaxVisibleTasks] = useState(12); //nombre de tâches
 
     const normalized = useMemo(() => {
         return tasks.map((t, i) => {
@@ -94,19 +91,22 @@ export default function GanttChart({ tasks = [], dayWidth = 28 }) {
     const TASK_HEIGHT = 32;
     const BAR_HEIGHT = 20;
 
-    // --- Gestion du scroll ---
     const handleScroll = (e) => {
         const scrollTop = e.target.scrollTop;
         if (scrollTop > 0 && maxVisibleTasks === 8) {
-            setMaxVisibleTasks(12); // passe à 12 tâches visibles
+            setMaxVisibleTasks(12);
         }
     };
 
     return (
         <div className="w-full border rounded-md overflow-hidden bg-white shadow-sm">
-            {/* Filtres et légende */}
             <div className="flex items-center justify-between p-3 border-b">
                 <div className="flex items-center gap-2">
+                    <button className="btn btn-primary"
+                            onClick={() => {
+                                setFilterStart("");
+                            }}
+                    >actu</button>
                     <label className="text-sm text-slate-600">Du :</label>
                     <input
                         type="date"
@@ -125,14 +125,12 @@ export default function GanttChart({ tasks = [], dayWidth = 28 }) {
                 <Legend />
             </div>
 
-            {/* Conteneur défilable */}
             <div
                 className="flex overflow-auto"
                 style={{ maxHeight: TASK_HEIGHT * maxVisibleTasks + 80 }}
                 onScroll={handleScroll}
             >
-                {/* Colonne noms */}
-                <div className="w-64 min-w-[16rem] border-r">
+                <div className="w-64 min-w-[16rem] border-r py-4">
                     <div className="h-12 flex items-center px-3 border-b bg-slate-50 sticky top-0 z-10">
                         <span className="text-sm text-slate-600">Noms / Tâches</span>
                     </div>
@@ -149,7 +147,6 @@ export default function GanttChart({ tasks = [], dayWidth = 28 }) {
                     </div>
                 </div>
 
-                {/* Calendrier */}
                 <div className="flex-1 bg-white">
                     <div style={{ width: totalDays * dayWidth }} className="min-w-[400px]">
                         {/* Mois */}
