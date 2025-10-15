@@ -11,6 +11,8 @@ import {
 import { Line } from "react-chartjs-2";
 import { useEffect } from "react";
 
+import PDF from "../Composants/ViewConge.jsx"; // ← majuscule obligatoire
+
 ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -104,6 +106,8 @@ export default function Accueil() {
         },
     };
 
+
+
     return (
 
         <div className="flex flex-col bg-base-200 min-h-screen">
@@ -174,11 +178,11 @@ export default function Accueil() {
                         <table className="table table-zebra">
                             <thead>
                                 <tr>
-                                    <th></th>
                                     <th>IM</th>
+                                    <th>Nom</th>
                                     <th>Motif</th>
                                     <th>Durée</th>
-                                    <th>Validation</th>
+                                    <th>Aperçu</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -188,11 +192,40 @@ export default function Accueil() {
                                     <td>Voyage</td>
                                     <td>3 jours</td>
                                     <td>
-                                        <div className="flex gap-4">
-                                            <button className="btn btn-success btn-circle">✔</button>
-                                            <button className="btn btn-error btn-circle">✖</button>
-                                        </div>
+                                        <button
+                                            className="btn btn-info btn-sm"
+                                            onClick={() => document.getElementById('my_modal_3').showModal()}
+                                        >
+                                            👁️
+                                        </button>
+
+                                        <dialog id="my_modal_3" className="modal">
+                                            <div className="modal-box w-11/12 max-w-5xl h-[600px] overflow-y-auto relative p-0">
+                                                <form method="dialog">
+                                                    <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                                                </form>
+
+                                                <button
+                                                    className="btn btn-primary btn-sm absolute left-3 top-3"
+                                                    onClick={() => window.print()}
+                                                >
+                                                    🖨️
+                                                </button>
+
+                                                <PDF />
+
+                                                <div className="absolute bottom-3 right-3 flex gap-3">
+                                                    <button className="btn btn-success btn-circle">✔</button>
+                                                    <button className="btn btn-error btn-circle">✖</button>
+                                                </div>
+                                            </div>
+                                        </dialog>
                                     </td>
+
+
+
+
+
                                 </tr>
                                 <tr>
                                     <th>2</th>
@@ -200,10 +233,7 @@ export default function Accueil() {
                                     <td>Maladie</td>
                                     <td>2 jours</td>
                                     <td>
-                                        <div className="flex gap-4">
-                                            <button className="btn btn-success btn-circle">✔</button>
-                                            <button className="btn btn-error btn-circle">✖</button>
-                                        </div>
+                                        <button className="btn btn-info btn-sm">👁️</button>
                                     </td>
                                 </tr>
                                 <tr>
@@ -212,10 +242,7 @@ export default function Accueil() {
                                     <td>Formation</td>
                                     <td>5 jours</td>
                                     <td>
-                                        <div className="flex gap-4">
-                                            <button className="btn btn-success btn-circle">✔</button>
-                                            <button className="btn btn-error btn-circle">✖</button>
-                                        </div>
+                                        <button className="btn btn-info btn-sm">👁️</button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -224,11 +251,12 @@ export default function Accueil() {
                 </div>
             </div>
 
-            {/* --- Boutons d’action --- */}
-            <div className="flex justify-center gap-6 mb-8">
+            <div className="flex justify-center gap-6 mb-12 mt-6">
                 <button className="btn btn-outline btn-primary">Faire une demande</button>
                 <button className="btn btn-outline">Voir mon historique</button>
             </div>
+
+
         </div>
     );
 }
