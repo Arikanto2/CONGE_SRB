@@ -16,7 +16,7 @@ export default class Connexion extends Component {
       <div className="items-center">
         <form>
           <div>
-            <p className="labeConnex mb-4 text-center">Connexion.</p>
+            <p className="labeConnex mb-7 text-center">Connexion</p>
 
             <div className="mb-4">
               <label className="text-m block text-left font-serif">Identifiant:</label>
@@ -57,7 +57,7 @@ export default class Connexion extends Component {
               </div>
             </div>
 
-            <button className="btnConnexion mx-auto block" >
+            <button className="btnConnexion mx-auto block mt-10" >
               se connecter
             </button>
             <p className="inscriptionLink mx-auto mt-2 block w-fit transition-all duration-1000 hover:underline " onClick={this.props.activeDefil}>

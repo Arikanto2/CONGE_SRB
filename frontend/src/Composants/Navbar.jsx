@@ -31,14 +31,10 @@ export default function Navbar() {
           </NavLink>
         </div>
 
-
         <div className="dropdown dropdown-end">
-          <div tabIndex={0} role="button" className="avatar btn btn-ghost btn-circle">
-            <div className="w-10 rounded-full">
-              <img
-                alt="Tailwind CSS Navbar component"
-                src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-              />
+          <div tabIndex={0} role="button" className="avatar">
+            <div className="w-12 rounded-full ring-2 ring-primary ring-offset-2 ring-offset-base-100">
+              <img src="https://img.daisyui.com/images/profile/demo/spiderperson@192.webp" />
             </div>
           </div>
           <ul
@@ -46,10 +42,14 @@ export default function Navbar() {
             className="dropdown-content menu menu-sm z-50 mt-3 w-52 rounded-box bg-base-100 p-2 shadow"
           >
             <li>
-              <NavLink to="/profile" className="text-sm">Profile</NavLink>
+              <NavLink to="/profile" className="text-sm">
+                Profile
+              </NavLink>
             </li>
             <li>
-              <NavLink to="/login" className="text-sm">Déconnecter</NavLink>
+              <NavLink to="/login" className="text-sm">
+                Déconnecter
+              </NavLink>
             </li>
           </ul>
         </div>

@@ -9,12 +9,15 @@ export default function Accueil() {
       setIsValid(password === confirmMDP);
     }
   }, [password, confirmMDP]);
+
   return (
     <div className="card card-xs mx-8 h-full bg-base-100 pb-3 shadow-sm">
       <div className="card-body ml-5 mr-5 h-full">
         <div className="divEntete flex items-center gap-5">
-          <div className="cadreprmierL flex items-center justify-items-center">
-            <p className="premierL text-center">F</p>
+          <div className="avatar">
+            <div className="w-20 rounded-full ring-2 ring-primary ring-offset-2 ring-offset-base-100">
+              <img src="https://img.daisyui.com/images/profile/demo/spiderperson@192.webp" />
+            </div>
           </div>
           <p className="nomUtil">FAHAZAVANARIKANTO Andriantsoa</p>
           <div className="flex gap-3">
@@ -22,78 +25,114 @@ export default function Accueil() {
               className="btnDemande btn btn-dash"
               onClick={() => document.getElementById("my_modal_3").showModal()}
             >
-              Modifier le profile
+              Modifier le profil
             </button>
+
             <dialog id="my_modal_3" className="modal">
               <div className="modal-box">
-                <button className="btn btn-ghost btn-sm btn-circle absolute right-2 top-2" onClick={() => document.getElementById("my_modal_3").close()}>
+                <button
+                  className="btn btn-ghost btn-sm btn-circle absolute right-2 top-2"
+                  onClick={() => document.getElementById("my_modal_3").close()}
+                >
                   ✕
                 </button>
                 <form method="dialog">
-                  {/* if there is a button in form, it will close the modal */}
-
                   <div className="blocks-center">
                     <div className="ml-6 mr-6">
-                      <p className="labeConnex1 text-center">Modification du profile</p>
-                      <div className="mb-2 flex gap-10">
+                      <p className="labeConnex1 text-center">Modification du profil</p>
+
+                      {/* Première ligne : Nom + Prénom */}
+                      <div className="flex gap-10">
                         <div className="flex-1">
                           <label className="block text-left font-serif text-sm">Nom :</label>
                           <input
                             required
                             type="text"
-                            placeholder=""
+                            placeholder="Entrez votre nom"
                             className="inputConnexion validator input input-info bg-gray-50"
                             pattern="^[A-Za-z\séùèà]+$"
-                            minlength="6"
-                            maxlength="30"
+                            minLength="6"
+                            maxLength="30"
                             title="Seules les lettres sont autorisées (6-30 caractères)"
                           />
-                          <p className="validator-hint">Seules les lettres sont autorisées</p>
+                          <p className="legendMDP validator-hint">
+                            Seules les lettres sont autorisées (6 à 30 caractères)
+                          </p>
                         </div>
                         <div className="flex-1">
                           <label className="block text-left font-serif text-sm">Prénom :</label>
                           <input
                             required
                             type="text"
-                            placeholder=""
+                            placeholder="Entrez votre prénom"
                             className="inputConnexion validator input input-info bg-gray-50"
                             pattern="^[A-Za-z\séùèà]+$"
-                            minlength="2"
-                            maxlength="30"
+                            minLength="2"
+                            maxLength="30"
                             title="Seules les lettres sont autorisées (2-30 caractères)"
                           />
-                          <p className="validator-hint">Seules les lettres sont autorisées</p>
+                          <p className="legendMDP validator-hint">
+                            Seules les lettres sont autorisées (2 à 30 caractères)
+                          </p>
                         </div>
                       </div>
 
+                      {/* Deuxième ligne : Matricule + Corps */}
+                      <div className="flex gap-10">
+                        <div className="flex-1">
+                          <label className="block text-left font-serif text-sm">Matricule :</label>
+                          <input
+                            type="text"
+                            required
+                            placeholder="Entrez votre matricule"
+                            className="inputConnexion validator input input-info bg-gray-50"
+                            pattern="^[0-9]{6}$"
+                            title="6 chiffres requis"
+                          />
+                          <p className="validator-hint legendMDP">Seuls les chiffres sont autorisés (6 requis)</p>
+                        </div>
+                        <div className="flex-1">
+                          <label className="block text-left font-serif text-sm">Corps :</label>
+                          <input
+                            required
+                            type="text"
+                            placeholder="Entrez votre corps"
+                            className="inputConnexion input input-info bg-gray-50"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Troisième ligne : Grade + Fonction */}
                       <div className="mb-2 flex gap-10">
                         <div className="flex-1">
                           <label className="block text-left font-serif text-sm">Grade :</label>
-                          <select className="inputConnexion select select-info bg-gray-50" required>
-                            <option value=""></option>
-                            <option>L1</option>
-                            <option>L2</option>
-                            <option>L3</option>
-                          </select>
+                          <input
+                            required
+                            type="text"
+                            placeholder="Entrez votre grade"
+                            className="inputConnexion input input-info bg-gray-50"
+                          />
                         </div>
                         <div className="flex-1">
                           <label className="block text-left font-serif text-sm">Fonction :</label>
                           <select className="inputConnexion select select-info bg-gray-50" required>
-                            <option value=""></option>
-                            <option>L1</option>
-                            <option>L2</option>
-                            <option>L3</option>
+                            <option value="">Sélectionnez une fonction</option>
+                            <option>Chef de service</option>
+                            <option>Chef de division</option>
+                            <option>Personnel</option>
                           </select>
                         </div>
                       </div>
-                      <div className="mb-3 flex gap-10">
+
+                      {/* Quatrième ligne : Division + E-mail */}
+                      <div className="flex gap-10">
                         <div className="flex-1">
                           <label className="block text-left font-serif text-sm">Division :</label>
                           <select className="inputConnexion select select-info bg-gray-50" required>
-                            <option value=""></option>
+                            <option value="">Sélectionnez une division</option>
                             <option>L1</option>
                             <option>L2</option>
-                            <option>L3</option>
+                            <option>Centre Informatique</option>
                           </select>
                         </div>
                         <div className="flex-1">
@@ -101,20 +140,42 @@ export default function Accueil() {
                           <input
                             required
                             type="email"
-                            placeholder=""
+                            placeholder="Entrez votre adresse e-mail"
                             className="inputConnexion validator input input-info bg-gray-50"
                           />
-                          <div className="validator-hint">Adresse mail invalide</div>
+                          <div className="legendMDP validator-hint">Adresse e-mail invalide</div>
                         </div>
                       </div>
-                      <div className="mb-2 flex gap-10">
+
+                      {/* Cinquième ligne : Contact + Photo */}
+                      <div className="relative mb-2 flex gap-10">
                         <div className="flex-1">
-                          <label className="block text-left font-serif text-sm">Corps :</label>
+                          <label className="block text-left font-serif text-sm">Contact :</label>
+                          <div className="relative w-full">
+                            <span className="pointer-events-none absolute left-0 top-4 z-20 h-8 -translate-y-1/2 rounded-md border border-solid border-gray-400 bg-gray-100 pl-1 pt-1 text-sm">
+                              +261
+                            </span>
+                            <input
+                              required
+                              type="text"
+                              pattern="^[0-9]{9}$"
+                              minLength={9}
+                              maxLength={9}
+                              title="Seuls les chiffres sont autorisés (9 chiffres après +261)"
+                              className="inputConnexion1 validator input input-info z-10 w-full bg-gray-50 px-10 py-2"
+                              placeholder="Numéro sans indicatif"
+                            />
+                            <p className="legendMDP validator-hint">
+                              Seuls les chiffres sont autorisés (9 chiffres requis)
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex-1">
+                          <label className="block text-left font-serif text-sm">Photo de profil :</label>
                           <input
-                            required
-                            type="text"
-                            placeholder=""
-                            className="inputConnexion input input-info bg-gray-50"
+                            type="file"
+                            className="input-info file-input h-8 w-48"
+                            accept=".jpg,.jpeg,.png,.gif"
                           />
                         </div>
                       </div>
@@ -125,12 +186,14 @@ export default function Accueil() {
                 </form>
               </div>
             </dialog>
+
             <button
               className="btnDemande btn btn-dash"
               onClick={() => document.getElementById("my_modal").showModal()}
             >
               Changer le mot de passe
             </button>
+
             <dialog id="my_modal" className="modal">
               <div className="modal-box flex items-center justify-center p-8">
                 <button
@@ -149,6 +212,7 @@ export default function Accueil() {
                       </label>
                       <input
                         type="password"
+                        placeholder="Entrez votre ancien mot de passe"
                         className="inputConnexion input input-info w-full bg-gray-50"
                       />
                     </div>
@@ -159,11 +223,9 @@ export default function Accueil() {
                       </label>
                       <input
                         value={password}
-                        onChange={(e) => {
-                          setPassword(e.target.value);
-                        }}
+                        onChange={(e) => setPassword(e.target.value)}
                         type="password"
-                        placeholder=""
+                        placeholder="Entrez un nouveau mot de passe"
                         className="inputConnexion validator input input-info bg-gray-50"
                         pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#\s?&]{8,}$"
                         title="Doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial"
@@ -171,8 +233,7 @@ export default function Accueil() {
                         maxLength="20"
                       />
                       <p className="legendMDP validator-hint">
-                        Doit contenir au moins 8 caractères, une majuscule, une minuscule, un
-                        chiffre et un caractère spécial
+                        Doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial
                       </p>
                     </div>
 
@@ -184,10 +245,11 @@ export default function Accueil() {
                         value={confirmMDP}
                         onChange={(e) => setConfirmMDP(e.target.value)}
                         type="password"
+                        placeholder="Confirmez le nouveau mot de passe"
                         className="inputConnexion input input-info w-full bg-gray-50"
                       />
                       <p className="legendMDP mt-2">
-                        {isValid ? "" : "Les mots de passe ne correspondent pas"}
+                        {isValid ? "" : "Les mots de passe ne correspondent pas."}
                       </p>
                     </div>
                   </div>
@@ -202,39 +264,39 @@ export default function Accueil() {
         <div className="mt-3">
           <div className="divPorfil rounded-lg">
             <label className="mb-2 block text-left font-serif text-sm">
-              <span className="labelProfil">Matricule:</span>&emsp;
+              <span className="labelProfil">Matricule :</span>&emsp;
               <span className="text-black">48798</span>
             </label>
             <label className="mb-2 block text-left font-serif text-sm">
-              <span className="labelProfil">Fonction:</span>&emsp;
+              <span className="labelProfil">Fonction :</span>&emsp;
               <span className="text-black">Chef</span>
             </label>
             <label className="mb-2 block text-left font-serif text-sm">
-              <span className="labelProfil">Division:</span>&emsp;
+              <span className="labelProfil">Division :</span>&emsp;
               <span className="text-black">CIR</span>
             </label>
             <label className="mb-2 block text-left font-serif text-sm">
-              <span className="labelProfil">Corps:</span>&emsp;
+              <span className="labelProfil">Corps :</span>&emsp;
               <span className="text-black">J08A</span>
             </label>
             <label className="mb-2 block text-left font-serif text-sm">
-              <span className="labelProfil">Grade:</span>&emsp;
+              <span className="labelProfil">Grade :</span>&emsp;
               <span className="text-black">ST0E</span>
             </label>
             <label className="mb-2 block text-left font-serif text-sm">
-              <span className="labelProfil">E-mail:</span>&emsp;
+              <span className="labelProfil">E-mail :</span>&emsp;
               <span className="text-black">fahazavanaandriantsoa@gmail.com</span>
             </label>
           </div>
 
           <div className="divPorfil mt-4 rounded-lg">
             <div className="mb-4 flex items-center">
-              <label className="labelProfil">Congé:</label>
+              <label className="labelProfil">Congé :</label>
               <select className="select select-info ml-4 w-32">
                 <option selected>2025</option>
                 <option>2024</option>
                 <option>2023</option>
-                <option>cumul</option>
+                <option>Cumul</option>
               </select>
             </div>
 
