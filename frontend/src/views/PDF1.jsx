@@ -1,24 +1,36 @@
 import React, { Component } from "react";
+import logo from "../assets/logo2.jpg";
+import logo3 from "../assets/logo3.jpg";
+
 
 export default class PDF extends Component {
   render() {
     return (
       <div className="px-20 py-10">
         <div id="pdfZone" className="bg-white p-10 font-serif">
-          <h1 className="mb-6 text-center text-2xl font-bold">PDF</h1>
-          <div className="flex justify-between">
-            <div className="flex-1 text-center leading-tight">
-              <p>MINISTERE DE L'ECONOMIE ET DES FINANCES</p>
-              <p>SECRETARIAT GENERAL</p>
-              <p>DIRECTION GENERALE DES FINANCES ET DES</p>
-              <p>AFFAIRES GENERALES</p>
-              <p>SERVICE REGIONAL DU BUDGET</p>
-              <p>HAUTE MATSIATRA</p>
-            </div>
-            <div className="flex-1"></div>
-          </div>
+          <div className="mb-6 flex justify-center">
+                      <img src={logo3} alt="Logo" className="h-20 w-56" />
+                    </div>
+          
+                    <div className="mb-4 flex items-start justify-between">
+                      <div>
+                        <div className="text-center">
+                          <img src={logo} alt="Logo" className="inline-block h-28 w-32" />
+                        </div>
+                        <div className="text-center">
+                          <p>MINISTÈRE DE L’ÉCONOMIE ET DES FINANCES</p>
+                          <p>SECRÉTARIAT GÉNÉRAL</p>
+                          <p>DIRECTION GÉNÉRALE DES FINANCES ET DES</p>
+                          <p>AFFAIRES GÉNÉRALES</p>
+                          <p>SERVICE RÉGIONAL DU BUDGET</p>
+                          <p>HAUTE MATSIATRA</p>
+                        </div>
+                      </div>
+          
+                      <p className="pt-40 text-right">Fianarantsoa, le 20/08/2025</p>
+                    </div>
 
-          <div className="mt-10 leading-relaxed">
+          <div className="mt-24 leading-relaxed">
             <p className="mb-8 text-center text-xl font-bold">
               DEMANDE DE JOUISSANCE DE CONGE
             </p>

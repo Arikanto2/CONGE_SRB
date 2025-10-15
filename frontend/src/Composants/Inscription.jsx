@@ -5,7 +5,7 @@ export default function Inscription({ activeDefil }) {
   const [confirmMDP, setConfirmMDP] = useState("");
   const [isValid, setIsValid] = useState(true);
 
-   useEffect(() => {
+  useEffect(() => {
     if (confirmMDP.length > 0) {
       setIsValid(password === confirmMDP);
     } else {
@@ -27,26 +27,14 @@ export default function Inscription({ activeDefil }) {
           <div className="ml-14 mr-14">
             <p className="labeConnex1 text-center">Inscription</p>
 
-            {/* Première ligne : Matricule + Nom */}
+            {/* Première ligne : Nom + Prénom */}
             <div className="flex gap-10">
-              <div className="flex-1">
-                <label className="block text-left font-serif text-sm">Matricule :</label>
-                <input
-                  type="text"
-                  required
-                  placeholder=""
-                  className="inputConnexion validator input input-info bg-gray-50"
-                  pattern="^[0-9]+$"
-                  title="Seules les chiffres sont autorisés"
-                />
-                <p className="validator-hint">Seules les chiffres sont autorisés</p>
-              </div>
               <div className="flex-1">
                 <label className="block text-left font-serif text-sm">Nom :</label>
                 <input
                   required
                   type="text"
-                  placeholder=""
+                  placeholder="Entrez votre nom"
                   className="inputConnexion validator input input-info bg-gray-50"
                   pattern="^[A-Za-z\séùèà]+$"
                   minLength="6"
@@ -54,19 +42,15 @@ export default function Inscription({ activeDefil }) {
                   title="Seules les lettres sont autorisées (6-30 caractères)"
                 />
                 <p className="legendMDP validator-hint">
-                  Seules les lettres sont autorisées et 6-30 caractères
+                  Seules les lettres sont autorisées (6 à 30 caractères)
                 </p>
               </div>
-            </div>
-
-            {/* Deuxième ligne : Prénom + Corps */}
-            <div className="flex gap-10">
               <div className="flex-1">
                 <label className="block text-left font-serif text-sm">Prénom :</label>
                 <input
                   required
                   type="text"
-                  placeholder=""
+                  placeholder="Entrez votre prénom"
                   className="inputConnexion validator input input-info bg-gray-50"
                   pattern="^[A-Za-z\séùèà]+$"
                   minLength="2"
@@ -74,7 +58,27 @@ export default function Inscription({ activeDefil }) {
                   title="Seules les lettres sont autorisées (2-30 caractères)"
                 />
                 <p className="legendMDP validator-hint">
-                  Seules les lettres sont autorisées et 6-30 caractères{" "}
+                  Seules les lettres sont autorisées (2 à 30 caractères)
+                </p>
+              </div>
+            </div>
+
+            {/* Deuxième ligne : Matricule + Corps */}
+            <div className="flex gap-10">
+              <div className="flex-1">
+                <label className="block text-left font-serif text-sm">Matricule :</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Entrez votre matricule"
+                  className="inputConnexion validator input input-info bg-gray-50"
+                  pattern="^[0-9]+$"
+                  minLength="6"
+                  maxLength="6"
+                  title="Seuls les chiffres sont autorisés"
+                />
+                <p className="legendMDP validator-hint">
+                  Seuls les chiffres sont autorisés (6 chiffres requis)
                 </p>
               </div>
               <div className="flex-1">
@@ -82,7 +86,7 @@ export default function Inscription({ activeDefil }) {
                 <input
                   required
                   type="text"
-                  placeholder=""
+                  placeholder="Entrez votre corps"
                   className="inputConnexion input input-info bg-gray-50"
                 />
               </div>
@@ -92,33 +96,33 @@ export default function Inscription({ activeDefil }) {
             <div className="mb-2 flex gap-10">
               <div className="flex-1">
                 <label className="block text-left font-serif text-sm">Grade :</label>
-                <select className="inputConnexion select select-info bg-gray-50" required>
-                  <option value=""></option>
-                  <option>L1</option>
-                  <option>L2</option>
-                  <option>L3</option>
-                </select>
+                <input
+                  required
+                  type="text"
+                  placeholder="Entrez votre grade"
+                  className="inputConnexion input input-info bg-gray-50"
+                />
               </div>
               <div className="flex-1">
                 <label className="block text-left font-serif text-sm">Fonction :</label>
                 <select className="inputConnexion select select-info bg-gray-50" required>
-                  <option value=""></option>
-                  <option>L1</option>
-                  <option>L2</option>
-                  <option>L3</option>
+                  <option value="">Sélectionnez votre fonction</option>
+                  <option>Chef de service</option>
+                  <option>Chef de division</option>
+                  <option>Personnel</option>
                 </select>
               </div>
             </div>
 
-            {/* Quatrième ligne : Division + Email */}
+            {/* Quatrième ligne : Division + E-mail */}
             <div className="flex gap-10">
               <div className="flex-1">
                 <label className="block text-left font-serif text-sm">Division :</label>
                 <select className="inputConnexion select select-info bg-gray-50" required>
-                  <option value=""></option>
+                  <option value="">Sélectionnez une division</option>
                   <option>L1</option>
                   <option>L2</option>
-                  <option>L3</option>
+                  <option>Centre informatique</option>
                 </select>
               </div>
               <div className="flex-1">
@@ -126,21 +130,54 @@ export default function Inscription({ activeDefil }) {
                 <input
                   required
                   type="email"
-                  placeholder=""
+                  placeholder="exemple@domaine.com"
                   className="inputConnexion validator input input-info bg-gray-50"
                 />
-                <div className="legendMDP validator-hint">Adresse mail invalide</div>
+                <div className="legendMDP validator-hint">Adresse e-mail invalide</div>
               </div>
             </div>
 
-            {/* Cinquième ligne : Mot de passe + Confirmation */}
+            {/* Cinquième ligne : Contact + Photo */}
+            <div className="relative flex gap-10">
+              <div className="flex-1">
+                <label className="block text-left font-serif text-sm">Contact :</label>
+                <div className="relative w-full">
+                  <span className="pointer-events-none absolute left-0 top-4 z-20 h-8 -translate-y-1/2 rounded-md border border-solid border-gray-400 bg-gray-100 pl-1 pt-1 text-sm">
+                    +261
+                  </span>
+                  <input
+                    required
+                    pattern="^[0-9]+$"
+                    type="text"
+                    minLength={9}
+                    maxLength={9}
+                    title="Seuls les chiffres sont autorisés (9 chiffres requis)"
+                    className="inputConnexion1 validator input input-info z-10 w-full bg-gray-50"
+                    placeholder="Numéro sans indicatif"
+                  />
+                  <p className="legendMDP validator-hint">
+                    Seuls les chiffres sont autorisés (9 chiffres requis)
+                  </p>
+                </div>
+              </div>
+              <div className="flex-1">
+                <label className="block text-left font-serif text-sm">Photo de profil :</label>
+                <input
+                  type="file"
+                  className="input-info file-input h-8 w-48"
+                  accept=".jpg,.jpeg,.png,.gif"
+                />
+              </div>
+            </div>
+
+            {/* Sixième ligne : Mot de passe + Confirmation */}
             <div className="flex gap-10">
               <div className="flex-1">
                 <label className="block text-left font-serif text-sm">Mot de passe :</label>
                 <input
                   required
                   type="password"
-                  placeholder=""
+                  placeholder="Entrez votre mot de passe"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="inputConnexion validator input input-info bg-gray-50"
@@ -150,8 +187,7 @@ export default function Inscription({ activeDefil }) {
                   maxLength="20"
                 />
                 <p className="legendMDP validator-hint">
-                  Doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et
-                  un caractère spécial
+                  Doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial
                 </p>
               </div>
               <div className="flex-1">
@@ -160,24 +196,24 @@ export default function Inscription({ activeDefil }) {
                 </label>
                 <input
                   type="password"
-                  placeholder=""
+                  placeholder="Confirmez votre mot de passe"
                   value={confirmMDP}
                   onChange={(e) => setConfirmMDP(e.target.value)}
                   className="inputConnexion input input-info bg-gray-50"
                 />
-                <p className="legendMDP mt-2">
-                  {isValid ? "" : "Les mots de passe ne correspondent pas"}
+                <p className="legendMDP mt-1">
+                  {isValid ? "" : "Les mots de passe ne correspondent pas."}
                 </p>
               </div>
             </div>
 
             {/* Bouton et lien retour */}
-            <button className="btnConnexion mx-auto block">s'inscrire</button>
+            <button className="btnConnexion mx-auto block">S'inscrire</button>
             <p
-              className="retourConnexion mx-auto mt-1 w-28 cursor-pointer text-center font-serif transition duration-1000 hover:underline"
+              className="retourConnexion mx-auto w-28 cursor-pointer text-center font-serif transition duration-1000 hover:underline"
               onClick={activeDefil}
             >
-              j'ai déja un compte
+              J'ai déjà un compte
             </p>
           </div>
         </form>
