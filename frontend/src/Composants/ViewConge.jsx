@@ -5,7 +5,7 @@ export default class ViewConge extends Component {
     return (
       <div
         id="pdfZone"
-        className="  m-16 rounded-xl bg-white p-10 shadow-lg font-serif border "
+        className="rounded-xl bg-white p-10 shadow-lg font-serif border "
       >
         <h1 className="mb-6 text-center text-2xl font-bold underline">
           DÉCISION DE CONGÉ ANNUEL

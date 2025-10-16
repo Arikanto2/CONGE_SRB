@@ -106,7 +106,7 @@ export default function Inscription({ activeDefil }) {
               <div className="flex-1">
                 <label className="block text-left font-serif text-sm">Fonction :</label>
                 <select className="inputConnexion select select-info bg-gray-50" required>
-                  <option value="">Sélectionnez votre fonction</option>
+                  <option value="" disabled>Sélectionnez votre fonction</option>
                   <option>Chef de service</option>
                   <option>Chef de division</option>
                   <option>Personnel</option>
@@ -119,10 +119,14 @@ export default function Inscription({ activeDefil }) {
               <div className="flex-1">
                 <label className="block text-left font-serif text-sm">Division :</label>
                 <select className="inputConnexion select select-info bg-gray-50" required>
-                  <option value="">Sélectionnez une division</option>
-                  <option>L1</option>
-                  <option>L2</option>
-                  <option>Centre informatique</option>
+                  <option value="" disabled>Sélectionnez une division</option>
+                  <option>Bureau du Secrétariat</option>
+                  <option>Cellule d'appui et coordination</option>
+                  <option>Bureau des affaires administratifs et financières</option>
+                  <option>Patrimoine de l'état</option>
+                  <option>Chargée de finances locales et des EPN</option>
+                  <option>Exécution budgetaire et remboursement des frais médicaux</option>
+                  <option>Centre informatique régional</option>
                 </select>
               </div>
               <div className="flex-1">
