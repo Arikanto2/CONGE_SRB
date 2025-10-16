@@ -246,6 +246,69 @@ export default function Accueil() {
                     <button className="btn btn-info btn-sm">👁️</button>
                   </td>
                 </tr>
+                <tr>
+                    <th>3</th>
+                    <td>Brice Swyre</td>
+                    <td>Formation</td>
+                    <td>5 jours</td>
+                    <td>
+                        <button className="btn btn-info btn-sm">👁️</button>
+                    </td>
+                </tr>
+                <tr>
+                    <th>3</th>
+                    <td>Brice Swyre</td>
+                    <td>Formation</td>
+                    <td>5 jours</td>
+                    <td>
+                        <button className="btn btn-info btn-sm">👁️</button>
+                    </td>
+                </tr>
+                <tr>
+                    <th>3</th>
+                    <td>Brice Swyre</td>
+                    <td>Formation</td>
+                    <td>5 jours</td>
+                    <td>
+                        <button className="btn btn-info btn-sm">👁️</button>
+                    </td>
+                </tr>
+                <tr>
+                    <th>3</th>
+                    <td>Brice Swyre</td>
+                    <td>Formation</td>
+                    <td>5 jours</td>
+                    <td>
+                        <button className="btn btn-info btn-sm">👁️</button>
+                    </td>
+                </tr>
+                <tr>
+                    <th>3</th>
+                    <td>Brice Swyre</td>
+                    <td>Formation</td>
+                    <td>5 jours</td>
+                    <td>
+                        <button className="btn btn-info btn-sm">👁️</button>
+                    </td>
+                </tr>
+                <tr>
+                    <th>3</th>
+                    <td>Brice Swyre</td>
+                    <td>Formation</td>
+                    <td>5 jours</td>
+                    <td>
+                        <button className="btn btn-info btn-sm">👁️</button>
+                    </td>
+                </tr>
+                <tr>
+                    <th>3</th>
+                    <td>Brice Swyre</td>
+                    <td>Formation</td>
+                    <td>5 jours</td>
+                    <td>
+                        <button className="btn btn-info btn-sm">👁️</button>
+                    </td>
+                </tr>
               </tbody>
             </table>
           </div>
