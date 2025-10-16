@@ -13,7 +13,7 @@ import {
 import { Line } from "react-chartjs-2";
 import { useEffect } from "react";
 
-import PDF from "../Composants/ViewConge.jsx"; // ← majuscule obligatoire
+import PDF from "../Composants/ViewConge.jsx";
 
 ChartJS.register(
   CategoryScale,
