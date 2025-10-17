@@ -12,6 +12,7 @@
   "dependencies": {
     "@fontsource/viaoda-libre": "^5.2.8",
     "@heroicons/react": "^2.2.0",
+    "axios": "^1.12.2",
     "chart.js": "^4.5.0",
     "daisyui": "^5.1.18",
     "html2canvas": "^1.4.1",
