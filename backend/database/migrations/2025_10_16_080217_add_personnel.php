@@ -6,32 +6,26 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('personnel', function (Blueprint $table) {
-            $table->id()->primary()->autoIncrement();
+            $table->id();
             $table->integer('IM')->unique();
-            $table->string('Nom');
-            $table->string('Prenoms');
-            $table->string('email')->unique();
-            $table->string('Corps');
-            $table->string('Grade');
-            $table->string('Fonction');
-            $table->string('Tel');
-            $table->string('Division');
-            $table->binary('PDP')->nullable();
-            $table->string('password');
+            $table->integer('IM_Chef')->nullable();
+            $table->char('NOM', 32)->nullable();
+            $table->string('PRENOMS', 128)->nullable();
+            $table->string('EMAIL', 128)->unique()->nullable();
+            $table->string('CORPS', 128)->nullable();
+            $table->string('GRADE', 128)->nullable();
+            $table->char('FONCTION', 32)->nullable();
+            $table->string('TEL', 128)->nullable();
+            $table->string('DIVISION', 128)->nullable();
+            $table->string('PDP', 128)->nullable();
+            $table->string('MDP', 60)->nullable();
             $table->timestamps();
-            $table->integer('IMChef')->foreign()->references('IM')->on('personnel')->onDelete('cascade');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('personnel');
