@@ -6,32 +6,28 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('demande', function (Blueprint $table) {
+        Schema::create('conge_absence', function (Blueprint $table) {
             $table->id();
-            $table->integer('Ref');
-            $table->integer('IM')->foreign()->references('IM')->on('personnel')->onDelete('cascade');
-            $table->string('Categorie');
-            $table->string('Type');
-            $table->string('Motif');
-            $table->date('DateDebut');
-            $table->date('DateFin');
-            $table->string('Lieu');
-            $table->string('ValidDiv');
-            $table->string('ValidChef');
+            $table->integer('Ref')->unique();
+            $table->integer('IM');
+            $table->string('CATEGORIE', 128)->nullable();
+            $table->string('TYPE', 128)->nullable();
+            $table->string('MOTIF', 128)->nullable();
+            $table->date('DATEDEBUT')->nullable();
+            $table->date('DATEFIN')->nullable();
+            $table->string('VALIDDIV', 15)->nullable();
+            $table->string('VALIDCHEF', 15)->nullable();
+            $table->string('LIEU', 128)->nullable();
+            $table->string('INTERIM', 128)->nullable();
+            $table->string('ABSENCE', 60)->nullable();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('demande');
+        Schema::dropIfExists('conge_absence');
     }
 };
