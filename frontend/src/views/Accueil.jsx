@@ -1,17 +1,17 @@
 import {
-  Chart as ChartJS,
   CategoryScale,
+  Chart as ChartJS,
+  Filler,
+  Legend,
   LinearScale,
-  PointElement,
   LineElement,
+  PointElement,
   Title,
   Tooltip,
-  Legend,
-  Filler,
 } from "chart.js";
 
-import { Line } from "react-chartjs-2";
 import { useEffect } from "react";
+import { Line } from "react-chartjs-2";
 
 import PDF from "../Composants/ViewConge.jsx";
 
@@ -201,7 +201,7 @@ export default function Accueil() {
                     </button>
 
                     <dialog id="my_modal_3" className="modal">
-                      <div className="modal-box relative max-w-full h-[85vh] overflow-y-auto p-0">
+                      <div className="modal-box relative h-[85vh] max-w-full overflow-y-auto p-0">
                         <form method="dialog">
                           <button className="btn btn-ghost btn-sm btn-circle absolute right-2 top-2">
                             ✕
@@ -216,10 +216,10 @@ export default function Accueil() {
                         </button>
 
                         <div className="mx-auto my-auto">
-                          <div className="mt-14 mx-14 mb-5">
+                          <div className="mx-14 mb-5 mt-14">
                             <PDF />
                           </div>
-                          <div className=" absolute right-0 flex gap-3 mr-14">
+                          <div className="absolute right-0 mr-14 flex gap-3">
                             <button className="btn btn-success btn-circle">✔</button>
                             <button className="btn btn-error btn-circle">✖</button>
                           </div>
@@ -247,67 +247,67 @@ export default function Accueil() {
                   </td>
                 </tr>
                 <tr>
-                    <th>3</th>
-                    <td>Brice Swyre</td>
-                    <td>Formation</td>
-                    <td>5 jours</td>
-                    <td>
-                        <button className="btn btn-info btn-sm">👁️</button>
-                    </td>
+                  <th>3</th>
+                  <td>Brice Swyre</td>
+                  <td>Formation</td>
+                  <td>5 jours</td>
+                  <td>
+                    <button className="btn btn-info btn-sm">👁️</button>
+                  </td>
                 </tr>
                 <tr>
-                    <th>3</th>
-                    <td>Brice Swyre</td>
-                    <td>Formation</td>
-                    <td>5 jours</td>
-                    <td>
-                        <button className="btn btn-info btn-sm">👁️</button>
-                    </td>
+                  <th>3</th>
+                  <td>Brice Swyre</td>
+                  <td>Formation</td>
+                  <td>5 jours</td>
+                  <td>
+                    <button className="btn btn-info btn-sm">👁️</button>
+                  </td>
                 </tr>
                 <tr>
-                    <th>3</th>
-                    <td>Brice Swyre</td>
-                    <td>Formation</td>
-                    <td>5 jours</td>
-                    <td>
-                        <button className="btn btn-info btn-sm">👁️</button>
-                    </td>
+                  <th>3</th>
+                  <td>Brice Swyre</td>
+                  <td>Formation</td>
+                  <td>5 jours</td>
+                  <td>
+                    <button className="btn btn-info btn-sm">👁️</button>
+                  </td>
                 </tr>
                 <tr>
-                    <th>3</th>
-                    <td>Brice Swyre</td>
-                    <td>Formation</td>
-                    <td>5 jours</td>
-                    <td>
-                        <button className="btn btn-info btn-sm">👁️</button>
-                    </td>
+                  <th>3</th>
+                  <td>Brice Swyre</td>
+                  <td>Formation</td>
+                  <td>5 jours</td>
+                  <td>
+                    <button className="btn btn-info btn-sm">👁️</button>
+                  </td>
                 </tr>
                 <tr>
-                    <th>3</th>
-                    <td>Brice Swyre</td>
-                    <td>Formation</td>
-                    <td>5 jours</td>
-                    <td>
-                        <button className="btn btn-info btn-sm">👁️</button>
-                    </td>
+                  <th>3</th>
+                  <td>Brice Swyre</td>
+                  <td>Formation</td>
+                  <td>5 jours</td>
+                  <td>
+                    <button className="btn btn-info btn-sm">👁️</button>
+                  </td>
                 </tr>
                 <tr>
-                    <th>3</th>
-                    <td>Brice Swyre</td>
-                    <td>Formation</td>
-                    <td>5 jours</td>
-                    <td>
-                        <button className="btn btn-info btn-sm">👁️</button>
-                    </td>
+                  <th>3</th>
+                  <td>Brice Swyre</td>
+                  <td>Formation</td>
+                  <td>5 jours</td>
+                  <td>
+                    <button className="btn btn-info btn-sm">👁️</button>
+                  </td>
                 </tr>
                 <tr>
-                    <th>3</th>
-                    <td>Brice Swyre</td>
-                    <td>Formation</td>
-                    <td>5 jours</td>
-                    <td>
-                        <button className="btn btn-info btn-sm">👁️</button>
-                    </td>
+                  <th>3</th>
+                  <td>Brice Swyre</td>
+                  <td>Formation</td>
+                  <td>5 jours</td>
+                  <td>
+                    <button className="btn btn-info btn-sm">👁️</button>
+                  </td>
                 </tr>
               </tbody>
             </table>
