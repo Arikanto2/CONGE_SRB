@@ -1,5 +1,7 @@
 import "./Style/App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./contexts/AuthContext";
+
 import Login from "./views/Login.jsx";
 import Accueil from "./views/Accueil.jsx";
 import Profile from "./views/Profile.jsx";
@@ -8,40 +10,50 @@ import Stats from "./views/Stats.jsx";
 import Layout from "./Composants/Layout.jsx";
 import PDF from "./views/PDF.jsx";
 import PDF1 from "./views/PDF1.jsx";
-import ViewConge from "./Composants/ViewConge.jsx"; 
-
+import ProtectedRoute from "./Composants/ProtectedRoute.jsx";
 
 import "@fontsource/viaoda-libre";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <Login />
-          }
-        />
-        <Route
-          path="/login"
-          element={
-            <Login />
-          }
-        ></Route>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Login />} />
 
-        <Route element={<Layout />}>
-          <Route path="/Accueil" element={<Accueil />} />
-          <Route path="/Profile" element={<Profile />} />
-          <Route path="/Demande" element={<Demande />} />
-          <Route path="/Statistique" element={<Stats />} />  
-        </Route>
-        <Route path="/PDF" element={<PDF/>} />
-        <Route path="/PDF1" element={<PDF1/>} />
-        <Route path="/ViewConge" element={<ViewConge/>} />
-        
-      </Routes>
-    </BrowserRouter>
+          <Route
+            element={
+              <ProtectedRoute>
+                <Layout />
+              </ProtectedRoute>
+            }
+          >
+            <Route path="/Accueil" element={<Accueil />} />
+            <Route path="/Profile" element={<Profile />} />
+            <Route path="/Demande" element={<Demande />} />
+            <Route path="/Statistique" element={<Stats />} />
+          </Route>
+
+          {/* Routes PDF protégées */}
+          <Route
+            path="/PDF"
+            element={
+              <ProtectedRoute>
+                <PDF />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/PDF1"
+            element={
+              <ProtectedRoute>
+                <PDF1 />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 
