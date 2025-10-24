@@ -1,10 +1,9 @@
 <?php
 
-
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Tymon\JWTAuth\Contracts\JWTSubject;
+use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject; // ✅ changement ici
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Personnel extends Authenticatable implements JWTSubject
@@ -34,6 +33,7 @@ class Personnel extends Authenticatable implements JWTSubject
     protected $hidden = [
         'MDP',
     ];
+
     protected function hashes(): array
     {
         return [
@@ -43,7 +43,6 @@ class Personnel extends Authenticatable implements JWTSubject
 
     public $timestamps = true;
 
-    // Relations auto-référentielles
     public function chef()
     {
         return $this->belongsTo(Personnel::class, 'IM_Chef', 'IM');
@@ -53,6 +52,7 @@ class Personnel extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(Personnel::class, 'IM_Chef', 'IM');
     }
+
     public function getJWTIdentifier()
     {
         return $this->getKey();
@@ -63,13 +63,11 @@ class Personnel extends Authenticatable implements JWTSubject
         return [];
     }
 
-    // Indique à Laravel quel champ utiliser pour le mot de passe
     public function getAuthPassword()
     {
         return $this->MDP;
     }
 
-    // Définir le champ utilisé pour l'identifiant unique
     public function getAuthIdentifierName()
     {
         return 'IM';
@@ -79,15 +77,4 @@ class Personnel extends Authenticatable implements JWTSubject
     {
         return $this->IM;
     }
-
-    // Relations avec congés
-    /*public function congesAbsence()
-    {
-        return $this->hasMany(CongeAbsence::class, 'IM', 'IM');
-    }
-
-    public function congesAnnuels()
-    {
-        return $this->hasMany(CongeAnnuel::class, 'IM', 'IM');
-    }*/
 }
