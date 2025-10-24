@@ -4,9 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Personnel;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth; 
+
 
 class InscriptionController extends Controller
 {
@@ -58,21 +59,14 @@ class InscriptionController extends Controller
             'MDP' => 'required|string',
         ]);
 
-        // Trouver l'utilisateur par IM
         $personnel = Personnel::where('IM', $credentials['IM'])->first();
 
-        // Vérifier les identifiants
         if (!$personnel || !Hash::check($credentials['MDP'], $personnel->MDP)) {
             return response()->json(['message' => 'Identifiants incorrects'], 401);
         }
 
-        // Générer un token JWT
         try {
-            /** @var \Tymon\JWTAuth\JWTGuard $jwt */
-            $jwt = auth('api');
-
-            // Connecter l'utilisateur manuellement et générer le token
-            $token = $jwt->login($personnel);
+            $token = JWTAuth::fromUser($personnel); // ✅ remplacement auth('api')->login()
 
             return response()->json([
                 'message' => 'Connexion réussie',
@@ -95,9 +89,7 @@ class InscriptionController extends Controller
     public function verifyToken(Request $request)
     {
         try {
-            /** @var \Tymon\JWTAuth\JWTGuard $jwt */
-            $jwt = auth('api');
-            $user = $jwt->user();
+            $user = JWTAuth::parseToken()->authenticate(); // ✅ nouveau
 
             if ($user) {
                 return response()->json([
@@ -122,9 +114,7 @@ class InscriptionController extends Controller
     public function getUser(Request $request)
     {
         try {
-            /** @var \Tymon\JWTAuth\JWTGuard $jwt */
-            $jwt = auth('api');
-            $user = $jwt->user();
+            $user = JWTAuth::parseToken()->authenticate(); // ✅ nouveau
 
             return response()->json([
                 'user' => [
@@ -143,13 +133,14 @@ class InscriptionController extends Controller
 
     public function logout(Request $request)
     {
-        /** @var \Tymon\JWTAuth\JWTGuard $jwt */
-        $jwt = auth('api');
-        $jwt->logout();
-
-        return response()->json([
-            'message' => 'Déconnexion réussie',
-            'status' => 'success'
-        ]);
+        try {
+            JWTAuth::invalidate(JWTAuth::getToken()); // ✅ nouvelle syntaxe
+            return response()->json([
+                'message' => 'Déconnexion réussie',
+                'status' => 'success'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Erreur lors de la déconnexion'], 500);
+        }
     }
 }
