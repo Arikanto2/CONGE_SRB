@@ -12,12 +12,12 @@ return new class extends Migration
             $table->id();
             $table->integer('IM')->unique();
             $table->integer('IM_Chef')->nullable();
-            $table->char('NOM', 32)->nullable();
+            $table->string('NOM', 128)->nullable();
             $table->string('PRENOMS', 128)->nullable();
             $table->string('EMAIL', 128)->unique()->nullable();
             $table->string('CORPS', 128)->nullable();
             $table->string('GRADE', 128)->nullable();
-            $table->char('FONCTION', 32)->nullable();
+            $table->string('FONCTION', 128)->nullable();
             $table->string('TEL', 128)->nullable();
             $table->string('DIVISION', 128)->nullable();
             $table->string('PDP', 128)->nullable();

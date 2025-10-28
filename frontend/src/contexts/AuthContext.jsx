@@ -5,9 +5,9 @@ import { AuthContext } from "./AuthContextDefinition";
 // Composant Provider uniquement
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem("token"));
+  const [token, setToken] = useState(() => localStorage.getItem("token"));
   const [loading, setLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => !!localStorage.getItem("token"));
 
   // Fonction logout définie en premier avec useCallback pour éviter les re-renders
   const logout = useCallback(() => {
@@ -42,16 +42,21 @@ export const AuthProvider = ({ children }) => {
 
   // Configuration axios avec intercepteurs (SEULEMENT si on a un token)
   useEffect(() => {
-    if (!token) return;
+    const currentToken = localStorage.getItem("token");
+    if (!currentToken) return;
 
-    console.log("🔧 Configuration intercepteurs pour token:", token?.substring(0, 20) + "...");
+    console.log(
+      "🔧 Configuration intercepteurs pour token:",
+      currentToken?.substring(0, 20) + "..."
+    );
 
     // Intercepteur de requête pour ajouter le token
     const requestInterceptor = axios.interceptors.request.use(
       (config) => {
-        // Ne pas ajouter le header si c'est déjà fait manuellement
-        if (token && !config.headers.Authorization) {
-          config.headers.Authorization = `Bearer ${token}`;
+        // Toujours utiliser le token le plus récent du localStorage
+        const latestToken = localStorage.getItem("token");
+        if (latestToken && !config.headers.Authorization) {
+          config.headers.Authorization = `Bearer ${latestToken}`;
         }
         return config;
       },
@@ -60,15 +65,13 @@ export const AuthProvider = ({ children }) => {
       }
     );
 
-    // Intercepteur de réponse pour gérer les erreurs d'authentification
+    // Intercepteur de réponse SIMPLIFIÉ - plus de déconnexion automatique
     const responseInterceptor = axios.interceptors.response.use(
       (response) => response,
       (error) => {
         console.log("❌ Erreur interceptée:", error.response?.status);
-        if (error.response?.status === 401) {
-          console.log("🚫 401 détecté, déconnexion...");
-          logout();
-        }
+        // On laisse les composants gérer leurs propres erreurs
+        // Plus de déconnexion automatique ici
         return Promise.reject(error);
       }
     );
@@ -77,18 +80,22 @@ export const AuthProvider = ({ children }) => {
       axios.interceptors.request.eject(requestInterceptor);
       axios.interceptors.response.eject(responseInterceptor);
     };
-  }, [token, logout]);
+  }, [token]);
 
-  // Vérification du token au chargement (UNE SEULE FOIS)
+  // Vérification du token au chargement
   useEffect(() => {
     const checkAuth = async () => {
-      console.log("🔍 Vérification auth, token:", token ? "présent" : "absent");
-
       const currentToken = localStorage.getItem("token");
+      console.log("🔍 Vérification auth, token:", currentToken ? "présent" : "absent");
+
       if (currentToken) {
+        // Toujours mettre à jour l'état local avec le token du localStorage
+        setToken(currentToken);
+        setIsAuthenticated(true);
+
         try {
           console.log("📡 Appel verify-token...");
-          // Vérifier la validité du token avec le backend
+          // Vérifier la validité du token avec le backend (sans bloquer l'UI)
           const response = await axios.get("http://localhost:8000/api/verify-token", {
             headers: {
               Authorization: `Bearer ${currentToken}`,
@@ -98,16 +105,12 @@ export const AuthProvider = ({ children }) => {
           console.log("✅ Réponse verify-token:", response.data);
 
           if (response.data.valid && response.data.user) {
-            setToken(currentToken);
             setUser(response.data.user);
-            setIsAuthenticated(true);
             console.log("✅ Utilisateur authentifié:", response.data.user.IM);
           } else {
             console.log("❌ Token invalide selon le serveur");
-            localStorage.removeItem("token");
-            setToken(null);
-            setUser(null);
-            setIsAuthenticated(false);
+            // Token invalide côté serveur
+            logout();
           }
         } catch (error) {
           console.error(
@@ -115,10 +118,16 @@ export const AuthProvider = ({ children }) => {
             error.response?.status,
             error.response?.data
           );
-          localStorage.removeItem("token");
-          setToken(null);
-          setUser(null);
-          setIsAuthenticated(false);
+
+          // Seulement déconnecter si c'est vraiment un problème d'authentification
+          if (error.response?.status === 401 && error.response?.data?.message?.includes("token")) {
+            console.log("🚪 Token vraiment expiré, déconnexion");
+            logout();
+          } else {
+            console.log("🌐 Erreur réseau ou serveur, on garde la session locale");
+            // En cas d'erreur réseau/serveur, on garde la session
+            // L'utilisateur reste connecté localement
+          }
         }
       } else {
         console.log("ℹ️ Pas de token, utilisateur non connecté");
@@ -132,7 +141,7 @@ export const AuthProvider = ({ children }) => {
 
     checkAuth();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Ignorer le warning ESLint intentionnellement
+  }, []); // On ignore logout volontairement pour éviter les boucles infinies
 
   const login = async (credentials) => {
     try {
