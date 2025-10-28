@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Personnel;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth; 
+use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 
 
 class InscriptionController extends Controller
@@ -75,7 +75,7 @@ class InscriptionController extends Controller
                     'id' => $personnel->id,
                     'IM' => $personnel->IM,
                     'NOM' => $personnel->NOM,
-                    'PRENOM' => $personnel->PRENOM,
+                    'PRENOMS' => $personnel->PRENOM,
                     'EMAIL' => $personnel->EMAIL,
                     'FONCTION' => $personnel->FONCTION,
                 ]
@@ -98,7 +98,7 @@ class InscriptionController extends Controller
                         'id' => $user->id,
                         'IM' => $user->IM,
                         'NOM' => $user->NOM,
-                        'PRENOM' => $user->PRENOM,
+                        'PRENOMS' => $user->PRENOM,
                         'EMAIL' => $user->EMAIL,
                         'FONCTION' => $user->FONCTION,
                     ]
@@ -121,7 +121,7 @@ class InscriptionController extends Controller
                     'id' => $user->id,
                     'IM' => $user->IM,
                     'NOM' => $user->NOM,
-                    'PRENOM' => $user->PRENOM,
+                    'PRENOMS' => $user->PRENOM,
                     'EMAIL' => $user->EMAIL,
                     'FONCTION' => $user->FONCTION,
                 ]

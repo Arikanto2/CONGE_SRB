@@ -19,7 +19,7 @@ class Personnel extends Authenticatable implements JWTSubject
         'IM',
         'IM_Chef',
         'NOM',
-        'PRENOM',
+        'PRENOMS',
         'EMAIL',
         'CORPS',
         'GRADE',
