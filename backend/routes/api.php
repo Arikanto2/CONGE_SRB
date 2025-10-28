@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Support\Facades\Route;
@@ -12,14 +13,13 @@ Route::middleware(['cors'])->group(function () {
     Route::post('/verify-chef-division', [InscriptionController::class, 'verifyChefDivision']);
     
 
+    Route::resource('Accueil', AccueilController::class );
+
     // Routes protégées par JWT
     Route::middleware(['auth:api'])->group(function () {
         Route::post('/logout', [InscriptionController::class, 'logout']);
         Route::get('/verify-token', [InscriptionController::class, 'verifyToken']);
 
 
-        // Routes métier protégées
-        Route::get('/accueil', [AccueilController::class, 'index']);
-        // Ajoutez ici toutes vos autres routes API protégées
     });
 });
