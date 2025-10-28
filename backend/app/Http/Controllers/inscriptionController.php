@@ -174,7 +174,9 @@ class InscriptionController extends Controller
             if ($user) {
                 return response()->json([
                     'valid' => true,
+
                     'user' => $user->makeHidden(['MDP']) // Toutes les données sauf le mot de passe
+
                 ]);
             }
             return response()->json(['valid' => false], 401);
@@ -189,8 +191,10 @@ class InscriptionController extends Controller
         try {
             JWTAuth::invalidate(JWTAuth::getToken());
             return response()->json([
+
                 'message' => 'Déconnexion réussie',
                 'status' => 'success'
+
             ]);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Erreur lors de la déconnexion'], 500);

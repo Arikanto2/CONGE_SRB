@@ -11,7 +11,7 @@ import {
 } from "chart.js";
 import { useAuth } from "../hooks/useAuth.js";
 
-import { useEffect } from "react";
+import {useEffect, useState} from "react";
 import { Line } from "react-chartjs-2";
 
 import PDF from "../Composants/ViewConge.jsx";
@@ -69,14 +69,27 @@ const arrowPlugin = {
 };
 
 export default function Accueil() {
-  const { user } = useAuth();
+
 
   const count = 50;
 
+    const [nom, setNom] = useState('');
+    const [dernieresDemandes, setDernieresDemandes] = useState([]);
+
+
+  const count = 50;
   // Enregistre le plugin de flèches une seule fois
-  useEffect(() => {
-    ChartJS.register(arrowPlugin);
-  }, []);
+    useEffect(() => {
+        ChartJS.register(arrowPlugin);
+
+        fetch("http://127.0.0.1:8000/api/Accueil")
+            .then((res) => res.json())
+            .then((data) => {
+                if (data.nom) setNom(data.nom);
+                if (data.dernieres_demandes) setDernieresDemandes(data.dernieres_demandes);
+            })
+            .catch((error) => console.error("Erreur:", error));
+    }, []);
 
   const data = {
     labels: ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Aoû", "Sep", "Oct", "Nov", "Déc"],
@@ -109,7 +122,11 @@ export default function Accueil() {
 
   return (
     <div className="flex min-h-screen flex-col bg-base-200">
-      <h1 className="mb-4 text-2xl font-bold">Bienvenue, {user?.NOM}</h1>
+
+      <h1 className="mb-4 text-2xl font-bold">
+          Bienvenue, {nom ? nom : "Chargement..."}
+      </h1>
+
       <div className="flex w-full items-center gap-4 p-4">
         <div className="card h-60 w-2/3 bg-base-100 shadow-xl">
           <div className="card-body h-full p-2">
@@ -125,7 +142,7 @@ export default function Accueil() {
             style={{
               "--value": 80,
               "--size": "8rem",
-              "--thickness": "10px", // épaisseur du cercle
+              "--thickness": "10px",
             }}
           >
             {count} jrs
@@ -138,15 +155,18 @@ export default function Accueil() {
         <div className="card-body">
           <h2 className="card-title">Les 3 derniers demandes</h2>
           <ul className="ml-5 list-disc">
-            <li>
-              Du 12 au 16 Octobre 2025 — <span className="text-warning">En attente</span>
-            </li>
-            <li>
-              Du 4 au 8 Novembre 2025 — <span className="text-success">Validé</span>
-            </li>
-            <li>
-              Du 4 au 8 Novembre 2025 — <span className="text-error">Refusé</span>
-            </li>
+              {dernieresDemandes.length > 0 ? (
+                  dernieresDemandes.map((demande, index) => (
+                      <li key={index}>
+                          Du {new Date(demande.DATEDEBUT).toLocaleDateString()} au {new Date(demande.DATEFIN).toLocaleDateString()} —
+                          <span className={`text-${demande.VALIDCHEF === 'En attente' ? 'warning' : demande.VALIDCHEF === 'Validé' ? 'success' : 'error'}`}>
+                    {demande.VALIDCHEF}
+                </span>
+                      </li>
+                  ))
+              ) : (
+                  <li>Aucune demande</li>
+              )}
           </ul>
         </div>
       </div>
