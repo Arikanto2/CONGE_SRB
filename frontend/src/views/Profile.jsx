@@ -1,8 +1,13 @@
 import { useState, useEffect } from "react";
-export default function Accueil() {
+import {useAuth} from "../hooks/useAuth";
+export default function Profile() {
   const [password, setPassword] = useState("");
   const [confirmMDP, setConfirmMDP] = useState("");
   const [isValid, setIsValid] = useState(true);
+
+  const {user} = useAuth();
+  
+
 
   useEffect(() => {
     if (confirmMDP.length > 0) {
@@ -19,7 +24,7 @@ export default function Accueil() {
               <img src="https://img.daisyui.com/images/profile/demo/spiderperson@192.webp" />
             </div>
           </div>
-          <p className="nomUtil">FAHAZAVANARIKANTO Andriantsoa</p>
+          <p className="nomUtil">  {(user?.NOM?.toUpperCase() || "") + " " + (user?.PRENOM || "")} </p>
           <div className="flex gap-3">
             <button
               className="btnDemande btn btn-dash"
@@ -265,27 +270,31 @@ export default function Accueil() {
           <div className="divPorfil rounded-lg">
             <label className="mb-2 block text-left font-serif text-sm">
               <span className="labelProfil">Matricule :</span>&emsp;
-              <span className="text-black">48798</span>
+              <span className="text-black">{user?.IM}</span>
             </label>
             <label className="mb-2 block text-left font-serif text-sm">
               <span className="labelProfil">Fonction :</span>&emsp;
-              <span className="text-black">Chef</span>
+              <span className="text-black">{user?.FONCTION}</span>
             </label>
             <label className="mb-2 block text-left font-serif text-sm">
               <span className="labelProfil">Division :</span>&emsp;
-              <span className="text-black">CIR</span>
+              <span className="text-black">{user?.DIVISION}</span>
             </label>
             <label className="mb-2 block text-left font-serif text-sm">
               <span className="labelProfil">Corps :</span>&emsp;
-              <span className="text-black">J08A</span>
+              <span className="text-black">{user?.CORPS}</span>
             </label>
             <label className="mb-2 block text-left font-serif text-sm">
               <span className="labelProfil">Grade :</span>&emsp;
-              <span className="text-black">ST0E</span>
+              <span className="text-black">{user?.GRADE}</span>
             </label>
             <label className="mb-2 block text-left font-serif text-sm">
               <span className="labelProfil">E-mail :</span>&emsp;
-              <span className="text-black">fahazavanaandriantsoa@gmail.com</span>
+              <span className="text-black">{user?.EMAIL}</span>
+            </label>
+            <label className="mb-2 block text-left font-serif text-sm">
+              <span className="labelProfil">Contact :</span>&emsp;
+              <span className="text-black">{user?.CONTACT}</span>
             </label>
           </div>
 

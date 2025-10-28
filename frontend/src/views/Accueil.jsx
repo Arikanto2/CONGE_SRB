@@ -9,6 +9,7 @@ import {
   Title,
   Tooltip,
 } from "chart.js";
+import { useAuth } from "../hooks/useAuth.js";
 
 import { useEffect } from "react";
 import { Line } from "react-chartjs-2";
@@ -68,6 +69,8 @@ const arrowPlugin = {
 };
 
 export default function Accueil() {
+  const { user } = useAuth();
+
   const count = 50;
 
   // Enregistre le plugin de flèches une seule fois
@@ -106,7 +109,7 @@ export default function Accueil() {
 
   return (
     <div className="flex min-h-screen flex-col bg-base-200">
-      <h1 className="mb-4 text-2xl font-bold">Bienvenue, RAZAFINDRAINIBE</h1>
+      <h1 className="mb-4 text-2xl font-bold">Bienvenue, {user?.NOM}</h1>
       <div className="flex w-full items-center gap-4 p-4">
         <div className="card h-60 w-2/3 bg-base-100 shadow-xl">
           <div className="card-body h-full p-2">
