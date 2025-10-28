@@ -77,4 +77,27 @@ class Personnel extends Authenticatable implements JWTSubject
     {
         return $this->IM;
     }
+
+    /**
+     * Retourne les données du personnel pour l'API (sans données sensibles)
+     */
+    public function toApiArray()
+    {
+        return [
+            'id' => $this->id,
+            'IM' => $this->IM,
+            'IM_Chef' => $this->IM_Chef,
+            'NOM' => $this->NOM,
+            'PRENOM' => $this->PRENOM,
+            'EMAIL' => $this->EMAIL,
+            'CORPS' => $this->CORPS,
+            'GRADE' => $this->GRADE,
+            'FONCTION' => $this->FONCTION,
+            'CONTACT' => $this->CONTACT,
+            'DIVISION' => $this->DIVISION,
+            'PHOTO_PROFIL' => $this->PHOTO_PROFIL,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+        ];
+    }
 }

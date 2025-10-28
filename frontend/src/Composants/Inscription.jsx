@@ -27,6 +27,37 @@ export default function Inscription({ activeDefil }) {
       alert("Les mots de passe ne correspondent pas !");
       return;
     }
+    if (donneepers.FONCTION === "Chef de service") {
+      try {
+        const response = await axios.post("http://localhost:8000/api/verify-chef-service");
+        if (response.data.exists) {
+          alert("Un chef de service existe déjà. Vous ne pouvez pas en créer un autre.");
+          return;
+        }
+      } catch (error) {
+        console.error("Erreur lors de la vérification du chef de service:", error);
+        alert("Une erreur est survenue lors de la vérification du chef de service.");
+        return;
+      }
+    }
+    if (donneepers.FONCTION === "Chef de division") {
+      try {
+        const response = await axios.post("http://localhost:8000/api/verify-chef-division", {
+          DIVISION: donneepers.DIVISION,
+        });
+        if (response.data.exists) {
+          const chef = response.data.chef;
+          alert(
+            `Un chef de division existe déjà pour la division "${donneepers.DIVISION}".\n\nChef actuel: ${chef.prenom} ${chef.nom} (IM: ${chef.im})\n\nVous ne pouvez pas créer un autre chef pour cette division.`
+          );
+          return;
+        }
+      } catch (error) {
+        console.error("Erreur lors de la vérification du chef de division:", error);
+        alert("Une erreur est survenue lors de la vérification du chef de division.");
+        return;
+      }
+    }
 
     // Debug: afficher les données exactes envoyées
     console.log("=== DONNÉES ENVOYÉES ===");
@@ -73,12 +104,15 @@ export default function Inscription({ activeDefil }) {
           const errors = err.response.data.errors;
           console.error("Erreurs de validation:", errors);
 
-          let errorMessage = "Erreurs de validation trouvées:\n\n";
+          // Affichage plus propre des erreurs
+          let errorMessages = [];
           Object.keys(errors).forEach((field) => {
-            errorMessage += `• ${field}: ${errors[field].join(", ")}\n`;
+            errors[field].forEach((error) => {
+              errorMessages.push(error);
+            });
           });
 
-          alert(errorMessage);
+          alert("❌ " + errorMessages.join("\n\n"));
         } else {
           alert(`Erreur ${err.response.status}: ${err.response.data.message || "Erreur inconnue"}`);
         }
