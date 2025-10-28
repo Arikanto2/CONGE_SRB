@@ -8,12 +8,15 @@ Route::middleware(['cors'])->group(function () {
     // Routes publiques
     Route::post('/inscription', [InscriptionController::class, 'store']);
     Route::post('/login', [InscriptionController::class, 'login']);
+    Route::post('/verify-chef-service', [InscriptionController::class, 'verifyChefService']);
+    Route::post('/verify-chef-division', [InscriptionController::class, 'verifyChefDivision']);
+    
 
     // Routes protégées par JWT
     Route::middleware(['auth:api'])->group(function () {
         Route::post('/logout', [InscriptionController::class, 'logout']);
         Route::get('/verify-token', [InscriptionController::class, 'verifyToken']);
-        Route::get('/user', [InscriptionController::class, 'getUser']);
+
 
         // Routes métier protégées
         Route::get('/accueil', [AccueilController::class, 'index']);
