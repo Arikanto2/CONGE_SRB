@@ -2,38 +2,67 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Conge_annuels;
 use App\Models\Demande;
-use App\Models\Personnel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
 
 class AccueilController extends Controller
 {
 
-    public function index()
-    {
-        $im = 311427;
-        $personnel = Personnel::where('IM', 311427)->first();
+    public function index(Request $request)
+        {
+            $im = $request->query('im');
+            $division = $request->query('division');
 
-        //             if ($personnel) {
-        //                 return response()->json([
-        //                     'nom' => $personnel->NOM,
-        //                 ]);
-        //             }
-        //             return response()->json([
-        //                 'nom' => null,
-        //                 'error' => 'Personnel non trouvé'
-        //             ], 404);
+            $dernieresDemandes = Demande::where('IM', $im)
+                   ->orderBy('DATEDEBUT', 'desc')
+                   ->limit(3)
+                   ->get(['DATEDEBUT', 'DATEFIN', 'VALIDCHEF']);
 
-        $dernieresDemandes = Demande::where('IM', 311427)
-            ->orderBy('DATEDEBUT', 'desc')
-            ->limit(3)
-            ->get(['DATEDEBUT', 'DATEFIN', 'VALIDCHEF']);
+            $Total_conge = Conge_annuels::where('IM', $im)->sum('NBR_CONGE');
+            
+            $Valid_div = Demande::join('personnel', 'conge_absence.IM', '=', 'personnel.IM')
+                ->where('conge_absence.VALIDDIV', 'En attente')
+                ->where('personnel.DIVISION', $division)
+                ->get([
+                    'personnel.NOM',
+                    'conge_absence.IM',
+                    'conge_absence.MOTIF',
+                    'conge_absence.DATEDEBUT',
+                 DB::raw('(conge_absence."DATEFIN" - conge_absence."DATEDEBUT") AS duree')
+            ]);
 
-        return response()->json([
-            'nom' => $personnel->NOM,
-            'dernieres_demandes' => $dernieresDemandes
-        ]);
-    }
+            $Valid_chef = Demande::join('personnel', 'conge_absence.IM', '=', 'personnel.IM')
+                ->where('conge_absence.VALIDDIV', 'Validé')
+                ->where('conge_absence.VALIDCHEF', 'En attente')           
+                ->get([
+                    'personnel.NOM',
+                    'conge_absence.IM',
+                    'conge_absence.MOTIF',
+                    'conge_absence.DATEDEBUT',
+                    DB::raw('(conge_absence."DATEFIN" - conge_absence."DATEDEBUT") AS duree')
+            ]);
+
+            $congesParMois = DB::table('conge_absence')
+                ->selectRaw('
+                    EXTRACT(MONTH FROM "DATEDEBUT")::INT AS mois,
+                    COUNT(*) AS total_conges
+                ')
+                ->where('VALIDCHEF', 'Validé')
+                ->groupByRaw('EXTRACT(MONTH FROM "DATEDEBUT")')
+                ->orderByRaw('EXTRACT(MONTH FROM "DATEDEBUT")')
+                ->get();
+
+            return response()->json([
+                  'dernieres_demandes' => $dernieresDemandes,
+                  'nbr_Conge' => $Total_conge,
+                  'validation_div' => $Valid_div,
+                  'validation_chef' => $Valid_chef,
+                  'conges_par_mois' => $congesParMois
+                ]);
+        }
 
     public function create()
     {
