@@ -3,17 +3,8 @@ import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
 const ProtectedRoute = ({ children, requiredRole = null }) => {
-  const { isAuthenticated, user, loading } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const location = useLocation();
-
-  // Affichage d'un loader pendant la vérification
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="h-32 w-32 animate-spin rounded-full border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
 
   // Redirection si non authentifié
   if (!isAuthenticated) {

@@ -8,6 +8,8 @@
   --link-color: #053b48;
 }
 
+
+
 @media (prefers-color-scheme: dark) {
   :root {
     --bg-color: #121212;

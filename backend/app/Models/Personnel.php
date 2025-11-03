@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject; // ✅ changement ici
+use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Personnel extends Authenticatable implements JWTSubject
@@ -19,7 +19,7 @@ class Personnel extends Authenticatable implements JWTSubject
         'IM',
         'IM_Chef',
         'NOM',
-        'PRENOMS',
+        'PRENOM',
         'EMAIL',
         'CORPS',
         'GRADE',
@@ -52,10 +52,18 @@ class Personnel extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(Personnel::class, 'IM_Chef', 'IM');
     }
+    public function congesAnnuels()
+    {
+        return $this->hasMany(Conge_annuels::class, 'IM', 'IM');
+    }
+    public function demandes()
+    {
+        return $this->hasMany(Demande::class, 'IM', 'IM');
+    }
 
     public function getJWTIdentifier()
     {
-        return $this->getKey();
+        return $this->getKey(); 
     }
 
     public function getJWTCustomClaims()
@@ -70,12 +78,12 @@ class Personnel extends Authenticatable implements JWTSubject
 
     public function getAuthIdentifierName()
     {
-        return 'IM';
+        return 'id'; // Utilise 'id' au lieu de 'IM' pour l'authentification
     }
 
     public function getAuthIdentifier()
     {
-        return $this->IM;
+        return $this->getKey(); // Utilise l'ID au lieu de l'IM
     }
 
     /**

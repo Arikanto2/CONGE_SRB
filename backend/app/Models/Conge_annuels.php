@@ -4,27 +4,20 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Demande extends Model
+class Conge_annuels extends Model
 {
-    protected $table = 'conge_absence';
+    protected $table = 'conge_annuels';
     protected $primaryKey = 'id';
     protected $fillable = [
-        'ref',
+        'IDCONGE',
         'IM',
-        'CATEGORIE',
-        'TYPE',
-        'MOTIF',
-        'DATEDEBUT',
-        'DATEFIN',
-        'VALIDDIV',
-        'VALIDCHEF',
-        'LIEU',
-        'INTERIM',
-        'ABSENCE',
+        'NBR_CONGE',
+        'ANNEE',
     ];
     public $timestamps = true;
     public function personnel()
     {
         return $this->belongsTo(Personnel::class, 'IM', 'IM');
     }
+    
 }

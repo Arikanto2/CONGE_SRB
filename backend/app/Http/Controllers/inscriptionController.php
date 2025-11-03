@@ -18,7 +18,7 @@ class InscriptionController extends Controller
         $rules = [
             'IM' => ['required', 'unique:personnel,IM'],
             'IM_CHEF' => ['nullable', 'exists:personnel,IM'], // Frontend envoie IM_CHEF
-            'NOM' => ['required', 'string', 'max:32'],
+            'NOM' => ['required', 'string', 'max:128'],
             'PRENOM' => ['required', 'string', 'max:128'],
             'EMAIL' => ['required', 'email', 'max:128', 'unique:personnel,EMAIL'],
             'CORPS' => ['required', 'string', 'max:128'],
@@ -89,35 +89,11 @@ class InscriptionController extends Controller
             $validated['MDP'] = Hash::make($validated['MDP']);
         }
 
-        // Assignation automatique du chef hiérarchique
-        if ($validated['FONCTION'] === 'Chef de division') {
-            $chefService = Personnel::where('FONCTION', 'Chef de service')->first();
-            if ($chefService) {
-                $validated['IM_CHEF'] = $chefService->IM;
-                Log::info('Chef de division créé - IM_CHEF assigné:', ['IM_CHEF' => $chefService->IM, 'Chef' => $chefService->PRENOM . ' ' . $chefService->NOM]);
-            } else {
-                Log::warning('Aucun Chef de service trouvé pour assigner comme IM_CHEF du Chef de division');
-                $validated['IM_CHEF'] = null;
-            }
-        } else if ($validated['FONCTION'] === 'Personnel') {
-            $chefDivision = Personnel::where('FONCTION', 'Chef de division')
-                ->where('DIVISION', $validated['DIVISION'])
-                ->first();
-            if ($chefDivision) {
-                $validated['IM_CHEF'] = $chefDivision->IM;
-                Log::info('Personnel créé - IM_CHEF assigné:', ['IM_CHEF' => $chefDivision->IM, 'Chef' => $chefDivision->PRENOM . ' ' . $chefDivision->NOM]);
-            } else {
-                Log::warning('Aucun Chef de division trouvé dans la division: ' . $validated['DIVISION']);
-                $validated['IM_CHEF'] = null;
-            }
-        } else if ($validated['FONCTION'] === 'Chef de service') {
-            $validated['IM_CHEF'] = null;
-            Log::info('Chef de service créé - IM_CHEF = null (pas de supérieur)');
-        }
+        // Forcer IM_Chef à null pour maintenir la cohérence avant l'assignation automatique
+        $validated['IM_Chef'] = null;
 
-        // Conversion du nom de champ pour correspondre à la DB (IM_CHEF -> IM_Chef)
+        // Supprimer IM_CHEF du frontend si présent
         if (isset($validated['IM_CHEF'])) {
-            $validated['IM_Chef'] = $validated['IM_CHEF'];
             unset($validated['IM_CHEF']);
         }
 
@@ -126,19 +102,79 @@ class InscriptionController extends Controller
 
         $personnel = Personnel::create($validated);
 
-        if ($validated['FONCTION'] === 'Chef de division') {
-            Personnel::where('FONCTION', 'Personnel')
-                ->where('DIVISION', $validated['DIVISION'])
-                ->update(['IM_Chef' => $personnel->IM]);
-        } else if ($validated['FONCTION'] === 'Chef de service') {
-            Personnel::where('FONCTION', 'Chef de division')
-                ->update(['IM_Chef' => $personnel->IM]);
+        // Appeler l'assignation automatique après la création
+        try {
+            $this->autoAssignerIM_Chef();
+            Log::info('Assignation automatique des IM_Chef exécutée après inscription');
+        } catch (\Exception $autoAssignException) {
+            Log::error('Erreur lors de l\'assignation automatique après inscription:', ['error' => $autoAssignException->getMessage()]);
+            // Ne pas faire échouer l'inscription si l'assignation automatique échoue
         }
 
         return response()->json([
             'message' => 'Inscription réussie',
             'personnel' => $personnel
         ], 201);
+    }
+    public function autoAssignerIM_Chef()
+    {
+        try {
+            // 1. Récupérer le Chef de service
+            $chefService = Personnel::where('FONCTION', 'Chef de service')->first();
+
+            if ($chefService) {
+                // 2. Assigner le Chef de service à tous les Chefs de division
+                Personnel::where('FONCTION', 'Chef de division')
+                    ->update(['IM_Chef' => $chefService->IM]);
+
+                Log::info('Chefs de division mis à jour avec le Chef de service', ['IM_Chef' => $chefService->IM]);
+            }
+
+            // 3. Pour chaque division, assigner le Chef de division aux Personnels de cette division
+            $divisions = Personnel::where('FONCTION', 'Chef de division')
+                ->select('DIVISION', 'IM')
+                ->get();
+
+            foreach ($divisions as $chefDivision) {
+                Personnel::where('FONCTION', 'Personnel')
+                    ->where('DIVISION', $chefDivision->DIVISION)
+                    ->update(['IM_Chef' => $chefDivision->IM]);
+
+                Log::info('Personnels de la division mis à jour', [
+                    'division' => $chefDivision->DIVISION,
+                    'IM_Chef' => $chefDivision->IM
+                ]);
+            }
+
+            // 4. Gérer les Personnels dont la division n'a pas de Chef de division
+            $personnelsSansChef = Personnel::where('FONCTION', 'Personnel')
+                ->whereNotIn('DIVISION', function ($query) {
+                    $query->select('DIVISION')
+                        ->from('personnel')
+                        ->where('FONCTION', 'Chef de division');
+                })
+                ->get();
+
+            foreach ($personnelsSansChef as $personnel) {
+                $personnel->update(['IM_Chef' => null]);
+                Log::warning('Personnel sans Chef de division dans sa division', [
+                    'personnel' => $personnel->PRENOM . ' ' . $personnel->NOM,
+                    'division' => $personnel->DIVISION
+                ]);
+            }
+
+            Log::info('Assignation automatique des IM_Chef terminée avec succès', [
+                'chef_service' => $chefService ? $chefService->IM : null,
+                'divisions_traitees' => $divisions->count(),
+                'personnels_sans_chef' => $personnelsSansChef->count()
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de l\'assignation automatique des IM_Chef:', ['error' => $e->getMessage()]);
+            // Ne plus relancer l'exception pour éviter de faire échouer l'opération principale
+            return false;
+        }
+
+        return true;
     }
 
     public function login(Request $request)
@@ -167,23 +203,7 @@ class InscriptionController extends Controller
         }
     }
 
-    public function verifyToken(Request $request)
-    {
-        try {
-            $user = JWTAuth::parseToken()->authenticate();
-            if ($user) {
-                return response()->json([
-                    'valid' => true,
 
-                    'user' => $user->makeHidden(['MDP']) // Toutes les données sauf le mot de passe
-
-                ]);
-            }
-            return response()->json(['valid' => false], 401);
-        } catch (\Exception $e) {
-            return response()->json(['valid' => false], 401);
-        }
-    }
 
 
     public function logout(Request $request)
@@ -231,5 +251,210 @@ class InscriptionController extends Controller
         }
 
         return response()->json(['exists' => false]);
+    }
+    public function modification(Request $request)
+    {
+        try {
+            // Vérifier que l'utilisateur est authentifié via JWT
+            $currentUser = JWTAuth::parseToken()->authenticate();
+
+            if (!$currentUser) {
+                return response()->json(['message' => 'Non autorisé'], 401);
+            }
+
+            Log::info('Modification tentée par:', ['user_id' => $currentUser->id, 'IM' => $currentUser->IM]);
+            Log::info('Données reçues:', $request->all());
+        } catch (\Exception $e) {
+            Log::error('Erreur JWT dans modification:', ['error' => $e->getMessage()]);
+            return response()->json(['message' => 'Token invalide ou expiré'], 401);
+        }
+
+        // Trouver l'ID du personnel à partir de IM_ANC
+        $personnelActuel = Personnel::where('IM', $request->IM_ANC)->first();
+
+        if (!$personnelActuel) {
+            return response()->json(['message' => 'Personnel introuvable'], 404);
+        }
+
+        $rules = [
+            'IM_ANC' => ['required'],
+            'NOM' => ['required', 'string', 'max:128'],
+            'PRENOM' => ['required', 'string', 'max:128'],
+            'EMAIL' => ['required', 'email', 'max:128', 'unique:personnel,EMAIL,' . $personnelActuel->id . ',id'],
+            'CORPS' => ['required', 'string', 'max:128'],
+            'GRADE' => ['required', 'string', 'max:128'],
+            'FONCTION' => ['required', 'string', 'max:32'],
+            'CONTACT' => ['required', 'string', 'max:128'],
+            'DIVISION' => ['required', 'string', 'max:128'],
+            'PHOTO_PROFIL' => ['nullable', 'string'],
+            'MDP' => ['nullable', 'string', 'min:8'],
+        ];
+
+        $messages = [
+            'IM_ANC.required' => 'L\'ancien IM est vide.',
+            'EMAIL.required' => 'L\'email est obligatoire.',
+            'EMAIL.email' => 'Le format de l\'email n\'est pas valide.',
+            'EMAIL.unique' => 'Cette adresse email est déjà utilisée par un autre personnel.',
+            'NOM.required' => 'Le nom est obligatoire.',
+            'PRENOM.required' => 'Le prénom est obligatoire.',
+            'CORPS.required' => 'Le corps est obligatoire.',
+            'GRADE.required' => 'Le grade est obligatoire.',
+            'FONCTION.required' => 'La fonction est obligatoire.',
+            'CONTACT.required' => 'Le contact est obligatoire.',
+            'DIVISION.required' => 'La division est obligatoire.',
+        ];
+
+        try {
+            $validated = $request->validate($rules, $messages);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error('Erreur de validation:', $e->errors());
+            return response()->json([
+                'message' => 'Erreur de validation',
+                'errors' => $e->errors()
+            ], 422);
+        }
+
+        // Vérifier si un chef existe déjà (seulement si la fonction change)
+        if ($personnelActuel->FONCTION !== $validated['FONCTION']) {
+
+
+            if ($validated['FONCTION'] === 'Chef de service') {
+                $chefServiceExistant = Personnel::where('FONCTION', 'Chef de service')
+                    ->where('id', '!=', $personnelActuel->id)
+                    ->first();
+
+                if ($chefServiceExistant) {
+                    return response()->json([
+                        'message' => 'Un chef de service existe déjà',
+                        'errors' => [
+                            'FONCTION' => ['Un chef de service existe déjà : ' . $chefServiceExistant->PRENOM . ' ' . $chefServiceExistant->NOM . ' (IM: ' . $chefServiceExistant->IM . ')']
+                        ]
+                    ], 422);
+                }
+            }
+
+            // Vérification pour Chef de division - Un seul par division
+            if ($validated['FONCTION'] === 'Chef de division') {
+                $chefDivisionExistant = Personnel::where('FONCTION', 'Chef de division')
+                    ->where('DIVISION', $validated['DIVISION'])
+                    ->where('id', '!=', $personnelActuel->id)
+                    ->first();
+
+                if ($chefDivisionExistant) {
+                    return response()->json([
+                        'message' => 'Un chef de division existe déjà dans cette division',
+                        'errors' => [
+                            'FONCTION' => ['Un chef de division existe déjà dans la division "' . $validated['DIVISION'] . '" : ' . $chefDivisionExistant->PRENOM . ' ' . $chefDivisionExistant->NOM . ' (IM: ' . $chefDivisionExistant->IM . ')']
+                        ]
+                    ], 422);
+                }
+            }
+        }
+
+        // Utiliser le personnel déjà trouvé précédemment
+        $personnel = $personnelActuel;
+
+        // Si un mot de passe est fourni, le hasher
+        if (!empty($validated['MDP'])) {
+            $validated['MDP'] = Hash::make($validated['MDP']);
+        } else {
+            unset($validated['MDP']); // Ne pas mettre à jour le mot de passe s'il est vide
+        }
+
+        // Forcer IM_Chef à null pour maintenir la cohérence avant l'assignation automatique
+        $validated['IM_Chef'] = null;
+
+        // Sauvegarder l'ancienne fonction pour comparaison
+        $ancienneFonction = $personnel->FONCTION;
+        $nouvelleFonction = $validated['FONCTION'];
+
+        unset($validated['IM_ANC']);
+
+        try {
+            $personnel->update($validated);
+            Log::info('Profil modifié avec succès:', ['personnel_id' => $personnel->id]);
+
+            // Appeler l'assignation automatique après la modification
+            try {
+                $this->autoAssignerIM_Chef();
+                Log::info('Assignation automatique des IM_Chef exécutée après modification');
+            } catch (\Exception $autoAssignException) {
+                Log::error('Erreur lors de l\'assignation automatique après modification:', ['error' => $autoAssignException->getMessage()]);
+                // Ne pas faire échouer la modification si l'assignation automatique échoue
+            }
+
+            // Générer un nouveau token avec les données mises à jour
+            $newToken = JWTAuth::fromUser($personnel);
+
+            return response()->json([
+                'message' => 'Profil modifié avec succès',
+                'token' => $newToken,
+                'personnel' => $personnel->makeHidden(['MDP'])
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de la mise à jour:', ['error' => $e->getMessage()]);
+            return response()->json(['message' => 'Erreur lors de la modification'], 500);
+        }
+    }
+    public function verifyMDP(Request $request)
+    {
+        $request->validate([
+            'ANCIEN_MDP' => 'required|string',
+        ]);
+
+        try {
+
+            $currentUser = JWTAuth::parseToken()->authenticate();
+
+            if (!$currentUser) {
+                return response()->json(['message' => 'Non autorisé'], 401);
+            }
+        } catch (\Exception $e) {
+            Log::error('Erreur JWT dans verifyMDP:', ['error' => $e->getMessage()]);
+            return response()->json(['message' => 'Token invalide ou expiré'], 401);
+        }
+
+
+        if (Hash::check($request->ANCIEN_MDP, $currentUser->MDP)) {
+            return response()->json(['valid' => true]);
+        } else {
+            return response()->json(['valid' => false]);
+        }
+    }
+    public function changeMDP(Request $request)
+    {
+        $request->validate([
+            'new_MDP' => [
+                'required',
+                'string',
+                'min:8',
+                'max:20',
+                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#\s?&]{8,}$/'
+            ],
+            'confirm_MDP' => 'required|string|same:new_MDP',
+        ], [
+            'new_MDP.required' => 'Le nouveau mot de passe est obligatoire.',
+            'new_MDP.min' => 'Le mot de passe doit contenir au moins 8 caractères.',
+            'new_MDP.max' => 'Le mot de passe ne peut pas dépasser 20 caractères.',
+            'new_MDP.regex' => 'Le mot de passe doit contenir au moins une majuscule, une minuscule, un chiffre et un caractère spécial (@$!%*#?&).',
+            'confirm_MDP.required' => 'La confirmation du mot de passe est obligatoire.',
+            'confirm_MDP.same' => 'La confirmation du mot de passe ne correspond pas.',
+        ]);
+
+        try {
+            $currentUser = JWTAuth::parseToken()->authenticate();
+
+            if (!$currentUser) {
+                return response()->json(['message' => 'Non autorisé'], 401);
+            }
+        } catch (\Exception $e) {
+            Log::error('Erreur JWT dans changeMDP:', ['error' => $e->getMessage()]);
+            return response()->json(['message' => 'Token invalide ou expiré'], 401);
+        }
+
+        $currentUser->MDP = Hash::make($request->new_MDP);
+        $currentUser->save();
+
+        return response()->json(['message' => 'Mot de passe changé avec succès']);
     }
 }
