@@ -1,6 +1,6 @@
 import "../Style/Demande.css";
 import { useState, useEffect } from "react";
-import axios from "axios";
+//import axios from "axios";
 
 export default function Demande() {
   // const [donneeDemande, setDonneeDemande] = useState({
@@ -31,11 +31,11 @@ export default function Demande() {
   //   });
   // };
 
-  const submitForm = async (e) => {
+  /*const submitForm = async (e) => {
     e.preventDefault();
     const reponse = await axios.post("http://localhost:8000/api/faire-demande", donneeDemande);
     alert(reponse.data.message);
-  };
+  };*/
 
   const lieux = [
     "Alaotra-Mangoro", "Amoron'i Mania", "Analamanga", "Analanjirofo", "Androy", "Anosy",
@@ -171,7 +171,7 @@ export default function Demande() {
               </button>
               <dialog id="my_modal_3" className="modal">
                 <div className="modalContent modal-box">
-                  <form method="dialog" onSubmit={submitForm}>
+                  <form method="dialog" >
                     <button className="btn btn-ghost btn-sm btn-circle absolute right-2 top-2">
                       ✕
                     </button>
