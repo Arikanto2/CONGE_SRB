@@ -3,7 +3,7 @@
   --text-color: black;
   --card-bg: white;
   --input-bg: white;
-  --input-border: #D1D5DB;
+  --input-border: #d1d5db;
   --title-color: #03303b;
   --link-color: #053b48;
 }
@@ -32,7 +32,7 @@ body {
 }
 
 /* inputs */
-.inputConnexion, 
+.inputConnexion,
 .inputConnexion1 {
   background: var(--input-bg);
   border: 1px solid var(--input-border);
@@ -44,7 +44,7 @@ body {
   color: var(--title-color);
 }
 
-.retourConnexion, 
+.retourConnexion,
 .inscriptionLink {
   color: var(--link-color);
 }
@@ -63,7 +63,8 @@ body {
 }
 
 /* bouton */
-.btnDemande, .btnConnexion {
+.btnDemande,
+.btnConnexion {
   background: var(--card-bg);
   color: var(--text-color);
   border: 1px solid var(--input-border);
@@ -75,62 +76,56 @@ body {
   color: var(--text-color);
 }
 
-.table-zebra th, 
+.table-zebra th,
 .table-zebra td {
   border-color: var(--input-border);
 }
 
 .activeLink {
-  background:linear-gradient(to right,#4886e9, #3cbad0);
+  background: linear-gradient(to right, #4886e9, #3cbad0);
   border: 1px solid white;
   border-radius: 5px;
   padding: 3px;
   color: white !important;
   text-align: center;
 }
-.menuLink{
+.menuLink {
   font-family: serif;
   color: #053b48;
   width: 15vh;
   text-align: center;
 }
-.menuLink:hover{
-  /*text-decoration: underline;*/
-    /*color: #0a7692;*/
-    background:linear-gradient(to right,#4886e9, #3cbad0);
-    border-radius: 5px;
-    padding: 3px;
-    color: white !important;
+.menuLink:hover {
+  text-decoration: underline;
+  color: #0a7692;
+  border-radius: 5px;
+  padding: 3px;
 }
-.premierL{
-  font-family: 'Viaoda Libre', serif;
+.premierL {
+  font-family: "Viaoda Libre", serif;
   color: white;
   font-size: 30px !important;
-  
-    
 }
 
-.nomUtil{
-  font-family: 'Viaoda Libre', serif;
+.nomUtil {
+  font-family: "Viaoda Libre", serif;
   color: #053b48;
   font-size: large;
 }
-.divEntete{
+.divEntete {
   border-bottom: 1px dashed #053b48;
   padding-bottom: 2vh;
- 
 }
-.divPorfil{
+.divPorfil {
   background-color: rgb(245, 250, 249);
   padding: 3vh;
-  
 }
-.labelProfil{
+.labelProfil {
   color: #053b48;
   font-family: serif;
   font-size: 18px;
 }
-.valueConge{
+.valueConge {
   color: #2392ed;
   font-family: serif;
   font-size: 25px;
