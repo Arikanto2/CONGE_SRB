@@ -83,9 +83,7 @@ class AccueilController extends Controller
                     $conge->save();
                 }
             }
-            if ($nb_jour > 0) {
-                return response()->json(['message' => 'Demande créée, mais congé annuel insuffisant. Il reste ' . $nb_jour . ' jour(s) non couvert(s).'], 201);
-            }
+            
                 
 */
     }
