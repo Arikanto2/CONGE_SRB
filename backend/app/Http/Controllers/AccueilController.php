@@ -21,26 +21,34 @@ class AccueilController extends Controller
                    ->get(['DATEDEBUT', 'DATEFIN', 'VALIDCHEF']);
 
             $Total_conge = Conge_annuel::where('IM', $im)->sum('NBR_CONGE');
-            
+
             $Valid_div = Demande::join('personnel', 'conge_absence.IM', '=', 'personnel.IM')
                 ->where('conge_absence.VALIDDIV', 'En attente')
                 ->where('personnel.DIVISION', $division)
                 ->get([
                     'personnel.NOM',
+                    'personnel.PRENOM',
                     'conge_absence.IM',
                     'conge_absence.MOTIF',
                     'conge_absence.DATEDEBUT',
+                    'conge_absence.DATEFIN',
+                    'conge_absence.LIEU',
+                    'conge_absence.Ref',
                  DB::raw('(conge_absence."DATEFIN" - conge_absence."DATEDEBUT") AS duree')
             ]);
 
             $Valid_chef = Demande::join('personnel', 'conge_absence.IM', '=', 'personnel.IM')
                 ->where('conge_absence.VALIDDIV', 'Validé')
-                ->where('conge_absence.VALIDCHEF', 'En attente')           
+                ->where('conge_absence.VALIDCHEF', 'En attente')
                 ->get([
                     'personnel.NOM',
+                    'personnel.PRENOM',
                     'conge_absence.IM',
                     'conge_absence.MOTIF',
                     'conge_absence.DATEDEBUT',
+                    'conge_absence.DATEFIN',
+                    'conge_absence.LIEU',
+                    'conge_absence.Ref',
                     DB::raw('(conge_absence."DATEFIN" - conge_absence."DATEDEBUT") AS duree')
             ]);
 
@@ -78,20 +86,14 @@ class AccueilController extends Controller
     {
 
     }
-
-
     public function edit(string $id)
     {
 
     }
-
-
     public function update(Request $request, string $id)
     {
 
     }
-
-
     public function destroy(string $id)
     {
 

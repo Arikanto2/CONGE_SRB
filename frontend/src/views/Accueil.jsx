@@ -28,7 +28,6 @@ ChartJS.register(
   Filler
 );
 
-// --- Plugin personnalisé : ajoute des flèches à la fin de la ligne --- //
 const arrowPlugin = {
   id: "arrowPlugin",
   afterDatasetsDraw(chart) {
@@ -108,7 +107,7 @@ export default function Accueil() {
   const congesMensuels = Array(12).fill(0);
 
   CongeParMois.forEach((item) => {
-    const moisIndex = item.mois - 1; // janvier = 0
+    const moisIndex = item.mois - 1;
     congesMensuels[moisIndex] = Number(item.total_conges);
   });
 
@@ -196,7 +195,6 @@ export default function Accueil() {
         </div>
       </div>
 
-      {/* --- Bloc : Prochains congés --- */}
       <div className="card mb-6 bg-base-100 shadow-xl">
         <div className="card-body">
           <h2 className="card-title">Les 3 derniers demandes</h2>
@@ -299,11 +297,22 @@ export default function Accueil() {
 
                               <div className="mx-auto my-auto">
                                 <div className="mx-14 mb-5 mt-14">
-                                  <PDF />
+                                  <PDF
+                                    IM={item.IM}
+                                    NOM={item.NOM}
+                                    PRENOM={item.PRENOM}
+                                    DATEDEBUT={item.DATEDEBUT}
+                                    DATEFIN={item.DATEFIN}
+                                    motif={item.MOTIF}
+                                    lieu={item.LIEU}
+                                    ref={item.Ref}
+                                  />
                                 </div>
                                 <div className="absolute right-0 mr-14 flex gap-3">
                                   <button className="btn btn-success btn-circle">✔</button>
-                                  <button className="btn btn-error btn-circle">✖</button>
+                                  <button className="btn btn-error btn-circle" onClick={teste}>
+                                    ✖
+                                  </button>
                                 </div>
                               </div>
                             </div>

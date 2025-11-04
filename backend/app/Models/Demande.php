@@ -9,7 +9,7 @@ class Demande extends Model
     protected $table = 'conge_absence';
     protected $primaryKey = 'id';
     protected $fillable = [
-        'ref',
+        'Ref',
         'IM',
         'CATEGORIE',
         'TYPE',
