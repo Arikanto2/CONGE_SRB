@@ -21,6 +21,7 @@ class AccueilController extends Controller
                    ->limit(3)
                    ->get(['DATEDEBUT', 'DATEFIN', 'VALIDCHEF']);
 
+
             $Total_conge = Conge_annuels::where('IM', $im)->sum('NBR_CONGE');
             
             $Valid_div = Demande::join('personnel', 'conge_absence.IM', '=', 'personnel.IM')
@@ -28,20 +29,28 @@ class AccueilController extends Controller
                 ->where('personnel.DIVISION', $division)
                 ->get([
                     'personnel.NOM',
+                    'personnel.PRENOM',
                     'conge_absence.IM',
                     'conge_absence.MOTIF',
                     'conge_absence.DATEDEBUT',
+                    'conge_absence.DATEFIN',
+                    'conge_absence.LIEU',
+                    'conge_absence.Ref',
                  DB::raw('(conge_absence."DATEFIN" - conge_absence."DATEDEBUT") AS duree')
             ]);
 
             $Valid_chef = Demande::join('personnel', 'conge_absence.IM', '=', 'personnel.IM')
                 ->where('conge_absence.VALIDDIV', 'Validé')
-                ->where('conge_absence.VALIDCHEF', 'En attente')           
+                ->where('conge_absence.VALIDCHEF', 'En attente')
                 ->get([
                     'personnel.NOM',
+                    'personnel.PRENOM',
                     'conge_absence.IM',
                     'conge_absence.MOTIF',
                     'conge_absence.DATEDEBUT',
+                    'conge_absence.DATEFIN',
+                    'conge_absence.LIEU',
+                    'conge_absence.Ref',
                     DB::raw('(conge_absence."DATEFIN" - conge_absence."DATEDEBUT") AS duree')
             ]);
 
