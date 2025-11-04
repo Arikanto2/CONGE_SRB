@@ -10,6 +10,7 @@ import {
   Tooltip,
 } from "chart.js";
 
+
 import { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
 import { useAuth } from "../hooks/useAuth";
@@ -66,6 +67,7 @@ const arrowPlugin = {
 };
 
 export default function Accueil() {
+
   const { user } = useAuth();
 
   console.log("Fonction de l'utilisateur :", user?.FONCTION);
@@ -126,6 +128,7 @@ export default function Accueil() {
     "Décembre",
   ];
 
+
   const data = {
     labels: moisLabels,
     datasets: [
@@ -171,7 +174,9 @@ export default function Accueil() {
 
   return (
     <div className="flex min-h-screen flex-col bg-base-200">
+
       <h1 className="mb-4 text-2xl font-bold">Bienvenue, {user?.NOM} </h1>
+
       <div className="flex w-full items-center gap-4 p-4">
         <div className="card h-60 w-2/3 bg-base-100 shadow-xl">
           <div className="card-body h-full p-2">
@@ -203,6 +208,7 @@ export default function Accueil() {
               dernieresDemandes.map((demande, index) => (
                 <li key={index}>
                   Du {new Date(demande.DATEDEBUT).toLocaleDateString()} au{" "}
+
                   {new Date(demande.DATEFIN).toLocaleDateString()} —{" "}
                   <span
                     className={`${
@@ -212,6 +218,7 @@ export default function Accueil() {
                           ? "text-success"
                           : "text-error"
                     }`}
+
                   >
                     {demande.VALIDCHEF}
                   </span>

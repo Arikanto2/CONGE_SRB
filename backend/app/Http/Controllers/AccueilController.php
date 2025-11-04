@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Conge_annuel;
+use App\Models\Conge_annuels;
 use App\Models\Demande;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class AccueilController extends Controller
 {
+
     public function index(Request $request)
         {
             $im = $request->query('im');
@@ -20,8 +21,9 @@ class AccueilController extends Controller
                    ->limit(3)
                    ->get(['DATEDEBUT', 'DATEFIN', 'VALIDCHEF']);
 
-            $Total_conge = Conge_annuel::where('IM', $im)->sum('NBR_CONGE');
 
+            $Total_conge = Conge_annuels::where('IM', $im)->sum('NBR_CONGE');
+            
             $Valid_div = Demande::join('personnel', 'conge_absence.IM', '=', 'personnel.IM')
                 ->where('conge_absence.VALIDDIV', 'En attente')
                 ->where('personnel.DIVISION', $division)
@@ -73,29 +75,39 @@ class AccueilController extends Controller
 
     public function create()
     {
-
+        /*
+        $nb_jour = (new \DateTime($validatedData['DATEFIN']))->diff(new \DateTime($validatedData['DATEDEBUT']))->days + 1;
+            if ($nb_jour <= 0) {
+                return response()->json(['message' => 'La date de fin doit être postérieure à la date de début.'], 400);
+            }
+                $congeAnnuel = Conge_annuels::where('IM', $validatedData['IM'])->where('NBR_CONGE' != 0)->orderBy('ANNEE','desc')->get();
+            foreach ($congeAnnuel as $conge) {
+                if ($conge->NBR_CONGE - $nb_jour >= 0) {
+                    $conge->NBR_CONGE -= $nb_jour;
+                    $conge->save();
+                    return response()->json(['message' => 'Demande créée avec succès et congé annuel mis à jour.'], 201);
+                } else {
+                    $conge->NBR_CONGE = 0;
+                    $nb_jour -= $conge->NBR_CONGE;
+                    $conge->save();
+                }
+            }
+            
+                
+*/
     }
 
-    public function store(Request $request)
-    {
-
-    }
+    public function store(Request $request) {}
 
 
-    public function show(string $id)
-    {
+    public function show(string $id) {}
 
-    }
-    public function edit(string $id)
-    {
 
-    }
-    public function update(Request $request, string $id)
-    {
+    public function edit(string $id) {}
 
-    }
-    public function destroy(string $id)
-    {
 
-    }
+    public function update(Request $request, string $id) {}
+
+
+    public function destroy(string $id) {}
 }

@@ -2,4 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+/* CSS global pour enlever les spinners des inputs de type number */
+/* Pour WebKit (Chrome, Safari, Edge) */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    appearance: none;
+    margin: 0;
+}
+
+/* Pour Firefox */
+input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
 

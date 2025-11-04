@@ -22,4 +22,9 @@ class Demande extends Model
         'INTERIM',
         'ABSENCE',
     ];
+    public $timestamps = true;
+    public function personnel()
+    {
+        return $this->belongsTo(Personnel::class, 'IM', 'IM');
+    }
 }

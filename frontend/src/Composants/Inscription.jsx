@@ -9,7 +9,6 @@ export default function Inscription({ activeDefil }) {
   const API_URL = "http://localhost:8000/api/inscription";
   const [donneepers, setDonneepers] = useState({
     IM: "",
-    IM_CHEF: "",
     NOM: "",
     PRENOM: "",
     CORPS: "",
@@ -76,7 +75,6 @@ export default function Inscription({ activeDefil }) {
       // Reset du formulaire en cas de succès
       setDonneepers({
         IM: "",
-        IM_CHEF: "",
         NOM: "",
         PRENOM: "",
         CORPS: "",
@@ -210,19 +208,18 @@ export default function Inscription({ activeDefil }) {
               <div className="flex-1">
                 <label className="block text-left font-serif text-sm">Matricule :</label>
                 <input
-                  type="text"
+                  type="number"
                   required
                   placeholder="Entrez votre matricule"
                   value={donneepers.IM}
                   className="inputConnexion validator input input-info bg-gray-50"
-                  pattern="^[0-9]{6}$"
-                  minLength="6"
-                  maxLength="6"
-                  title="Seuls les chiffres sont autorisés"
+                  min="100000"
+                  max="999999"
+                  title="Seuls les chiffres sont autorisés (6 chiffres requis)"
                   onChange={(e) => handleChange("IM", e.target.value)}
                 />
                 <p className="legendMDP validator-hint">
-                  Seuls les chiffres sont autorisés (6 chiffres requis)
+                  6 chiffres requis.
                 </p>
               </div>
               <div className="flex-1">
@@ -320,18 +317,17 @@ export default function Inscription({ activeDefil }) {
                   </span>
                   <input
                     required
-                    pattern="^[0-9]{9}$"
-                    type="text"
+                    type="number"
                     value={donneepers.CONTACT}
-                    minLength={9}
-                    maxLength={9}
+                    min="9"
+                    max="9"
                     title="Seuls les chiffres sont autorisés (9 chiffres requis)"
                     className="inputConnexion1 validator input input-info z-10 w-full bg-gray-50"
                     placeholder="Numéro sans indicatif"
                     onChange={(e) => handleChange("CONTACT", e.target.value)}
                   />
                   <p className="legendMDP validator-hint">
-                    Seuls les chiffres sont autorisés (9 chiffres requis)
+                    9 chiffres requis.
                   </p>
                 </div>
               </div>
