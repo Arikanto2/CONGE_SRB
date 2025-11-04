@@ -2,11 +2,12 @@ import "../Style/Demande.css";
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useAuth } from "../hooks/useAuth";
+import PDF from "../Composants/ViewConge.jsx";
 
 export default function Demande() {
   const { user, token } = useAuth();
   const [donneeDemande, setDonneeDemande] = useState({
-    IM: user.IM,
+    IM: user?.IM || "",
     CATEGORIE: "",
     TYPE: "",
     MOTIF: "",
@@ -16,7 +17,16 @@ export default function Demande() {
     INTERIM: "",
     ABSENCE: "",
   });
-
+  const iscongeValide = (validchef, validediv) => {
+    if (validchef === "Validé") {
+      return "Validé";
+    } else if (validchef === "En attente" || validediv === "En attente") {
+      return "En attente";
+    } else if (validediv === "Refusé" || validchef === "Refusé") {
+      return "Refusé";
+    }
+  };
+  const [getAlldemande, setGetAlldemande] = useState([]);
   const [checkbox, setCheckbox] = useState(false);
   const [categorieAbsence, setCategorieAbsence] = useState("");
   const [titreTypeABS, setTitreTypeABS] = useState("");
@@ -47,6 +57,22 @@ export default function Demande() {
       });
     }
   };
+  const fetchDemande = useCallback(async () => {
+    try {
+      if (!token || !user?.IM) return;
+      const response = await axios.get(`http://localhost:8000/api/all-demande/${user.IM}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("Demandes récupérées:", response.data);
+      setGetAlldemande(response.data || []);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des demandes:", error);
+      alert("Erreur lors de la récupération des demandes: " + error.message);
+    }
+  }, [token, user?.IM]);
 
   const validateForm = () => {
     const newErrors = {};
@@ -247,12 +273,23 @@ export default function Demande() {
     }
   }, [token, user?.IM]);
 
+  // Mettre à jour l'IM quand user est chargé
+  useEffect(() => {
+    if (user?.IM) {
+      setDonneeDemande((prev) => ({
+        ...prev,
+        IM: user.IM,
+      }));
+    }
+  }, [user?.IM]);
+
   // UseEffect pour récupérer le solde au chargement du composant
   useEffect(() => {
     if (token && user) {
       recupererSolde();
+      fetchDemande();
     }
-  }, [token, user, recupererSolde]); // Se déclenche quand token ou user change
+  }, [token, user, recupererSolde, fetchDemande]); // Se déclenche quand token ou user change
 
   useEffect(() => {
     if (categorieAbsence === "Autorisation d'absence") {
@@ -620,22 +657,61 @@ export default function Demande() {
                 <th>Nombre de jour</th>
                 <th>Intérim</th>
                 <th>Validateur et Date de confirmation</th>
-                <th>Statut</th>
-                <th>Action</th>
+                <th>Status</th>
+                <th>Aperçu</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>12/10/2025</td>
-                <td>Congé annuel</td>
-                <td>15/10/2025</td>
-                <td>20/10/2025</td>
-                <td>5</td>
-                <td>Jean Dupont</td>
-                <td>Chef RH - 13/10/2025</td>
-                <td>Validé</td>
-                <td>---</td>
-              </tr>
+              {getAlldemande &&
+                getAlldemande.map((conge) => (
+                  <tr key={conge.id}>
+                    <td>{new Date(conge.created_at).toLocaleDateString()}</td>
+                    <td>{conge.TYPE == null? conge.CATEGORIE : conge.TYPE}</td>
+                    <td>{new Date(conge.DATEDEBUT).toLocaleDateString()}</td>
+                    <td>{new Date(conge.DATEFIN).toLocaleDateString()}</td>
+                    <td>{calculerNombreJours(conge.DATEDEBUT, conge.DATEFIN)}</td>
+                    <td>{conge.INTERIM || "N/A"}</td>
+                    <td>
+                      {conge.NOM_CHEF && conge.PRENOM_CHEF
+                        ? `${conge.NOM_CHEF} ${conge.PRENOM_CHEF}`
+                        : "Non assigné"}
+                      <br />
+                      {new Date(conge.updated_at).toLocaleDateString("fr-FR")}
+                    </td>
+                    <td>{iscongeValide(conge.VALIDCHEF, conge.VALIDDIV)}</td>
+                    <td>
+                      <button
+                        className="btn btn-info btn-sm"
+                        onClick={() => document.getElementById(`modal`).showModal()}
+                      >
+                        👁️
+                      </button>
+
+                      <dialog id="modal" className="modal">
+                        <div className="modal-box relative h-[85vh] max-w-full overflow-y-auto p-0">
+                          <form method="dialog">
+                            <button className="btn btn-ghost btn-sm btn-circle absolute right-2 top-2">
+                              ✕
+                            </button>
+                          </form>
+
+                          <button
+                            className="btn btn-primary btn-sm absolute left-14 top-3"
+                            onClick={() => window.print()}
+                          >
+                            🖨️
+                          </button>
+
+                          <div className="mx-auto my-auto">
+                            <div className="mx-14 mb-5 mt-14">
+                              <PDF />
+                            </div>
+                          </div>
+                        </div>
+                      </dialog>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>

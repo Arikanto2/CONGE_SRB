@@ -118,6 +118,7 @@ class ProfilController extends Controller
             $fonction = Personnel::where('IM', $validatedData['IM'])->value('FONCTION');
             if ($fonction === 'Chef de division') {
                 $validatedData['VALIDDIV'] = 'Validé';
+                $validatedData['VALIDCHEF'] = 'En attente';
             } else if ($fonction === 'Chef de service') {
                 $validatedData['VALIDDIV'] = 'Validé';
                 $validatedData['VALIDCHEF'] = 'Validé';
@@ -142,6 +143,9 @@ class ProfilController extends Controller
                         $conge->save();
                     }
                 }
+            } else {
+                $validatedData['VALIDDIV'] = 'En attente';
+                $validatedData['VALIDCHEF'] = 'En attente';
             }
 
             // Générer une référence unique
@@ -168,5 +172,22 @@ class ProfilController extends Controller
     {
         $n = Conge_annuels::where('IM', $id)->sum('NBR_CONGE');
         return response()->json(['nbr_conge' => $n], 200);
+    }
+
+    public function getAlldemande($id)
+    {
+        $demandes = Demande::join('personnel', 'conge_absence.IM', '=', 'personnel.IM')
+            ->leftJoin('personnel as chef', 'personnel.IM_Chef', '=', 'chef.IM')
+            ->where('conge_absence.IM', $id)
+            ->select(
+                'conge_absence.*',
+                'personnel.NOM',
+                'personnel.PRENOM',
+                'chef.NOM as NOM_CHEF',
+                'chef.PRENOM as PRENOM_CHEF'
+            )
+            ->get();
+
+        return response()->json($demandes, 200);
     }
 }

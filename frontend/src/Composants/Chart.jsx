@@ -107,7 +107,7 @@ export default function GanttChart({ tasks = [], dayWidth = 28 }) {
               setSpinning(true);
               setFilterStart("");
               setFilterEnd("");
-              setTimeout(() => setSpinning(false), 500);
+              setTimeout(() => setSpinning(false), 700);
             }}
             className="rounded-md bg-blue-600 p-2 text-white transition hover:bg-blue-700"
             title="Actualiser"

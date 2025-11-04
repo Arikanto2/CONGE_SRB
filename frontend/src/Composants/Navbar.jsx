@@ -32,11 +32,13 @@ export default function Navbar() {
           title: "Déconnexion réussie",
           text: "À bientôt 👋",
           icon: "success",
-          timer: 2000,
+          timer: 1500,
           timerProgressBar: true,
           showConfirmButton: false,
+        }).then(() => {
+          // Appeler logout() seulement après que le SweetAlert se ferme
+          logout();
         });
-        logout();
       }
     });
   };

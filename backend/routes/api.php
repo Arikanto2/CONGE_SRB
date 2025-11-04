@@ -29,5 +29,6 @@ Route::middleware(['cors'])->group(function () {
         Route::get('/conge-annuel', [ProfilController::class, 'getCongeAnnuel']);
         Route::post('/faire-demande', [ProfilController::class, 'faireDemande']);
         Route::get('/solde/{id}', [ProfilController::class, 'getSolde']);
+        Route::get('/all-demande/{id}', [ProfilController::class, 'getAlldemande']);
     });
 });
