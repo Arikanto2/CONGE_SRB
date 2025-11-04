@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Conge_annuels;
 use Illuminate\Http\Request;
 use App\Models\Personnel;
 use Illuminate\Support\Facades\Hash;
@@ -195,7 +196,7 @@ class InscriptionController extends Controller
             return response()->json([
                 'message' => 'Connexion réussie',
                 'token' => $token,
-                'personnel' => $personnel->makeHidden(['MDP']) // Toutes les données sauf le mot de passe
+                'personnel' => $personnel->makeHidden(['MDP'])
             ]);
         } catch (\Exception $e) {
             Log::error('Erreur JWT:', ['error' => $e->getMessage()]);

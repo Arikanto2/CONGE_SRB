@@ -28,5 +28,6 @@ Route::middleware(['cors'])->group(function () {
         Route::post('/verify-password', [InscriptionController::class, 'verifyMDP']);
         Route::get('/conge-annuel', [ProfilController::class, 'getCongeAnnuel']);
         Route::post('/faire-demande', [ProfilController::class, 'faireDemande']);
+        Route::get('/solde/{id}', [ProfilController::class, 'getSolde']);
     });
 });

@@ -9,10 +9,8 @@ export const AuthProvider = ({ children }) => {
   });
 
   const [token, setToken] = useState(() => localStorage.getItem("token"));
-  
+
   const [isAuthenticated, setIsAuthenticated] = useState(() => !!localStorage.getItem("token"));
-
-
 
   const logout = useCallback(() => {
     if (token) {
@@ -64,6 +62,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("user", JSON.stringify(newUserData));
     }
   };
+
   useEffect(() => {
     if (token) {
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
@@ -72,11 +71,14 @@ export const AuthProvider = ({ children }) => {
     }
   }, [token]);
 
-  const value = { user, token, isAuthenticated, login, logout, updateUser };
-
-  
-  
+  const value = {
+    user,
+    token,
+    isAuthenticated,
+    login,
+    logout,
+    updateUser,
+  };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
-
