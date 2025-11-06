@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 
@@ -12,102 +13,100 @@ class AccueilController extends Controller
 {
 
     public function index(Request $request)
-        {
-            $user_im = $request->query('user_im');
-            $division = $request->query('division');
+    {
+        $user_im = $request->query('user_im');
+        $division = $request->query('division');
 
-            $dernieresDemandes = Demande::where('IM', $user_im)
-                   ->orderBy('DATEDEBUT', 'desc')
-                   ->limit(3)
-                   ->get(['DATEDEBUT', 'DATEFIN', 'VALIDCHEF']);
+        $dernieresDemandes = Demande::where('IM', $user_im)
+            ->orderBy('DATEDEBUT', 'desc')
+            ->limit(3)
+            ->get(['DATEDEBUT', 'DATEFIN', 'VALIDCHEF']);
 
 
-            $Total_conge = Conge_annuels::where('IM', $user_im)->sum('NBR_CONGE');
+        $Total_conge = Conge_annuels::where('IM', $user_im)->sum('NBR_CONGE');
 
-            $Valid_div = Demande::join('personnel', 'conge_absence.IM', '=', 'personnel.IM')
-                ->where('conge_absence.VALIDDIV', 'En attente')
-                ->where('personnel.DIVISION', $division)
-                ->get([
-                    'personnel.NOM',
-                    'personnel.PRENOM',
-                    'conge_absence.IM',
-                    'conge_absence.MOTIF',
-                    'conge_absence.DATEDEBUT',
-                    'conge_absence.DATEFIN',
-                    'conge_absence.LIEU',
-                    'conge_absence.Ref',
-                 DB::raw('(conge_absence."DATEFIN" - conge_absence."DATEDEBUT") AS duree')
+        $Valid_div = Demande::join('personnel', 'conge_absence.IM', '=', 'personnel.IM')
+            ->where('conge_absence.VALIDDIV', 'En attente')
+            ->where('personnel.DIVISION', $division)
+            ->get([
+                'personnel.NOM',
+                'personnel.PRENOM',
+                'conge_absence.IM',
+                'conge_absence.MOTIF',
+                'conge_absence.DATEDEBUT',
+                'conge_absence.DATEFIN',
+                'conge_absence.LIEU',
+                'conge_absence.Ref',
+                DB::raw('(conge_absence."DATEFIN" - conge_absence."DATEDEBUT") AS duree')
             ]);
 
-            $Valid_chef = Demande::join('personnel', 'conge_absence.IM', '=', 'personnel.IM')
-                ->where('conge_absence.VALIDDIV', 'Validé')
-                ->where('conge_absence.VALIDCHEF', 'En attente')
-                ->get([
-                    'personnel.NOM',
-                    'personnel.PRENOM',
-                    'conge_absence.IM',
-                    'conge_absence.MOTIF',
-                    'conge_absence.DATEDEBUT',
-                    'conge_absence.DATEFIN',
-                    'conge_absence.LIEU',
-                    'conge_absence.Ref',
-                    DB::raw('(conge_absence."DATEFIN" - conge_absence."DATEDEBUT") AS duree')
+        $Valid_chef = Demande::join('personnel', 'conge_absence.IM', '=', 'personnel.IM')
+            ->where('conge_absence.VALIDDIV', 'Validé')
+            ->where('conge_absence.VALIDCHEF', 'En attente')
+            ->get([
+                'personnel.NOM',
+                'personnel.PRENOM',
+                'conge_absence.IM',
+                'conge_absence.MOTIF',
+                'conge_absence.DATEDEBUT',
+                'conge_absence.DATEFIN',
+                'conge_absence.LIEU',
+                'conge_absence.Ref',
+                DB::raw('(conge_absence."DATEFIN" - conge_absence."DATEDEBUT") AS duree')
             ]);
-            
-            /////// historique
-            $congesParMois = DB::table('conge_absence')
-                ->selectRaw('
+
+        /////// historique
+        $congesParMois = DB::table('conge_absence')
+            ->selectRaw('
                     EXTRACT(MONTH FROM "DATEDEBUT")::INT AS mois,
                     COUNT(*) AS total_conges
                 ')
-                ->where('VALIDCHEF', 'Validé')
-                ->groupByRaw('EXTRACT(MONTH FROM "DATEDEBUT")')
-                ->orderByRaw('EXTRACT(MONTH FROM "DATEDEBUT")')
-                ->get();
+            ->where('VALIDCHEF', 'Validé')
+            ->groupByRaw('EXTRACT(MONTH FROM "DATEDEBUT")')
+            ->orderByRaw('EXTRACT(MONTH FROM "DATEDEBUT")')
+            ->get();
 
-        $item_user = $request->query('item_im');   
-        
+        $item_user = $request->query('item_im');
+        $item_ref = $request->query('item_ref');
+
         $congeAnnuel = Conge_annuels::where('IM', $item_user)
-        ->orderBy('ANNEE', 'asc')
-        ->get();
+            ->orderBy('ANNEE', 'asc')
+            ->get();
 
-        $demandeJours = Demande::where('IM', $item_user)
+        $demandeJours = Demande::where('Ref', $item_ref)
             ->selectRaw('("DATEFIN" - "DATEDEBUT") AS nb_jrs')
             ->value('nb_jrs');
         $joursADebiter = [];
 
-    foreach ($congeAnnuel as $conge) {
-        if ($demandeJours <= 0) break; 
+        foreach ($congeAnnuel as $conge) {
+            if ($demandeJours <= 0) break;
 
-        $reste = $conge->NBR_CONGE; 
+            $reste = $conge->NBR_CONGE;
 
-        if ($reste <= 0) continue; 
+            if ($reste <= 0) continue;
 
-        $debiter = min($reste, $demandeJours);
+            $debiter = min($reste, $demandeJours);
 
-        $joursADebiter[] = [
-            'id' => $conge->id,
-            'annee' => $conge->ANNEE,
-            'jours' => $debiter
-        ];
+            $joursADebiter[] = [
+                'id' => $conge->id,
+                'annee' => $conge->ANNEE,
+                'jours' => $debiter
+            ];
 
-        $demandeJours -= $debiter;
-    }
-            return response()->json([
-                'joursADebiter' => $joursADebiter,
-                'congeAnnuel' => $demandeJours, 
-                'dernieres_demandes' => $dernieresDemandes,
-                'nbr_Conge' => $Total_conge,
-                'validation_div' => $Valid_div,
-                'validation_chef' => $Valid_chef,
-                'conges_par_mois' => $congesParMois
-                ]);
+            $demandeJours -= $debiter;
         }
-
-    public function create()
-    {
-    
+        return response()->json([
+            'joursADebiter' => $joursADebiter,
+            'congeAnnuel' => $demandeJours,
+            'dernieres_demandes' => $dernieresDemandes,
+            'nbr_Conge' => $Total_conge,
+            'validation_div' => $Valid_div,
+            'validation_chef' => $Valid_chef,
+            'conges_par_mois' => $congesParMois
+        ]);
     }
+
+    public function create() {}
 
     public function store(Request $request) {}
 

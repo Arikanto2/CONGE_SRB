@@ -67,7 +67,6 @@ const arrowPlugin = {
 };
 
 export default function Accueil() {
-
   const navigate = useNavigate();
 
   const { user } = useAuth();
@@ -175,10 +174,10 @@ export default function Accueil() {
     },
   };
 
-
   const handleViewConge = (item, index) => {
     const params = new URLSearchParams({
       item_im: item.IM,
+      item_ref: item.Ref,
     });
 
     fetch(`http://127.0.0.1:8000/api/Accueil?${params.toString()}`)
@@ -191,21 +190,21 @@ export default function Accueil() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-base-200">
+    <div className="flex min-h-screen flex-col bg-base-200">
       <h1 className="mb-4 text-2xl font-bold">Bienvenue, {user?.NOM} </h1>
 
-      <div className="flex items-center w-full gap-4 p-4">
-        <div className="w-2/3 shadow-xl card h-60 bg-base-100">
-          <div className="h-full p-2 card-body">
-            <div className="w-full h-full">
+      <div className="flex w-full items-center gap-4 p-4">
+        <div className="card h-60 w-2/3 bg-base-100 shadow-xl">
+          <div className="card-body h-full p-2">
+            <div className="h-full w-full">
               <Line data={data} options={options} />
             </div>
           </div>
         </div>
 
-        <div className="flex items-center justify-center w-1/3">
+        <div className="flex w-1/3 items-center justify-center">
           <div
-            className="flex items-center justify-center text-xl font-semibold radial-progress text-primary"
+            className="radial-progress flex items-center justify-center text-xl font-semibold text-primary"
             style={{
               "--value": 80,
               "--size": "8rem",
@@ -217,7 +216,7 @@ export default function Accueil() {
         </div>
       </div>
 
-      <div className="mb-6 shadow-xl card bg-base-100">
+      <div className="card mb-6 bg-base-100 shadow-xl">
         <div className="card-body">
           <h2 className="card-title">Les 3 derniers demandes</h2>
           <ul className="ml-5 list-disc">
@@ -247,10 +246,10 @@ export default function Accueil() {
       </div>
 
       {(isChefDivision || isChefService) && (
-        <div className="ml-3 mr-3 shadow-xl card mt-7 bg-base-100">
+        <div className="card ml-3 mr-3 mt-7 bg-base-100 shadow-xl">
           <div className="card-body">
-            <div className="flex items-center justify-between mb-5">
-              <label className="w-64 h-10 input input-info">
+            <div className="mb-5 flex items-center justify-between">
+              <label className="input input-info h-10 w-64">
                 <svg
                   className="h-[1em] opacity-50"
                   xmlns="http://www.w3.org/2000/svg"
@@ -269,13 +268,13 @@ export default function Accueil() {
                 </svg>
                 <input type="search" required placeholder="Recherche..." />
               </label>
-              <p className="font-semibold text-center labelTitre">Les congés à valider</p>
+              <p className="labelTitre text-center font-semibold">Les congés à valider</p>
               <a onClick={teste} href="" className="text-primary hover:underline">
                 Afficher tous
               </a>
             </div>
 
-            <div className="overflow-x-auto overflow-y-auto border conteneurTab border-base-content/5 max-h-80 rounded-box bg-base-100">
+            <div className="conteneurTab border-base-content/5 max-h-80 overflow-x-auto overflow-y-auto rounded-box border bg-base-100">
               <table className="table table-zebra">
                 <thead>
                   <tr>
@@ -307,20 +306,20 @@ export default function Accueil() {
                           <dialog id={`modal_${index}`} className="modal">
                             <div className="modal-box relative h-[85vh] max-w-full overflow-y-auto p-0">
                               <form method="dialog">
-                                <button className="absolute btn btn-ghost btn-sm btn-circle right-2 top-2">
+                                <button className="btn btn-ghost btn-sm btn-circle absolute right-2 top-2">
                                   ✕
                                 </button>
                               </form>
 
                               <button
-                                className="absolute btn btn-primary btn-sm left-14 top-3"
+                                className="btn btn-primary btn-sm absolute left-14 top-3"
                                 onClick={() => window.print()}
                               >
                                 🖨️
                               </button>
 
                               <div className="mx-auto my-auto">
-                                <div className="mb-5 mx-14 mt-14">
+                                <div className="mx-14 mb-5 mt-14">
                                   <PDF
                                     IM={item.IM}
                                     NOM={item.NOM}
@@ -333,7 +332,7 @@ export default function Accueil() {
                                     joursADebiter={joursADebiter || []}
                                   />
                                 </div>
-                                <div className="absolute right-0 flex gap-3 mr-14">
+                                <div className="absolute right-0 mr-14 flex gap-3">
                                   {/* Bouton Valider */}
                                   <button
                                     className="btn btn-success btn-circle"
@@ -408,7 +407,6 @@ export default function Accueil() {
         <button className="btn btn-outline" onClick={() => navigate("/Statistique")}>
           Voir mon historique
         </button>
-
       </div>
     </div>
   );
