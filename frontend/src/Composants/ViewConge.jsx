@@ -1,6 +1,16 @@
 import React from "react";
 
-export default function ViewConge({ IM, NOM, PRENOM, DATEDEBUT, DATEFIN, motif, lieu, ref }) {
+export default function ViewConge({
+  IM,
+  NOM,
+  PRENOM,
+  DATEDEBUT,
+  DATEFIN,
+  motif,
+  lieu,
+  ref,
+  joursADebiter,
+}) {
   return (
     <div id="pdfZone" className="rounded-xl border bg-white p-10 font-serif shadow-lg">
       <h1 className="mb-6 text-center text-2xl font-bold underline">DÉCISION DE CONGÉ ANNUEL</h1>
@@ -53,22 +63,27 @@ export default function ViewConge({ IM, NOM, PRENOM, DATEDEBUT, DATEFIN, motif, 
             Décision administrative
           </h2>
           <div className="space-y-1">
-            <div className="flex justify-between">
-              <p>Nombre de jours à débiter :</p>
-              <p className="font-medium">4</p>
-            </div>
-            <div className="flex justify-between">
-              <p>Décision:</p>
-              <p className="font-medium">018-MEF/SG/DGFAG/DB/SRB/HM.F</p>
-            </div>
-            <div className="flex justify-between">
-              <p>Nombre de jours à débiter :</p>
-              <p className="font-medium">4</p>
-            </div>
-            <div className="flex justify-between">
-              <p>Décision:</p>
-              <p className="font-medium">N57/2022-MEF/SG/DGFAG/DB/SRB/HM.F</p>
-            </div>
+            {joursADebiter && joursADebiter.length > 0 ? (
+              joursADebiter.map((ligne, index) => (
+                <div key={index} className="space-y-1">
+                  <div className="flex justify-between">
+                    <p>Nombre de jours à débiter:</p>
+                    <p className="font-medium">{ligne.jours}</p>
+                  </div>
+                  <div className="flex justify-between">
+                    <p>Decision :</p>
+                    <p className="font-medium">
+                      {ligne.id}/{ligne.annee}-MEF/SG/DGFAG/DB/SRB/HM.F
+                    </p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="flex justify-between">
+                <p>Nombre de jours à débiter :</p>
+                <p className="font-medium">0</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
