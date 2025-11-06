@@ -12,6 +12,7 @@ import {
 
 import { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
 import Swal from "sweetalert2";
@@ -66,6 +67,9 @@ const arrowPlugin = {
 };
 
 export default function Accueil() {
+
+  const navigate = useNavigate();
+
   const { user } = useAuth();
 
   console.log("Fonction de l'utilisateur :", user?.FONCTION);
@@ -170,6 +174,7 @@ export default function Accueil() {
       },
     },
   };
+
 
   const handleViewConge = (item, index) => {
     const params = new URLSearchParams({
@@ -392,9 +397,18 @@ export default function Accueil() {
           </div>
         </div>
       )}
-      <div className="flex justify-center gap-6 mt-6 mb-12">
-        <button className="btn btn-primary btn-outline">Faire une demande</button>
-        <button className="btn btn-outline">Voir mon historique</button>
+
+      <div className="mb-12 mt-6 flex justify-center gap-6">
+        <button
+          className="btn btn-primary btn-outline"
+          onClick={() => navigate("/demande?openModal=true")}
+        >
+          Faire une demande
+        </button>
+        <button className="btn btn-outline" onClick={() => navigate("/Statistique")}>
+          Voir mon historique
+        </button>
+
       </div>
     </div>
   );

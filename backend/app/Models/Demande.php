@@ -27,4 +27,8 @@ class Demande extends Model
     {
         return $this->belongsTo(Personnel::class, 'IM', 'IM');
     }
+    public function decision()
+    {
+        return $this->hasMany(decision::class, 'id_conge_absence', 'id');
+    }
 }
