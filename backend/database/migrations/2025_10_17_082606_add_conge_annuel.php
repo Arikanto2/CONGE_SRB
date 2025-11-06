@@ -10,7 +10,6 @@ return new class extends Migration
     {
         Schema::create('conge_annuels', function (Blueprint $table) {
             $table->id();
-            $table->smallInteger('IDCONGE')->unique();
             $table->integer('IM');
             $table->smallInteger('NBR_CONGE')->nullable();
             $table->string('ANNEE', 128)->nullable();

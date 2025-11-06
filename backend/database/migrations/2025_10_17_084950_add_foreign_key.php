@@ -31,6 +31,7 @@ return new class extends Migration
                   ->on('personnel')
                   ->onDelete('cascade');
         });
+        
     }
 
     public function down(): void

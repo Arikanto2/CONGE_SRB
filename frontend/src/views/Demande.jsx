@@ -1,11 +1,15 @@
 import "../Style/Demande.css";
+import { RefreshCcw, Printer } from "lucide-react";
+import { EyeIcon } from "@heroicons/react/24/solid";
 import { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../hooks/useAuth";
 import PDF from "../Composants/ViewConge.jsx";
 
 export default function Demande() {
   const { user, token } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [donneeDemande, setDonneeDemande] = useState({
     IM: user?.IM || "",
     CATEGORIE: "",
@@ -37,6 +41,10 @@ export default function Demande() {
   const [nbrJR, setNbrJR] = useState(0);
   const [errors, setErrors] = useState({});
   const [soldeConge, setSoldeConge] = useState(0);
+  const [alldemandeChange, setAlldemandeChange] = useState([]);
+  const [filtreCategorie, setFiltreCategorie] = useState("");
+  const [rechercheTexte, setRechercheTexte] = useState("");
+  const [isResetAnimating, setIsResetAnimating] = useState(false);
 
   const handleChange = (key, value) => {
     console.log(`handleChange appelé: ${key} = ${value}`);
@@ -48,7 +56,6 @@ export default function Demande() {
       console.log("Nouvelles données:", newData);
       return newData;
     });
-    // Effacer l'erreur du champ quand l'utilisateur commence à taper
     if (errors[key]) {
       setErrors((prev) => {
         const newErrors = { ...prev };
@@ -111,6 +118,11 @@ export default function Demande() {
     } else if (debutDate && new Date(finDate) < new Date(debutDate)) {
       newErrors.DATEFIN = "La date de fin doit être postérieure ou égale à la date de début";
     }
+    if (nbrJR <= 0) {
+      newErrors.nbrJR = "Le nombre de jours doit être supérieur à zéro ";
+    } else if (nbrJR > 15) {
+      newErrors.nbrJR = "Le nombre de jours ne peut pas dépasser 15 ";
+    }
 
     // Validation du lieu
     if (lieuSelectionne.length === 0) {
@@ -144,12 +156,9 @@ export default function Demande() {
 
       console.log("Réponse reçue:", reponse.data);
       alert(reponse.data.message);
-
-      // Recharger le solde après une demande réussie
       recupererSolde();
-
+      fetchDemande();
       document.getElementById("my_modal_3").close();
-      // Réinitialiser le formulaire
       setDonneeDemande({
         IM: user.IM,
         CATEGORIE: "",
@@ -178,10 +187,8 @@ export default function Demande() {
         console.log("Erreurs de validation:", err.response.data.errors);
         setErrors(err.response.data.errors);
       } else if (err.response?.status === 400) {
-        // Erreur métier (demande en attente, solde insuffisant, etc.)
         alert(err.response.data.message);
       } else if (err.response?.status === 401) {
-        // Erreur d'authentification
         alert("Erreur d'authentification. Veuillez vous reconnecter.");
       } else {
         alert(
@@ -192,7 +199,6 @@ export default function Demande() {
   };
 
   const lieux = [
-    "Alaotra-Mangoro",
     "Amoron'i Mania",
     "Analamanga",
     "Analanjirofo",
@@ -272,8 +278,6 @@ export default function Demande() {
       console.error("Erreur lors de la récupération du solde:", error);
     }
   }, [token, user?.IM]);
-
-  // Mettre à jour l'IM quand user est chargé
   useEffect(() => {
     if (user?.IM) {
       setDonneeDemande((prev) => ({
@@ -283,13 +287,78 @@ export default function Demande() {
     }
   }, [user?.IM]);
 
-  // UseEffect pour récupérer le solde au chargement du composant
   useEffect(() => {
     if (token && user) {
       recupererSolde();
       fetchDemande();
     }
-  }, [token, user, recupererSolde, fetchDemande]); // Se déclenche quand token ou user change
+  }, [token, user, recupererSolde, fetchDemande]);
+
+  useEffect(() => {
+    let demandesFiltrees = getAlldemande;
+
+    // Filtrage par catégorie
+    if (filtreCategorie !== "") {
+      demandesFiltrees = demandesFiltrees.filter(
+        (demande) => demande.CATEGORIE === filtreCategorie
+      );
+    }
+
+    // Filtrage par texte de recherche (recherche dans toutes les colonnes du tableau)
+    if (rechercheTexte !== "") {
+      const texteRecherche = rechercheTexte.toLowerCase();
+      demandesFiltrees = demandesFiltrees.filter((demande) => {
+        // Date de demande
+        const dateCreation = new Date(demande.created_at).toLocaleDateString().toLowerCase();
+
+        // Type (catégorie ou type spécifique)
+        const typeAffiche =
+          (demande.TYPE == null ? demande.CATEGORIE : demande.TYPE)?.toLowerCase() || "";
+
+        // Dates début et fin
+        const dateDebut = new Date(demande.DATEDEBUT).toLocaleDateString().toLowerCase();
+        const dateFin = new Date(demande.DATEFIN).toLocaleDateString().toLowerCase();
+
+        // Nombre de jours (converti en string)
+        const nombreJours = calculerNombreJours(demande.DATEDEBUT, demande.DATEFIN).toString();
+
+        // Intérim
+        const interim = (demande.INTERIM || "N/A").toLowerCase();
+
+        // Validateur
+        const validateur =
+          demande.NOM_CHEF && demande.PRENOM_CHEF
+            ? `${demande.NOM_CHEF} ${demande.PRENOM_CHEF}`.toLowerCase()
+            : "non assigné";
+
+        // Date de confirmation
+        const dateConfirmation = new Date(demande.updated_at)
+          .toLocaleDateString("fr-FR")
+          .toLowerCase();
+
+        // Status
+        const status = iscongeValide(demande.VALIDCHEF, demande.VALIDDIV)?.toLowerCase() || "";
+
+        // Recherche dans tous les champs
+        return (
+          dateCreation.includes(texteRecherche) ||
+          typeAffiche.includes(texteRecherche) ||
+          dateDebut.includes(texteRecherche) ||
+          dateFin.includes(texteRecherche) ||
+          nombreJours.includes(texteRecherche) ||
+          interim.includes(texteRecherche) ||
+          validateur.includes(texteRecherche) ||
+          dateConfirmation.includes(texteRecherche) ||
+          status.includes(texteRecherche) ||
+          demande.CATEGORIE?.toLowerCase().includes(texteRecherche) ||
+          demande.MOTIF?.toLowerCase().includes(texteRecherche) ||
+          demande.LIEU?.toLowerCase().includes(texteRecherche)
+        );
+      });
+    }
+
+    setAlldemandeChange(demandesFiltrees);
+  }, [getAlldemande, filtreCategorie, rechercheTexte]);
 
   useEffect(() => {
     if (categorieAbsence === "Autorisation d'absence") {
@@ -304,11 +373,32 @@ export default function Demande() {
     }
   }, [categorieAbsence]);
 
+  // Fonction utilitaire pour ouvrir le modal de demande
+  const ouvrirModalDemande = () => {
+    document.getElementById("my_modal_3")?.showModal();
+  };
+
+  // UseEffect pour ouvrir le modal si le paramètre URL openModal=true est présent
+  useEffect(() => {
+    const openModal = searchParams.get("openModal");
+    if (openModal === "true") {
+      // Petit délai pour s'assurer que le DOM est prêt et que la page est chargée
+      setTimeout(() => {
+        ouvrirModalDemande();
+
+        // Optionnel : Afficher une notification discrète
+        console.log("Modal de demande ouvert automatiquement");
+      }, 300);
+
+      // Nettoyer le paramètre URL après avoir ouvert le modal
+      setSearchParams({});
+    }
+  }, [searchParams, setSearchParams]);
+
   const handleDebutChange = (val) => {
     setDebutDate(val);
     handleChange("DATEDEBUT", val);
 
-    // Effacer l'erreur de date de début
     if (errors.DATEDEBUT) {
       setErrors((prev) => {
         const newErrors = { ...prev };
@@ -328,7 +418,6 @@ export default function Demande() {
   };
 
   const handleFinChange = (val) => {
-    // Effacer l'erreur de date de fin
     if (errors.DATEFIN) {
       setErrors((prev) => {
         const newErrors = { ...prev };
@@ -362,8 +451,6 @@ export default function Demande() {
     setLieuSelectionne((prev) => {
       const nouv = prev.includes(lieu) ? prev.filter((l) => l !== lieu) : [...prev, lieu];
       handleChange("LIEU", nouv.join(", "));
-
-      // Effacer l'erreur de lieu si des lieux sont sélectionnés
       if (nouv.length > 0 && errors.LIEU) {
         setErrors((prevErrors) => {
           const newErrors = { ...prevErrors };
@@ -376,37 +463,80 @@ export default function Demande() {
     });
   };
 
+  const reinitialiserFiltres = () => {
+    setIsResetAnimating(true);
+    setFiltreCategorie("");
+    setRechercheTexte("");
+
+    // Arrêter l'animation après 1 seconde
+    setTimeout(() => {
+      setIsResetAnimating(false);
+    }, 1000);
+  };
+
   return (
     <div className="card ml-3 mr-3 mt-5 bg-base-100 shadow-xl">
       <div className="card-body">
         <div className="mb-4 flex items-center justify-between">
-          <label className="input input-info left-0 h-10 w-60">
-            <svg
-              className="h-[1em] opacity-50"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-            >
-              <g
-                strokeLinejoin="round"
-                strokeLinecap="round"
-                strokeWidth="2.5"
-                fill="none"
-                stroke="currentColor"
+          <div className="relative">
+            <label className="input input-info left-0 h-10 w-80">
+              <svg
+                className="h-[1em] opacity-50"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
               >
-                <circle cx="11" cy="11" r="8"></circle>
-                <path d="m21 21-4.3-4.3"></path>
-              </g>
-            </svg>
-            <input type="search" placeholder="Recherche..." />
-          </label>
-          <p className="labelTitre absolute left-1/2 -translate-x-1/2 transform text-center">
-            Les congés demandés
-          </p>
+                <g
+                  strokeLinejoin="round"
+                  strokeLinecap="round"
+                  strokeWidth="2.5"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="m21 21-4.3-4.3"></path>
+                </g>
+              </svg>
+              <input
+                type="search"
+                placeholder="Rechercher..."
+                value={rechercheTexte}
+                onChange={(e) => setRechercheTexte(e.target.value)}
+              />
+            </label>
+          </div>
+          <div className="absolute left-1/2 -translate-x-1/2 transform text-center">
+            <p className="labelTitre">Les congés demandés</p>
+          </div>
           <div className="right-0 flex gap-2">
-            <select className="comboDemande select select-info">
-              <option value="" disabled>
-                Catégorie d'absence
-              </option>
+            <button
+              className="btn btn-outline btn-sm"
+              onClick={reinitialiserFiltres}
+              title="Réinitialiser les filtres"
+              disabled={isResetAnimating}
+            >
+              <RefreshCcw
+                size={16}
+                className={`transition-transform duration-1000 ${isResetAnimating ? "animate-spin" : ""}`}
+              />
+              {isResetAnimating ? "Réinitialisation..." : "Réinitialiser"}
+            </button>
+            <select
+              className="comboDemande select select-info"
+              value={filtreCategorie}
+              onChange={(e) => {
+                const nouvelleCategorieFiltre = e.target.value;
+                setFiltreCategorie(nouvelleCategorieFiltre);
+
+                if (nouvelleCategorieFiltre === "") {
+                  setAlldemandeChange(getAlldemande);
+                } else {
+                  setAlldemandeChange(
+                    getAlldemande.filter((demande) => demande.CATEGORIE === nouvelleCategorieFiltre)
+                  );
+                }
+              }}
+            >
+              <option value="">Toutes les catégories</option>
               <option value="Autorisation d'absence">Autorisation d'absence</option>
               <option value="Congé">Congé</option>
               <option value="Permission">Permission</option>
@@ -414,10 +544,7 @@ export default function Demande() {
               <option value="Formation">Formation</option>
               <option value="Repos médical">Repos médical</option>
             </select>
-            <button
-              className="btnDemande btn btn-dash"
-              onClick={() => document.getElementById("my_modal_3").showModal()}
-            >
+            <button className="btnDemande btn btn-dash" onClick={ouvrirModalDemande}>
               Faire une demande
             </button>
             <dialog id="my_modal_3" className="modal">
@@ -452,7 +579,6 @@ export default function Demande() {
                           setCategorieAbsence(e.target.value);
                           handleChange("CATEGORIE", e.target.value);
                         }}
-                        required
                       >
                         <option value="" disabled>
                           Sélectionner
@@ -465,7 +591,7 @@ export default function Demande() {
                         <option value="Repos médical">Repos médical</option>
                       </select>
                       {errors.CATEGORIE && (
-                        <p className="mt-1 text-sm text-red-500">{errors.CATEGORIE}</p>
+                        <p className="mt-1 text-[10px] text-red-600">{errors.CATEGORIE}</p>
                       )}
                     </div>
                     <div className="flex-1">
@@ -490,7 +616,6 @@ export default function Demande() {
                           className={`comboDemande select select-info w-full bg-gray-50 ${errors.TYPE ? "border-2 border-red-500" : ""}`}
                           value={donneeDemande.TYPE}
                           onChange={(e) => handleChange("TYPE", e.target.value)}
-                          required
                         >
                           <option value="" disabled>
                             Sélectionner le type
@@ -504,7 +629,9 @@ export default function Demande() {
                             </option>
                           ))}
                         </select>
-                        {errors.TYPE && <p className="mt-1 text-sm text-red-500">{errors.TYPE}</p>}
+                        {errors.TYPE && (
+                          <p className="mt-1 text-[10px] text-red-600">{errors.TYPE}</p>
+                        )}
                       </div>
                     )}
                     <div className="mt-3 flex flex-1 items-center gap-2">
@@ -550,9 +677,10 @@ export default function Demande() {
                         value={donneeDemande.MOTIF}
                         onChange={(e) => handleChange("MOTIF", e.target.value)}
                         maxLength={500}
-                        required
                       />
-                      {errors.MOTIF && <p className="mt-1 text-sm text-red-500">{errors.MOTIF}</p>}
+                      {errors.MOTIF && (
+                        <p className="mt-1 text-[10px] text-red-600">{errors.MOTIF}</p>
+                      )}
                       <p className="mt-1 text-xs text-gray-500">
                         {donneeDemande.MOTIF.length}/500 caractères
                       </p>
@@ -568,10 +696,9 @@ export default function Demande() {
                         min={getDateDemain()}
                         onChange={(e) => handleDebutChange(e.target.value)}
                         className={`input input-info ${errors.DATEDEBUT ? "border-2 border-red-500" : ""}`}
-                        required
                       />
                       {errors.DATEDEBUT && (
-                        <p className="mt-1 text-sm text-red-500">{errors.DATEDEBUT}</p>
+                        <p className="mt-1 text-[10px] text-red-600">{errors.DATEDEBUT}</p>
                       )}
                     </div>
                     <div className="max-w-16 flex-1">
@@ -579,12 +706,12 @@ export default function Demande() {
                       <input
                         type="number"
                         value={nbrJR}
-                        max={15}
-                        min={1}
                         onChange={(e) => handleNbrJRChange(e.target.value)}
-                        className="input input-info w-14 bg-gray-50 text-center"
-                        required
+                        className={`input ${errors.nbrJR ? "input-error border-red-500" : "input-info"} w-14 bg-gray-50 text-center`}
                       />
+                      {errors.nbrJR && (
+                        <p className="mt-1 text-[10px] text-red-600">{errors.nbrJR}</p>
+                      )}
                     </div>
                     <div className="flex-1">
                       <label className="block text-left font-serif text-sm">Date fin*:</label>
@@ -594,10 +721,9 @@ export default function Demande() {
                         min={debutDate}
                         onChange={(e) => handleFinChange(e.target.value)}
                         className={`input input-info ${errors.DATEFIN ? "border-2 border-red-500" : ""}`}
-                        required
                       />
                       {errors.DATEFIN && (
-                        <p className="mt-1 text-sm text-red-500">{errors.DATEFIN}</p>
+                        <p className="mt-1 text-[10px] text-red-600">{errors.DATEFIN}</p>
                       )}
                     </div>
                   </div>
@@ -614,7 +740,6 @@ export default function Demande() {
                           className={`inputDemande inputLieu input input-info w-full bg-gray-50 ${errors.LIEU ? "border-2 border-red-500" : ""}`}
                           placeholder="Sélectionner un lieu"
                           readOnly
-                          required
                         />
                         <details className="dropdown dropdown-top">
                           <summary className="btnChoixLieu btn h-8">choisir</summary>
@@ -624,7 +749,7 @@ export default function Demande() {
                                 <li
                                   key={lieu}
                                   onClick={() => ajouterLieu(lieu)}
-                                  className={`cursor-pointer hover:bg-blue-100 hover:text-blue-800 ${lieuSelectionne.includes(lieu) ? "bg-blue-500 text-white" : ""}`}
+                                  className={`cursor-pointer hover:bg-blue-100 hover:text-blue-600 ${lieuSelectionne.includes(lieu) ? "bg-blue-500 text-white" : ""}`}
                                 >
                                   {lieu}
                                 </li>
@@ -633,7 +758,9 @@ export default function Demande() {
                           </div>
                         </details>
                       </div>
-                      {errors.LIEU && <p className="mt-1 text-sm text-red-500">{errors.LIEU}</p>}
+                      {errors.LIEU && (
+                        <p className="mt-1 text-[10px] text-red-600">{errors.LIEU}</p>
+                      )}
                     </div>
                   </div>
 
@@ -648,43 +775,54 @@ export default function Demande() {
 
         <div className="conteneurTab border-base-content/5 max-h-80 overflow-x-auto overflow-y-auto rounded-box border bg-base-100">
           <table className="table table-zebra">
-            <thead>
+            <thead className="sticky top-0 z-10">
               <tr>
-                <th>Date de demande</th>
-                <th>Type</th>
-                <th>Date début</th>
-                <th>Date fin</th>
-                <th>Nombre de jour</th>
-                <th>Intérim</th>
-                <th>Validateur et Date de confirmation</th>
-                <th>Status</th>
-                <th>Aperçu</th>
+                <th className="bg-base-200 text-center">Date de demande</th>
+                <th className="bg-base-200 text-center">Type</th>
+                <th className="bg-base-200 text-center">Date début</th>
+                <th className="bg-base-200 text-center">Date fin</th>
+                <th className="bg-base-200 text-center">Nombre de jour</th>
+                <th className="bg-base-200 text-center">Intérim</th>
+                <th className="bg-base-200 text-center">Validateur et Date de confirmation</th>
+                <th className="bg-base-200 text-center">Status</th>
+                <th className="bg-base-200 ">Aperçu</th>
               </tr>
             </thead>
             <tbody>
-              {getAlldemande &&
-                getAlldemande.map((conge) => (
+              {alldemandeChange && alldemandeChange.length > 0 ? (
+                alldemandeChange.map((conge) => (
                   <tr key={conge.id}>
-                    <td>{new Date(conge.created_at).toLocaleDateString()}</td>
-                    <td>{conge.TYPE == null? conge.CATEGORIE : conge.TYPE}</td>
-                    <td>{new Date(conge.DATEDEBUT).toLocaleDateString()}</td>
-                    <td>{new Date(conge.DATEFIN).toLocaleDateString()}</td>
-                    <td>{calculerNombreJours(conge.DATEDEBUT, conge.DATEFIN)}</td>
-                    <td>{conge.INTERIM || "N/A"}</td>
-                    <td>
+                    <td className="text-center">
+                      {new Date(conge.created_at).toLocaleDateString()}
+                    </td>
+                    <td className="text-center">
+                      {conge.TYPE == null ? conge.CATEGORIE : conge.TYPE}
+                    </td>
+                    <td className="text-center">
+                      {new Date(conge.DATEDEBUT).toLocaleDateString()}
+                    </td>
+                    <td className="text-center">{new Date(conge.DATEFIN).toLocaleDateString()}</td>
+                    <td className="text-center">
+                      {calculerNombreJours(conge.DATEDEBUT, conge.DATEFIN)}
+                    </td>
+                    <td className="text-center">{conge.INTERIM || "N/A"}</td>
+                    <td className="text-center">
                       {conge.NOM_CHEF && conge.PRENOM_CHEF
                         ? `${conge.NOM_CHEF} ${conge.PRENOM_CHEF}`
                         : "Non assigné"}
                       <br />
                       {new Date(conge.updated_at).toLocaleDateString("fr-FR")}
                     </td>
-                    <td>{iscongeValide(conge.VALIDCHEF, conge.VALIDDIV)}</td>
-                    <td>
+                    <td className="text-center">
+                      {iscongeValide(conge.VALIDCHEF, conge.VALIDDIV)}
+                    </td>
+                    <td className="">
                       <button
-                        className="btn btn-info btn-sm"
+                        className="btnConnexion"
                         onClick={() => document.getElementById(`modal`).showModal()}
+                        title="Voir l'aperçu"
                       >
-                        👁️
+                        <EyeIcon className="h-4 w-4 text-white" />
                       </button>
 
                       <dialog id="modal" className="modal">
@@ -699,19 +837,70 @@ export default function Demande() {
                             className="btn btn-primary btn-sm absolute left-14 top-3"
                             onClick={() => window.print()}
                           >
-                            🖨️
+                            <Printer className="h-4 w-4 text-white" />
                           </button>
 
                           <div className="mx-auto my-auto">
                             <div className="mx-14 mb-5 mt-14">
-                              <PDF />
+                              <PDF
+                                IM={conge.IM}
+                                NOM={conge.NOM}
+                                PRENOM={conge.PRENOM}
+                                DATEDEBUT={conge.DATEDEBUT}
+                                DATEFIN={conge.DATEFIN}
+                                motif={conge.MOTIF}
+                                lieu={conge.LIEU}
+                                ref={conge.Ref}
+                              />
                             </div>
                           </div>
                         </div>
                       </dialog>
                     </td>
                   </tr>
-                ))}
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="9" className="py-8 text-center">
+                    <div className="flex flex-col items-center justify-center text-gray-500">
+                      <svg
+                        className="mb-4 h-16 w-16 text-gray-300"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                        />
+                      </svg>
+                      <p className="mb-2 text-lg font-medium text-gray-600">
+                        Aucun résultat trouvé
+                      </p>
+                      <p className="text-sm text-gray-400">
+                        {rechercheTexte || filtreCategorie
+                          ? "Aucune demande ne correspond à vos critères de recherche."
+                          : "Vous n'avez encore fait aucune demande de congé."}
+                      </p>
+                      {(rechercheTexte || filtreCategorie) && (
+                        <button
+                          className="btn btn-outline btn-sm mt-3"
+                          onClick={reinitialiserFiltres}
+                          disabled={isResetAnimating}
+                        >
+                          <RefreshCcw
+                            size={14}
+                            className={`mr-2 transition-transform duration-1000 ${isResetAnimating ? "animate-spin" : ""}`}
+                          />
+                          {isResetAnimating ? "Réinitialisation..." : "Effacer les filtres"}
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

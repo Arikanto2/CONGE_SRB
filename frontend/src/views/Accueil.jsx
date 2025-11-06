@@ -10,9 +10,9 @@ import {
   Tooltip,
 } from "chart.js";
 
-
 import { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
 import Swal from "sweetalert2";
@@ -67,7 +67,7 @@ const arrowPlugin = {
 };
 
 export default function Accueil() {
-
+  const navigate = useNavigate();
   const { user } = useAuth();
 
   console.log("Fonction de l'utilisateur :", user?.FONCTION);
@@ -128,7 +128,6 @@ export default function Accueil() {
     "Décembre",
   ];
 
-
   const data = {
     labels: moisLabels,
     datasets: [
@@ -174,7 +173,6 @@ export default function Accueil() {
 
   return (
     <div className="flex min-h-screen flex-col bg-base-200">
-
       <h1 className="mb-4 text-2xl font-bold">Bienvenue, {user?.NOM} </h1>
 
       <div className="flex w-full items-center gap-4 p-4">
@@ -208,7 +206,6 @@ export default function Accueil() {
               dernieresDemandes.map((demande, index) => (
                 <li key={index}>
                   Du {new Date(demande.DATEDEBUT).toLocaleDateString()} au{" "}
-
                   {new Date(demande.DATEFIN).toLocaleDateString()} —{" "}
                   <span
                     className={`${
@@ -218,7 +215,6 @@ export default function Accueil() {
                           ? "text-success"
                           : "text-error"
                     }`}
-
                   >
                     {demande.VALIDCHEF}
                   </span>
@@ -341,8 +337,15 @@ export default function Accueil() {
         </div>
       )}
       <div className="mb-12 mt-6 flex justify-center gap-6">
-        <button className="btn btn-primary btn-outline">Faire une demande</button>
-        <button className="btn btn-outline">Voir mon historique</button>
+        <button
+          className="btn btn-primary btn-outline"
+          onClick={() => navigate("/demande?openModal=true")}
+        >
+          Faire une demande
+        </button>
+        <button className="btn btn-outline" onClick={() => navigate("/Statistique")}>
+          Voir mon historique
+        </button>
       </div>
     </div>
   );

@@ -28,6 +28,19 @@ table tr:nth-child(even) {
 .conteneurTab{
     border: 1px solid rgb(0, 90, 108);
 }
+
+/* Styles pour l'en-tête fixe du tableau */
+.conteneurTab thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.conteneurTab thead th {
+    border-bottom: 2px solid rgb(0, 90, 108);
+    font-weight: bold;
+    text-align: center;
+}
 .labelTitre{
     font-family: 'Viaoda Libre', serif;
     font-size: x-large;
