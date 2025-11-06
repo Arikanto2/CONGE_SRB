@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
 import axios from "axios";
+import React, { useEffect, useState } from "react";
 
 export default function Inscription({ activeDefil }) {
   const [password, setPassword] = useState("");
@@ -218,9 +218,7 @@ export default function Inscription({ activeDefil }) {
                   title="Seuls les chiffres sont autorisés (6 chiffres requis)"
                   onChange={(e) => handleChange("IM", e.target.value)}
                 />
-                <p className="legendMDP validator-hint">
-                  6 chiffres requis.
-                </p>
+                <p className="legendMDP validator-hint">6 chiffres requis.</p>
               </div>
               <div className="flex-1">
                 <label className="block text-left font-serif text-sm">Corps :</label>
@@ -326,9 +324,7 @@ export default function Inscription({ activeDefil }) {
                     placeholder="Numéro sans indicatif"
                     onChange={(e) => handleChange("CONTACT", e.target.value)}
                   />
-                  <p className="legendMDP validator-hint">
-                    9 chiffres requis.
-                  </p>
+                  <p className="legendMDP validator-hint">9 chiffres requis.</p>
                 </div>
               </div>
               <div className="flex-1">
