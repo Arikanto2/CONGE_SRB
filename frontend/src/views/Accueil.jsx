@@ -67,7 +67,9 @@ const arrowPlugin = {
 };
 
 export default function Accueil() {
+
   const navigate = useNavigate();
+
   const { user } = useAuth();
 
   console.log("Fonction de l'utilisateur :", user?.FONCTION);
@@ -80,6 +82,7 @@ export default function Accueil() {
   const [ValidationDiv, setValidationDiv] = useState([]);
   const [ValidationChef, setValidationChef] = useState([]);
   const [CongeParMois, setCongeParMois] = useState([]);
+  const [joursADebiter, setJoursADebiter] = useState({});
 
   useEffect(() => {
     ChartJS.register(arrowPlugin);
@@ -88,7 +91,7 @@ export default function Accueil() {
     if (!user?.FONCTION) return;
 
     const params = new URLSearchParams({
-      im: user.IM,
+      user_im: user.IM,
       division: user.DIVISION,
     });
 
@@ -100,6 +103,7 @@ export default function Accueil() {
         if (data.validation_div) setValidationDiv(data.validation_div);
         if (data.validation_chef) setValidationChef(data.validation_chef);
         if (data.conges_par_mois) setCongeParMois(data.conges_par_mois);
+        if (data.joursADebiter) setJoursADebiter(data.joursADebiter);
       })
       .catch((error) => console.error("Erreur:", error));
   }, [user]);
@@ -171,22 +175,37 @@ export default function Accueil() {
     },
   };
 
+
+  const handleViewConge = (item, index) => {
+    const params = new URLSearchParams({
+      item_im: item.IM,
+    });
+
+    fetch(`http://127.0.0.1:8000/api/Accueil?${params.toString()}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.joursADebiter) setJoursADebiter(data.joursADebiter);
+        document.getElementById(`modal_${index}`).showModal();
+      })
+      .catch((error) => console.error("Erreur:", error));
+  };
+
   return (
-    <div className="flex min-h-screen flex-col bg-base-200">
+    <div className="flex flex-col min-h-screen bg-base-200">
       <h1 className="mb-4 text-2xl font-bold">Bienvenue, {user?.NOM} </h1>
 
-      <div className="flex w-full items-center gap-4 p-4">
-        <div className="card h-60 w-2/3 bg-base-100 shadow-xl">
-          <div className="card-body h-full p-2">
-            <div className="h-full w-full">
+      <div className="flex items-center w-full gap-4 p-4">
+        <div className="w-2/3 shadow-xl card h-60 bg-base-100">
+          <div className="h-full p-2 card-body">
+            <div className="w-full h-full">
               <Line data={data} options={options} />
             </div>
           </div>
         </div>
 
-        <div className="flex w-1/3 items-center justify-center">
+        <div className="flex items-center justify-center w-1/3">
           <div
-            className="radial-progress flex items-center justify-center text-xl font-semibold text-primary"
+            className="flex items-center justify-center text-xl font-semibold radial-progress text-primary"
             style={{
               "--value": 80,
               "--size": "8rem",
@@ -198,7 +217,7 @@ export default function Accueil() {
         </div>
       </div>
 
-      <div className="card mb-6 bg-base-100 shadow-xl">
+      <div className="mb-6 shadow-xl card bg-base-100">
         <div className="card-body">
           <h2 className="card-title">Les 3 derniers demandes</h2>
           <ul className="ml-5 list-disc">
@@ -228,10 +247,10 @@ export default function Accueil() {
       </div>
 
       {(isChefDivision || isChefService) && (
-        <div className="card ml-3 mr-3 mt-7 bg-base-100 shadow-xl">
+        <div className="ml-3 mr-3 shadow-xl card mt-7 bg-base-100">
           <div className="card-body">
-            <div className="mb-5 flex items-center justify-between">
-              <label className="input input-info h-10 w-64">
+            <div className="flex items-center justify-between mb-5">
+              <label className="w-64 h-10 input input-info">
                 <svg
                   className="h-[1em] opacity-50"
                   xmlns="http://www.w3.org/2000/svg"
@@ -250,13 +269,13 @@ export default function Accueil() {
                 </svg>
                 <input type="search" required placeholder="Recherche..." />
               </label>
-              <p className="labelTitre text-center font-semibold">Les congés à valider</p>
+              <p className="font-semibold text-center labelTitre">Les congés à valider</p>
               <a onClick={teste} href="" className="text-primary hover:underline">
                 Afficher tous
               </a>
             </div>
 
-            <div className="conteneurTab border-base-content/5 max-h-80 overflow-x-auto overflow-y-auto rounded-box border bg-base-100">
+            <div className="overflow-x-auto overflow-y-auto border conteneurTab border-base-content/5 max-h-80 rounded-box bg-base-100">
               <table className="table table-zebra">
                 <thead>
                   <tr>
@@ -272,13 +291,15 @@ export default function Accueil() {
                     Validation.map((item, index) => (
                       <tr key={index}>
                         <th>{item.IM}</th>
-                        <td>{item.NOM}</td>
+                        <td>
+                          {item.NOM} {item.PRENOM}
+                        </td>
                         <td>{item.MOTIF}</td>
                         <td>{item.duree} jours</td>
                         <td>
                           <button
                             className="btn btn-info btn-sm"
-                            onClick={() => document.getElementById(`modal_${index}`).showModal()}
+                            onClick={() => handleViewConge(item, index)}
                           >
                             👁️
                           </button>
@@ -286,20 +307,20 @@ export default function Accueil() {
                           <dialog id={`modal_${index}`} className="modal">
                             <div className="modal-box relative h-[85vh] max-w-full overflow-y-auto p-0">
                               <form method="dialog">
-                                <button className="btn btn-ghost btn-sm btn-circle absolute right-2 top-2">
+                                <button className="absolute btn btn-ghost btn-sm btn-circle right-2 top-2">
                                   ✕
                                 </button>
                               </form>
 
                               <button
-                                className="btn btn-primary btn-sm absolute left-14 top-3"
+                                className="absolute btn btn-primary btn-sm left-14 top-3"
                                 onClick={() => window.print()}
                               >
                                 🖨️
                               </button>
 
                               <div className="mx-auto my-auto">
-                                <div className="mx-14 mb-5 mt-14">
+                                <div className="mb-5 mx-14 mt-14">
                                   <PDF
                                     IM={item.IM}
                                     NOM={item.NOM}
@@ -309,11 +330,51 @@ export default function Accueil() {
                                     motif={item.MOTIF}
                                     lieu={item.LIEU}
                                     ref={item.Ref}
+                                    joursADebiter={joursADebiter || []}
                                   />
                                 </div>
-                                <div className="absolute right-0 mr-14 flex gap-3">
-                                  <button className="btn btn-success btn-circle">✔</button>
-                                  <button className="btn btn-error btn-circle" onClick={teste}>
+                                <div className="absolute right-0 flex gap-3 mr-14">
+                                  {/* Bouton Valider */}
+                                  <button
+                                    className="btn btn-success btn-circle"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      const confirmer = window.confirm(
+                                        "Voulez-vous vraiment valider cette demande ?"
+                                      );
+                                      if (confirmer) {
+                                        // Ici, tu peux mettre ton code pour valider la demande
+                                        console.log("Demande validée !");
+                                        // Optionnel : fermer la modale si validation réussie
+                                        // const modal = e.target.closest("dialog");
+                                        // modal.close();
+                                      } else {
+                                        console.log("Validation annulée");
+                                      }
+                                    }}
+                                  >
+                                    ✔
+                                  </button>
+
+                                  {/* Bouton Refuser */}
+                                  <button
+                                    className="btn btn-error btn-circle"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      const confirmer = window.confirm(
+                                        "Voulez-vous vraiment refuser cette demande ?"
+                                      );
+                                      if (confirmer) {
+                                        // Ici, tu peux mettre ton code pour refuser la demande
+                                        console.log("Demande refusée !");
+                                        // Optionnel : fermer la modale si refus effectué
+                                        // const modal = e.target.closest("dialog");
+                                        // modal.close();
+                                      } else {
+                                        console.log("Refus annulé");
+                                      }
+                                    }}
+                                  >
                                     ✖
                                   </button>
                                 </div>
@@ -336,6 +397,7 @@ export default function Accueil() {
           </div>
         </div>
       )}
+
       <div className="mb-12 mt-6 flex justify-center gap-6">
         <button
           className="btn btn-primary btn-outline"
@@ -346,6 +408,7 @@ export default function Accueil() {
         <button className="btn btn-outline" onClick={() => navigate("/Statistique")}>
           Voir mon historique
         </button>
+
       </div>
     </div>
   );

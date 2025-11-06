@@ -1,6 +1,6 @@
 <?php
-
 namespace App\Http\Controllers;
+
 
 use App\Models\Conge_annuels;
 use App\Models\Demande;
@@ -13,17 +13,17 @@ class AccueilController extends Controller
 
     public function index(Request $request)
         {
-            $im = $request->query('im');
+            $user_im = $request->query('user_im');
             $division = $request->query('division');
 
-            $dernieresDemandes = Demande::where('IM', $im)
+            $dernieresDemandes = Demande::where('IM', $user_im)
                    ->orderBy('DATEDEBUT', 'desc')
                    ->limit(3)
                    ->get(['DATEDEBUT', 'DATEFIN', 'VALIDCHEF']);
 
 
-            $Total_conge = Conge_annuels::where('IM', $im)->sum('NBR_CONGE');
-            
+            $Total_conge = Conge_annuels::where('IM', $user_im)->sum('NBR_CONGE');
+
             $Valid_div = Demande::join('personnel', 'conge_absence.IM', '=', 'personnel.IM')
                 ->where('conge_absence.VALIDDIV', 'En attente')
                 ->where('personnel.DIVISION', $division)
@@ -53,7 +53,8 @@ class AccueilController extends Controller
                     'conge_absence.Ref',
                     DB::raw('(conge_absence."DATEFIN" - conge_absence."DATEDEBUT") AS duree')
             ]);
-
+            
+            /////// historique
             $congesParMois = DB::table('conge_absence')
                 ->selectRaw('
                     EXTRACT(MONTH FROM "DATEDEBUT")::INT AS mois,
@@ -64,37 +65,48 @@ class AccueilController extends Controller
                 ->orderByRaw('EXTRACT(MONTH FROM "DATEDEBUT")')
                 ->get();
 
+        $item_user = $request->query('item_im');   
+        
+        $congeAnnuel = Conge_annuels::where('IM', $item_user)
+        ->orderBy('ANNEE', 'asc')
+        ->get();
+
+        $demandeJours = Demande::where('IM', $item_user)
+            ->selectRaw('("DATEFIN" - "DATEDEBUT") AS nb_jrs')
+            ->value('nb_jrs');
+        $joursADebiter = [];
+
+    foreach ($congeAnnuel as $conge) {
+        if ($demandeJours <= 0) break; 
+
+        $reste = $conge->NBR_CONGE; 
+
+        if ($reste <= 0) continue; 
+
+        $debiter = min($reste, $demandeJours);
+
+        $joursADebiter[] = [
+            'id' => $conge->id,
+            'annee' => $conge->ANNEE,
+            'jours' => $debiter
+        ];
+
+        $demandeJours -= $debiter;
+    }
             return response()->json([
-                  'dernieres_demandes' => $dernieresDemandes,
-                  'nbr_Conge' => $Total_conge,
-                  'validation_div' => $Valid_div,
-                  'validation_chef' => $Valid_chef,
-                  'conges_par_mois' => $congesParMois
+                'joursADebiter' => $joursADebiter,
+                'congeAnnuel' => $demandeJours, 
+                'dernieres_demandes' => $dernieresDemandes,
+                'nbr_Conge' => $Total_conge,
+                'validation_div' => $Valid_div,
+                'validation_chef' => $Valid_chef,
+                'conges_par_mois' => $congesParMois
                 ]);
         }
 
     public function create()
     {
-        /*
-        $nb_jour = (new \DateTime($validatedData['DATEFIN']))->diff(new \DateTime($validatedData['DATEDEBUT']))->days + 1;
-            if ($nb_jour <= 0) {
-                return response()->json(['message' => 'La date de fin doit être postérieure à la date de début.'], 400);
-            }
-                $congeAnnuel = Conge_annuels::where('IM', $validatedData['IM'])->where('NBR_CONGE' != 0)->orderBy('ANNEE','desc')->get();
-            foreach ($congeAnnuel as $conge) {
-                if ($conge->NBR_CONGE - $nb_jour >= 0) {
-                    $conge->NBR_CONGE -= $nb_jour;
-                    $conge->save();
-                    return response()->json(['message' => 'Demande créée avec succès et congé annuel mis à jour.'], 201);
-                } else {
-                    $conge->NBR_CONGE = 0;
-                    $nb_jour -= $conge->NBR_CONGE;
-                    $conge->save();
-                }
-            }
-            
-                
-*/
+    
     }
 
     public function store(Request $request) {}
