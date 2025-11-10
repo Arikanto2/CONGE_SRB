@@ -20,9 +20,12 @@ function addDays(d, n) {
 }
 
 const DEFAULT_COLORS = {
+  autorisation: "bg-purple-600",
   conge: "bg-blue-600",
+  permission: "bg-pink-500",
   mission: "bg-green-600",
   formation: "bg-yellow-500",
+  repos_medical: "bg-red-500",
   default: "bg-slate-600",
 };
 
@@ -222,10 +225,13 @@ export default function GanttChart({ tasks = [], dayWidth = 28 }) {
 // --- Légende ---
 function Legend() {
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex flex-wrap items-center gap-3">
+      <LegendItem colorClass={DEFAULT_COLORS.autorisation} label="Autorisation d’absence" />
       <LegendItem colorClass={DEFAULT_COLORS.conge} label="Congé" />
+      <LegendItem colorClass={DEFAULT_COLORS.permission} label="Permission" />
       <LegendItem colorClass={DEFAULT_COLORS.mission} label="Mission" />
       <LegendItem colorClass={DEFAULT_COLORS.formation} label="Formation" />
+      <LegendItem colorClass={DEFAULT_COLORS.repos_medical} label="Repos médical" />
     </div>
   );
 }

@@ -38,7 +38,6 @@ class StatsController extends Controller
                 'status'=> $status,
             ];
         });
-
         return response()->json($tasks);
     }
 }

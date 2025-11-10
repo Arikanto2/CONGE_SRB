@@ -19,5 +19,4 @@ class decision extends Model
     {
         return $this->belongsTo(Demande::class, 'id_conge_absence', 'id');
     }
-    //
 }
