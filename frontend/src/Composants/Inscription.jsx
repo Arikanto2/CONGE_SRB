@@ -5,7 +5,7 @@ export default function Inscription({ activeDefil }) {
   const [password, setPassword] = useState("");
   const [confirmMDP, setConfirmMDP] = useState("");
   const [isValid, setIsValid] = useState(true);
-  const [selectedFile, setSelectedFile] = useState(null); // État pour le fichier
+  const [selectedFile, setSelectedFile] = useState(null);
   const API_URL = "http://localhost:8000/api/inscription";
   const [donneepers, setDonneepers] = useState({
     IM: "",
@@ -26,6 +26,7 @@ export default function Inscription({ activeDefil }) {
       alert("Les mots de passe ne correspondent pas !");
       return;
     }
+
     if (donneepers.FONCTION === "Chef de service") {
       try {
         const response = await axios.post("http://localhost:8000/api/verify-chef-service");
@@ -39,6 +40,7 @@ export default function Inscription({ activeDefil }) {
         return;
       }
     }
+
     if (donneepers.FONCTION === "Chef de division") {
       try {
         const response = await axios.post("http://localhost:8000/api/verify-chef-division", {
@@ -58,7 +60,6 @@ export default function Inscription({ activeDefil }) {
       }
     }
 
-    // Debug: afficher les données exactes envoyées
     console.log("=== DONNÉES ENVOYÉES ===");
     console.log("donneepers:", donneepers);
     console.log(
@@ -68,11 +69,23 @@ export default function Inscription({ activeDefil }) {
     console.log("========================");
 
     try {
-      const response = await axios.post(API_URL, donneepers);
+      const formData = new FormData();
+      Object.keys(donneepers).forEach((key) => {
+        if (key !== "PHOTO_PROFIL") {
+          formData.append(key, donneepers[key]);
+        }
+      });
+      if (selectedFile) {
+        formData.append("PHOTO_PROFIL", selectedFile);
+      }
+
+      const response = await axios.post(API_URL, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
       alert("Inscription réussie !");
       console.log("Réponse:", response.data);
 
-      // Reset du formulaire en cas de succès
       setDonneepers({
         IM: "",
         NOM: "",
@@ -88,7 +101,7 @@ export default function Inscription({ activeDefil }) {
       });
       setPassword("");
       setConfirmMDP("");
-      setSelectedFile(null); // Reset du fichier sélectionné
+      setSelectedFile(null);
     } catch (err) {
       console.error("=== ERREUR COMPLÈTE ===");
       console.error("Erreur:", err);
@@ -102,7 +115,6 @@ export default function Inscription({ activeDefil }) {
           const errors = err.response.data.errors;
           console.error("Erreurs de validation:", errors);
 
-          // Affichage plus propre des erreurs
           let errorMessages = [];
           Object.keys(errors).forEach((field) => {
             errors[field].forEach((error) => {
@@ -136,22 +148,6 @@ export default function Inscription({ activeDefil }) {
       setIsValid(true);
     }
   }, [password, confirmMDP]);
-
-  // useEffect pour convertir automatiquement le fichier en nom de fichier (string)
-  useEffect(() => {
-    if (selectedFile) {
-      console.log("Fichier sélectionné:", selectedFile.name);
-      setDonneepers((prev) => ({
-        ...prev,
-        PHOTO_PROFIL: selectedFile.name,
-      }));
-    } else {
-      setDonneepers((prev) => ({
-        ...prev,
-        PHOTO_PROFIL: "",
-      }));
-    }
-  }, [selectedFile]);
 
   return (
     <>
@@ -213,8 +209,8 @@ export default function Inscription({ activeDefil }) {
                   placeholder="Entrez votre matricule"
                   value={donneepers.IM}
                   className="inputConnexion validator input input-info bg-gray-50"
-                  min="100000"
-                  max="999999"
+                  minLength="6"
+                  maxLength="6"
                   title="Seuls les chiffres sont autorisés (6 chiffres requis)"
                   onChange={(e) => handleChange("IM", e.target.value)}
                 />
@@ -317,8 +313,8 @@ export default function Inscription({ activeDefil }) {
                     required
                     type="number"
                     value={donneepers.CONTACT}
-                    min="9"
-                    max="9"
+                    minLength="9"
+                    maxLength="9"
                     title="Seuls les chiffres sont autorisés (9 chiffres requis)"
                     className="inputConnexion1 validator input input-info z-10 w-full bg-gray-50"
                     placeholder="Numéro sans indicatif"
@@ -334,8 +330,7 @@ export default function Inscription({ activeDefil }) {
                   className="input-info file-input h-8 w-48"
                   accept=".jpg,.jpeg,.png,.gif"
                   onChange={(e) => {
-                    const file = e.target.files[0];
-                    setSelectedFile(file); // Le useEffect s'occupera de convertir en string
+                    setSelectedFile(e.target.files[0]);
                   }}
                 />
               </div>

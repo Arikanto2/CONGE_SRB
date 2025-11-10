@@ -30,5 +30,6 @@ Route::middleware(['cors'])->group(function () {
         Route::post('/faire-demande', [ProfilController::class, 'faireDemande']);
         Route::get('/solde/{id}', [ProfilController::class, 'getSolde']);
         Route::get('/all-demande/{id}', [ProfilController::class, 'getAlldemande']);
+        Route::get('/decision/{id}', [ProfilController::class, 'getDecision']);
     });
 });

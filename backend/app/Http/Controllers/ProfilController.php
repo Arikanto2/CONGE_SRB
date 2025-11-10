@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Conge_annuels;
+use App\Models\Decision;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
@@ -189,5 +190,10 @@ class ProfilController extends Controller
             ->get();
 
         return response()->json($demandes, 200);
+    }
+    public function getDecision($id)
+    {
+        $decision = Decision::where('id_conge_absence', $id)->get();
+        return response()->json($decision, 200);
     }
 }

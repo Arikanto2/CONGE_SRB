@@ -21,6 +21,7 @@ export default function Demande() {
     INTERIM: "",
     ABSENCE: "",
   });
+  const [decisionData, setDecisionData] = useState([]);
   const iscongeValide = (validchef, validediv) => {
     if (validchef === "Validé") {
       return "Validé";
@@ -30,6 +31,11 @@ export default function Demande() {
       return "Refusé";
     }
   };
+  const getDecision = async (id) => {
+    const reponse = await axios.get(`http://localhost:8000/api/decision/${id}`);
+    setDecisionData(reponse.data);
+
+  }
   const [getAlldemande, setGetAlldemande] = useState([]);
   const [checkbox, setCheckbox] = useState(false);
   const [categorieAbsence, setCategorieAbsence] = useState("");
@@ -819,7 +825,9 @@ export default function Demande() {
                     <td className="">
                       <button
                         className="btnConnexion"
-                        onClick={() => document.getElementById(`modal`).showModal()}
+                        onClick={() => {document.getElementById(`modal`).showModal();
+                          getDecision(conge.id);
+                        }}
                         title="Voir l'aperçu"
                       >
                         <EyeIcon className="h-4 w-4 text-white" />
@@ -846,11 +854,13 @@ export default function Demande() {
                                 IM={conge.IM}
                                 NOM={conge.NOM}
                                 PRENOM={conge.PRENOM}
-                                DATEDEBUT={conge.DATEDEBUT}
-                                DATEFIN={conge.DATEFIN}
+                                DATEDEBUT={new Date(conge.DATEDEBUT).toLocaleDateString()}
+                                DATEFIN={new Date(conge.DATEFIN).toLocaleDateString()}
                                 motif={conge.MOTIF}
                                 lieu={conge.LIEU}
                                 ref={conge.Ref}
+                                joursADebiter={[]}
+                                decision={decisionData}
                               />
                             </div>
                           </div>
