@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 
 use App\Models\Conge_annuels;
+use App\Models\decision;
 use App\Models\Demande;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -11,7 +12,6 @@ use Illuminate\Support\Facades\DB;
 
 class AccueilController extends Controller
 {
-
     public function index(Request $request)
     {
         $user_im = $request->query('user_im');
@@ -37,6 +37,7 @@ class AccueilController extends Controller
                 'conge_absence.DATEFIN',
                 'conge_absence.LIEU',
                 'conge_absence.Ref',
+                'conge_absence.id',
                 DB::raw('(conge_absence."DATEFIN" - conge_absence."DATEDEBUT") AS duree')
             ]);
 
@@ -52,6 +53,7 @@ class AccueilController extends Controller
                 'conge_absence.DATEFIN',
                 'conge_absence.LIEU',
                 'conge_absence.Ref',
+                'conge_absence.id',
                 DB::raw('(conge_absence."DATEFIN" - conge_absence."DATEDEBUT") AS duree')
             ]);
 
@@ -102,12 +104,11 @@ class AccueilController extends Controller
             'nbr_Conge' => $Total_conge,
             'validation_div' => $Valid_div,
             'validation_chef' => $Valid_chef,
-            'conges_par_mois' => $congesParMois
+            'conges_par_mois' => $congesParMois,
         ]);
     }
 
     public function create() {}
-
     public function store(Request $request) {}
 
 
@@ -117,7 +118,65 @@ class AccueilController extends Controller
     public function edit(string $id) {}
 
 
-    public function update(Request $request, string $id) {}
+    public function update(Request $request, string $id) {
+        $fonction = $request->query('fonction');
+
+        $action = $request->query('action');
+        
+        if(!$fonction) {
+            return response()->json(['message' => 'Fonction manquante'], 400);
+        }
+    
+        $demande = Demande::findOrFail($id);
+
+        if ($action === 'rejeter') {
+            if($fonction === 'Chef de division'){
+                $demande->VALIDDIV = 'Refusé';
+                $demande->VALIDCHEF = 'Refusé';
+            }elseif($fonction === 'Chef de service'){
+                $demande->VALIDCHEF = 'Refusé';
+            } else{
+                return response()->json(['message' => 'Role non autorisé'], 403);
+            }
+    
+            $demande->save();
+    
+            return response()->json([
+                'message' => 'Demande Refusée.'
+            ]);
+        } else{
+            if($fonction === 'Chef de division'){
+                $demande->VALIDDIV = 'Validé';
+            }elseif($fonction === 'Chef de service'){
+                $demande->VALIDCHEF = 'Validé';
+                $joursADebiter = $request->input('joursADebiter');
+
+            if (!empty($joursADebiter) && is_array($joursADebiter)) {
+                foreach ($joursADebiter as $item) {
+                    decision::create([
+                        'id_conge_absence' => $id,
+                        'congeDebite' => $item['jours'],
+                        'an' => $item['annee'],
+                    ]);
+                }
+            }
+            } else{
+                return response()->json(['message' => 'Role non autorisé'], 403);
+            }
+
+            $demande->save();
+
+            if($fonction === 'Chef de division'){
+                return response()->json([
+                    'message' => 'Demande validée.',
+                ]);
+            }elseif($fonction === 'Chef de service'){
+                return response()->json([
+                    'message' => 'Demande validée et decision enregistrée.',
+                ]);
+            }        
+        }
+    }
 
 
     public function destroy(string $id) {}

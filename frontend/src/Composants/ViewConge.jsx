@@ -25,7 +25,7 @@ export default function ViewConge({
         </div>
         <div className="text-right">
           <p className="text-lg font-semibold">Demande n°{ref}</p>
-          <p>En date du 29/08/2025</p>
+          <p>En date du </p>
         </div>
       </div>
 

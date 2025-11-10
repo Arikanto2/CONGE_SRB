@@ -269,9 +269,6 @@ export default function Accueil() {
                 <input type="search" required placeholder="Recherche..." />
               </label>
               <p className="labelTitre text-center font-semibold">Les congés à valider</p>
-              <a onClick={teste} href="" className="text-primary hover:underline">
-                Afficher tous
-              </a>
             </div>
 
             <div className="conteneurTab border-base-content/5 max-h-80 overflow-x-auto overflow-y-auto rounded-box border bg-base-100">
@@ -311,13 +308,6 @@ export default function Accueil() {
                                 </button>
                               </form>
 
-                              <button
-                                className="btn btn-primary btn-sm absolute left-14 top-3"
-                                onClick={() => window.print()}
-                              >
-                                🖨️
-                              </button>
-
                               <div className="mx-auto my-auto">
                                 <div className="mx-14 mb-5 mt-14">
                                   <PDF
@@ -336,41 +326,123 @@ export default function Accueil() {
                                   {/* Bouton Valider */}
                                   <button
                                     className="btn btn-success btn-circle"
-                                    onClick={(e) => {
+                                    onClick={async (e) => {
                                       e.preventDefault();
                                       const confirmer = window.confirm(
-                                        "Voulez-vous vraiment valider cette demande ?"
+                                        "Voulez-vous valider cette demande ?"
                                       );
-                                      if (confirmer) {
-                                        // Ici, tu peux mettre ton code pour valider la demande
-                                        console.log("Demande validée !");
-                                        // Optionnel : fermer la modale si validation réussie
-                                        // const modal = e.target.closest("dialog");
-                                        // modal.close();
-                                      } else {
-                                        console.log("Validation annulée");
+
+                                      if (!confirmer) return;
+
+                                      try {
+                                        const response = await fetch(
+                                          `http://127.0.0.1:8000/api/Accueil/${item.id}?fonction=${user.FONCTION}&action=valider`,
+                                          {
+                                            method: "PUT",
+                                            headers: {
+                                              "Content-Type": "application/json",
+                                            },
+                                            body: JSON.stringify({
+                                              joursADebiter: joursADebiter,
+                                            }),
+                                          }
+                                        );
+
+                                        const result = await response.json();
+
+                                        if (response.ok) {
+                                          const modal = document.getElementById(`modal_${index}`);
+                                          modal.close();
+                                          Swal.fire({
+                                            icon: "success",
+                                            title: "Demande valide",
+                                            text: result.message,
+                                            timer: 2000,
+                                            showConfirmButton: false,
+                                            timerProgressBar: true,
+                                          });
+
+                                          setValidationDiv((prev) =>
+                                            prev.filter((d) => d.id !== item.id)
+                                          );
+                                          setValidationChef((prev) =>
+                                            prev.filter((d) => d.id !== item.id)
+                                          );
+                                        } else {
+                                          Swal.fire({
+                                            icon: "error",
+                                            title: "Erreur",
+                                            text: result.message || "Une erreur est survenue",
+                                          });
+                                        }
+                                      } catch (error) {
+                                        console.error("Erreur:", error);
+                                        Swal.fire({
+                                          icon: "error",
+                                          title: "Erreur de connexion",
+                                          text: "Impossible de contacter le serveur",
+                                        });
                                       }
                                     }}
                                   >
                                     ✔
                                   </button>
 
-                                  {/* Bouton Refuser */}
                                   <button
                                     className="btn btn-error btn-circle"
-                                    onClick={(e) => {
+                                    onClick={async (e) => {
                                       e.preventDefault();
+
                                       const confirmer = window.confirm(
                                         "Voulez-vous vraiment refuser cette demande ?"
                                       );
-                                      if (confirmer) {
-                                        // Ici, tu peux mettre ton code pour refuser la demande
-                                        console.log("Demande refusée !");
-                                        // Optionnel : fermer la modale si refus effectué
-                                        // const modal = e.target.closest("dialog");
-                                        // modal.close();
-                                      } else {
-                                        console.log("Refus annulé");
+                                      if (!confirmer) return;
+
+                                      try {
+                                        const response = await fetch(
+                                          `http://127.0.0.1:8000/api/Accueil/${item.id}?fonction=${user.FONCTION}&action=rejeter`,
+                                          {
+                                            method: "PUT",
+                                            headers: {
+                                              "Content-Type": "application/json",
+                                            },
+                                          }
+                                        );
+
+                                        const data = await response.json();
+
+                                        if (response.ok) {
+                                          const modal = document.getElementById(`modal_${index}`);
+                                          modal.close();
+                                          Swal.fire({
+                                            icon: "success",
+                                            title: "Demande refusée",
+                                            text: data.message,
+                                            timer: 2000,
+                                            showConfirmButton: false,
+                                            timerProgressBar: true,
+                                          });
+
+                                          setValidationDiv((prev) =>
+                                            prev.filter((d) => d.id !== item.id)
+                                          );
+                                          setValidationChef((prev) =>
+                                            prev.filter((d) => d.id !== item.id)
+                                          );
+                                        } else {
+                                          Swal.fire({
+                                            icon: "error",
+                                            title: "Erreur",
+                                            text: data.message || "Une erreur est survenue.",
+                                          });
+                                        }
+                                      } catch (error) {
+                                        console.error("Erreur:", error);
+                                        Swal.fire({
+                                          icon: "error",
+                                          title: "Erreur de connexion",
+                                          text: "Impossible de contacter le serveur.",
+                                        });
                                       }
                                     }}
                                   >
