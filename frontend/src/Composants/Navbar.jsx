@@ -73,13 +73,7 @@ export default function Navbar() {
         <div className="dropdown dropdown-end">
           <div tabIndex={0} role="button" className="avatar">
             <div className="w-12 rounded-full ring-2 ring-primary ring-offset-2 ring-offset-base-100">
-              <img
-                src={
-                  user?.PHOTO_PROFIL ||
-                  "https://img.daisyui.com/images/profile/demo/spiderperson@192.webp"
-                }
-                alt="Profile"
-              />
+              <img src={`http://localhost:8000/storage/profile_photos/${user.PHOTO_PROFIL}`} />
             </div>
           </div>
           <ul

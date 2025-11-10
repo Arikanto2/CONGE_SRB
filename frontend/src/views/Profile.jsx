@@ -186,7 +186,12 @@ export default function Profile() {
     }
 
     try {
-      const response = await axios.post(API_URL, donneepers);
+      const formData = new FormData();
+      for (const key in donneepers) {
+        formData.append(key, donneepers[key]);
+      }
+
+      const response = await axios.post(API_URL, formData);
       console.log("Response from server:", response.data);
 
       // Mettre à jour le contexte d'authentification avec les nouvelles données
@@ -233,7 +238,9 @@ export default function Profile() {
         <div className="divEntete flex items-center gap-5">
           <div className="avatar">
             <div className="w-20 rounded-full ring-2 ring-primary ring-offset-2 ring-offset-base-100">
-              <img src="https://img.daisyui.com/images/profile/demo/spiderperson@192.webp" />
+              <img src={`http://localhost:8000/storage/profile_photos/${donneepers.PHOTO_PROFIL}`} />
+              
+
             </div>
           </div>
           <p className="nomUtil">
@@ -402,8 +409,8 @@ export default function Profile() {
                             <input
                               required
                               type="number"
-                              min="9"
-                              max="9"
+                              minLength="9"
+                              maxLength="9"
                               value={donneepers.CONTACT}
                               onChange={(e) => handleChange("CONTACT", e.target.value)}
                               title="Seuls les chiffres sont autorisés (9 chiffres après +261)"
@@ -426,7 +433,10 @@ export default function Profile() {
                             type="file"
                             onChange={(e) => {
                               if (e.target.files && e.target.files[0]) {
-                                handleChange("PHOTO_PROFIL", e.target.files[0].name);
+                                handleChange("PHOTO_PROFIL", e.target.files[0]);
+                              }
+                              else {
+                                handleChange("PHOTO_PROFIL", null);
                               }
                             }}
                             className="input-info file-input h-8 w-48"

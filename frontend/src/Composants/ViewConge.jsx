@@ -10,6 +10,7 @@ export default function ViewConge({
   lieu,
   ref,
   joursADebiter,
+  decision,
 }) {
   return (
     <div id="pdfZone" className="rounded-xl border bg-white p-10 font-serif shadow-lg">
@@ -79,10 +80,20 @@ export default function ViewConge({
                 </div>
               ))
             ) : (
-              <div className="flex justify-between">
-                <p>Nombre de jours à débiter :</p>
-                <p className="font-medium">0</p>
-              </div>
+              decision.map((dec) => (
+                <div key={dec.id} className="space-y-1">
+                  <div className="flex justify-between">
+                    <p>Nombre de jours à débiter:</p>
+                    <p className="font-medium">{dec.congeDebite}</p>
+                  </div>
+                  <div className="flex justify-between">
+                    <p>Decision :</p>
+                    <p className="font-medium">
+                      {dec.id}/{dec.an}-MEF/SG/DGFAG/DB/SRB/HM.F
+                    </p>
+                  </div>
+                </div>
+              ))
             )}
           </div>
         </div>

@@ -80,11 +80,15 @@ class InscriptionController extends Controller
             ], 422);
         }
 
-        if ($request->has('PHOTO_PROFIL') && !empty($request->PHOTO_PROFIL)) {
-            $validated['PHOTO_PROFIL'] = is_string($request->PHOTO_PROFIL) ? $request->PHOTO_PROFIL : '';
+        if ($request->hasFile('PHOTO_PROFIL')) {
+            $file = $request->file('PHOTO_PROFIL');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->storeAs('profile_photos', $filename);
+            $validated['PHOTO_PROFIL'] = $filename;
         } else {
             $validated['PHOTO_PROFIL'] = null;
         }
+
 
         if (!empty($validated['MDP'])) {
             $validated['MDP'] = Hash::make($validated['MDP']);
@@ -287,7 +291,7 @@ class InscriptionController extends Controller
             'FONCTION' => ['required', 'string', 'max:32'],
             'CONTACT' => ['required', 'string', 'max:128'],
             'DIVISION' => ['required', 'string', 'max:128'],
-            'PHOTO_PROFIL' => ['nullable', 'string'],
+            'PHOTO_PROFIL' => ['nullable', 'file', 'image'],
             'MDP' => ['nullable', 'string', 'min:8'],
         ];
 
@@ -360,6 +364,23 @@ class InscriptionController extends Controller
             $validated['MDP'] = Hash::make($validated['MDP']);
         } else {
             unset($validated['MDP']); // Ne pas mettre à jour le mot de passe s'il est vide
+        }
+        if ($request->hasFile('PHOTO_PROFIL')) {
+            $ancienPhoto = $personnel->PHOTO_PROFIL;
+            // Supprimer l'ancienne photo si elle existe
+            if ($ancienPhoto) {
+                $ancienPath = storage_path('app/public/profile_photos/' . $ancienPhoto);
+                if (file_exists($ancienPath)) {
+                    unlink($ancienPath);
+                    Log::info('Ancienne photo de profil supprimée:', ['path' => $ancienPath]);
+                }
+            }
+            $file = $request->file('PHOTO_PROFIL');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->storeAs('profile_photos', $filename);
+            $validated['PHOTO_PROFIL'] = $filename;
+        } else {
+            unset($validated['PHOTO_PROFIL']); // ne rien mettre si pas de nouvelle photo
         }
 
         // Forcer IM_Chef à null pour maintenir la cohérence avant l'assignation automatique
