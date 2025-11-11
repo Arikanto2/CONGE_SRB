@@ -1,11 +1,11 @@
-import "../Style/Demande.css";
-import { RefreshCcw, Printer } from "lucide-react";
 import { EyeIcon } from "@heroicons/react/24/solid";
-import { useState, useEffect, useCallback } from "react";
-import { useSearchParams } from "react-router-dom";
 import axios from "axios";
-import { useAuth } from "../hooks/useAuth";
+import { Printer, RefreshCcw } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import PDF from "../Composants/ViewConge.jsx";
+import { useAuth } from "../hooks/useAuth";
+import "../Style/Demande.css";
 
 export default function Demande() {
   const { user, token } = useAuth();
@@ -34,8 +34,7 @@ export default function Demande() {
   const getDecision = async (id) => {
     const reponse = await axios.get(`http://localhost:8000/api/decision/${id}`);
     setDecisionData(reponse.data);
-
-  }
+  };
   const [getAlldemande, setGetAlldemande] = useState([]);
   const [checkbox, setCheckbox] = useState(false);
   const [categorieAbsence, setCategorieAbsence] = useState("");
@@ -791,7 +790,7 @@ export default function Demande() {
                 <th className="bg-base-200 text-center">Intérim</th>
                 <th className="bg-base-200 text-center">Validateur et Date de confirmation</th>
                 <th className="bg-base-200 text-center">Status</th>
-                <th className="bg-base-200 ">Aperçu</th>
+                <th className="bg-base-200">Aperçu</th>
               </tr>
             </thead>
             <tbody>
@@ -825,7 +824,8 @@ export default function Demande() {
                     <td className="">
                       <button
                         className="btnConnexion"
-                        onClick={() => {document.getElementById(`modal`).showModal();
+                        onClick={() => {
+                          document.getElementById(`modal`).showModal();
                           getDecision(conge.id);
                         }}
                         title="Voir l'aperçu"
@@ -859,8 +859,9 @@ export default function Demande() {
                                 motif={conge.MOTIF}
                                 lieu={conge.LIEU}
                                 ref={conge.Ref}
-                                joursADebiter={[]}
-                                decision={decisionData}
+                                joursADebiter={decisionData}
+                                decision="demande"
+                                date={new Date(conge.updated_at).toLocaleDateString("fr-FR")}
                               />
                             </div>
                           </div>

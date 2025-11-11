@@ -1,3 +1,4 @@
+import { toast } from "react-hot-toast";
 import { NavLink } from "react-router-dom";
 import Swal from "sweetalert2";
 import logo1 from "../assets/logo1.jpg";
@@ -20,25 +21,10 @@ export default function Navbar() {
       cancelButtonText: "Annuler",
       background: "#f9fafb",
       color: "#111827",
-      showClass: {
-        popup: "animate__animated animate__fadeInDown",
-      },
-      hideClass: {
-        popup: "animate__animated animate__fadeOutUp",
-      },
     }).then((result) => {
       if (result.isConfirmed) {
-        Swal.fire({
-          title: "Déconnexion réussie",
-          text: "À bientôt 👋",
-          icon: "success",
-          timer: 1500,
-          timerProgressBar: true,
-          showConfirmButton: false,
-        }).then(() => {
-          // Appeler logout() seulement après que le SweetAlert se ferme
-          logout();
-        });
+        logout();
+        toast.success("Déconnexion réussie 👋");
       }
     });
   };

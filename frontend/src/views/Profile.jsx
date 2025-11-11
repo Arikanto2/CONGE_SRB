@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
-import { useAuth } from "../hooks/useAuth";
 import axios from "axios";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { useAuth } from "../hooks/useAuth";
 import "../Style/Login.css";
 
 export default function Profile() {
@@ -27,18 +28,15 @@ export default function Profile() {
     const fetchCongeAnnuel = async () => {
       try {
         if (token) {
-          console.log("Token disponible, récupération des congés annuels...");
           const response = await axios.get("http://localhost:8000/api/conge-annuel");
 
           setCongeAnnuel(response.data);
-          console.log("Données congés annuels récupérées:", response.data);
 
           // Extraire les années et les mettre dans Annee
           const annees = response.data.map((element) => element.ANNEE);
           // Supprimer les doublons si nécessaire et trier par ordre décroissant
           const anneesUniques = [...new Set(annees)].sort((a, b) => b - a);
           setAnnee(anneesUniques);
-          console.log("Années extraites:", anneesUniques);
 
           // Sélectionner la première année par défaut
           if (anneesUniques.length > 0) {
@@ -101,14 +99,15 @@ export default function Profile() {
   const submitFormMDP = async () => {
     // Validation du mot de passe
     if (!validatePassword(password)) {
-      alert(
-        "Le nouveau mot de passe ne respecte pas les critères requis.\n\nIl doit contenir au moins :\n- 8 caractères\n- Une lettre majuscule\n- Une lettre minuscule\n- Un chiffre\n- Un caractère spécial (@$!%*#?&)"
+      toast.error(
+        "Le nouveau mot de passe ne respecte pas les critères requis.\n" +
+          "Il doit contenir au moins :\n- 8 caractères\n- Une lettre majuscule\n- Une lettre minuscule\n- Un chiffre\n- Un caractère spécial (@$!%*#?&)"
       );
       return;
     }
 
     if (!isValid) {
-      alert("Les mots de passe ne correspondent pas.");
+      toast.error("Les mots de passe ne correspondent pas.");
       return;
     }
     console.log("submitFormMDP called with data:", donneeMDP);
@@ -116,7 +115,7 @@ export default function Profile() {
     setIsSubmitting(true);
 
     if (!token) {
-      alert("Vous devez être connecté pour modifier votre mot de passe");
+      toast.error("Vous devez être connecté pour modifier votre mot de passe");
       setIsSubmitting(false);
       return;
     }
@@ -126,14 +125,14 @@ export default function Profile() {
         ANCIEN_MDP: donneeMDP.ANCIEN_MDP,
       });
       if (!response.data.valid) {
-        alert(`L'ancien mot de passe est incorrect.`);
+        toast.error("L'ancien mot de passe est incorrect.");
         setIsSubmitting(false);
         return;
       }
       const response1 = await axios.post("http://localhost:8000/api/change-password", donneeMDP);
       console.log("Response from server:", response1.data);
 
-      alert("Mot de passe modifié avec succès");
+      toast.success("Mot de passe modifié avec succès");
       document.getElementById("my_modal").close();
       setIsSubmitting(false);
     } catch (error) {
@@ -238,9 +237,9 @@ export default function Profile() {
         <div className="divEntete flex items-center gap-5">
           <div className="avatar">
             <div className="w-20 rounded-full ring-2 ring-primary ring-offset-2 ring-offset-base-100">
-              <img src={`http://localhost:8000/storage/profile_photos/${donneepers.PHOTO_PROFIL}`} />
-              
-
+              <img
+                src={`http://localhost:8000/storage/profile_photos/${donneepers.PHOTO_PROFIL}`}
+              />
             </div>
           </div>
           <p className="nomUtil">
@@ -434,8 +433,7 @@ export default function Profile() {
                             onChange={(e) => {
                               if (e.target.files && e.target.files[0]) {
                                 handleChange("PHOTO_PROFIL", e.target.files[0]);
-                              }
-                              else {
+                              } else {
                                 handleChange("PHOTO_PROFIL", null);
                               }
                             }}

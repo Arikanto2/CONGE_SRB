@@ -11,6 +11,7 @@ export default function ViewConge({
   ref,
   joursADebiter,
   decision,
+  date,
 }) {
   return (
     <div id="pdfZone" className="rounded-xl border bg-white p-10 font-serif shadow-lg">
@@ -26,7 +27,7 @@ export default function ViewConge({
         </div>
         <div className="text-right">
           <p className="text-lg font-semibold">Demande n°{ref}</p>
-          <p>En date du </p>
+          {decision === "accueil" ? <p>En date du {date}</p> : <p>En date du {date}</p>}
         </div>
       </div>
 
@@ -64,23 +65,27 @@ export default function ViewConge({
             Décision administrative
           </h2>
           <div className="space-y-1">
-            {joursADebiter && joursADebiter.length > 0 ? (
-              joursADebiter.map((ligne, index) => (
-                <div key={index} className="space-y-1">
-                  <div className="flex justify-between">
-                    <p>Nombre de jours à débiter:</p>
-                    <p className="font-medium">{ligne.jours}</p>
+            {decision === "accueil" ? (
+              joursADebiter && joursADebiter.length > 0 ? (
+                joursADebiter.map((ligne, index) => (
+                  <div key={index} className="space-y-1">
+                    <div className="flex justify-between">
+                      <p>Nombre de jours à débiter:</p>
+                      <p className="font-medium">{ligne.jours}</p>
+                    </div>
+                    <div className="flex justify-between">
+                      <p>Decision :</p>
+                      <p className="font-medium">
+                        {ligne.id}/{ligne.annee}-MEF/SG/DGFAG/DB/SRB/HM.F
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex justify-between">
-                    <p>Decision :</p>
-                    <p className="font-medium">
-                      {ligne.id}/{ligne.annee}-MEF/SG/DGFAG/DB/SRB/HM.F
-                    </p>
-                  </div>
-                </div>
-              ))
-            ) : (
-              decision.map((dec) => (
+                ))
+              ) : (
+                <p>Aucune donnée disponible</p>
+              )
+            ) : joursADebiter && joursADebiter.length > 0 ? (
+              joursADebiter.map((dec) => (
                 <div key={dec.id} className="space-y-1">
                   <div className="flex justify-between">
                     <p>Nombre de jours à débiter:</p>
@@ -94,6 +99,8 @@ export default function ViewConge({
                   </div>
                 </div>
               ))
+            ) : (
+              <p>Congé refusé ou en attente</p>
             )}
           </div>
         </div>
