@@ -38,7 +38,7 @@ class AccueilController extends Controller
                 'conge_absence.LIEU',
                 'conge_absence.Ref',
                 'conge_absence.id',
-                DB::raw('(conge_absence."DATEFIN" - conge_absence."DATEDEBUT") AS duree')
+                DB::raw('(conge_absence."DATEFIN" - conge_absence."DATEDEBUT") + 1 AS duree')
             ]);
 
         $Valid_chef = Demande::join('personnel', 'conge_absence.IM', '=', 'personnel.IM')
@@ -54,7 +54,7 @@ class AccueilController extends Controller
                 'conge_absence.LIEU',
                 'conge_absence.Ref',
                 'conge_absence.id',
-                DB::raw('(conge_absence."DATEFIN" - conge_absence."DATEDEBUT") AS duree')
+                DB::raw('(conge_absence."DATEFIN" - conge_absence."DATEDEBUT") + 1 AS duree')
             ]);
 
         /////// historique
@@ -76,7 +76,7 @@ class AccueilController extends Controller
             ->get();
 
         $demandeJours = Demande::where('Ref', $item_ref)
-            ->selectRaw('("DATEFIN" - "DATEDEBUT") AS nb_jrs')
+            ->selectRaw('("DATEFIN" - "DATEDEBUT") + 1 AS nb_jrs')
             ->value('nb_jrs');
         $joursADebiter = [];
 
@@ -119,9 +119,13 @@ class AccueilController extends Controller
 
 
     public function update(Request $request, string $id) {
+        $user_im = $request->query('user_im');
+
         $fonction = $request->query('fonction');
 
         $action = $request->query('action');
+
+        $Total_conge = Conge_annuels::where('IM', $user_im)->sum('NBR_CONGE');
         
         if(!$fonction) {
             return response()->json(['message' => 'Fonction manquante'], 400);
@@ -151,15 +155,16 @@ class AccueilController extends Controller
                 $demande->VALIDCHEF = 'Validé';
                 $joursADebiter = $request->input('joursADebiter');
 
-            if (!empty($joursADebiter) && is_array($joursADebiter)) {
-                foreach ($joursADebiter as $item) {
-                    decision::create([
-                        'id_conge_absence' => $id,
-                        'congeDebite' => $item['jours'],
-                        'an' => $item['annee'],
-                    ]);
+                if (!empty($joursADebiter) && is_array($joursADebiter)) {
+                    foreach ($joursADebiter as $item) {
+                        decision::create([
+                            'id_conge_absence' => $id,
+                            'congeDebite' => $item['jours'],
+                            'an' => $item['annee'],
+                            'soldeApres' => $Total_conge,
+                        ]);
+                    }
                 }
-            }
             } else{
                 return response()->json(['message' => 'Role non autorisé'], 403);
             }

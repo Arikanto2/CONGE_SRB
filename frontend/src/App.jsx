@@ -1,16 +1,17 @@
-import "./Style/App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
+import "./Style/App.css";
 
-import Login from "./views/Login.jsx";
-import Accueil from "./views/Accueil.jsx";
-import Profile from "./views/Profile.jsx";
-import Demande from "./views/Demande.jsx";
-import Stats from "./views/Stats.jsx";
 import Layout from "./Composants/Layout.jsx";
+import ProtectedRoute from "./Composants/ProtectedRoute.jsx";
+import ToastProvider from "./Composants/Toaster";
+import Accueil from "./views/Accueil.jsx";
+import Demande from "./views/Demande.jsx";
+import Login from "./views/Login.jsx";
 import PDF from "./views/PDF.jsx";
 import PDF1 from "./views/PDF1.jsx";
-import ProtectedRoute from "./Composants/ProtectedRoute.jsx";
+import Profile from "./views/Profile.jsx";
+import Stats from "./views/Stats.jsx";
 
 import "@fontsource/viaoda-libre";
 
@@ -18,6 +19,7 @@ function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
+        <ToastProvider />
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
