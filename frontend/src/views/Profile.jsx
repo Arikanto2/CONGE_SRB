@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import { toast } from "react-hot-toast";
 import { useAuth } from "../hooks/useAuth";
 import "../Style/Login.css";
 
@@ -17,6 +17,7 @@ export default function Profile() {
   const [congeSelectionne, setCongeSelectionne] = useState(null);
 
   const { user, token, updateUser } = useAuth();
+
   useEffect(() => {
     if (_congeAnnuel && _congeAnnuel.length > 0 && selectedAnnee) {
       const conge = _congeAnnuel.find((c) => c.ANNEE === selectedAnnee);
@@ -29,27 +30,22 @@ export default function Profile() {
       try {
         if (token) {
           const response = await axios.get("http://localhost:8000/api/conge-annuel");
-
           setCongeAnnuel(response.data);
 
-          // Extraire les années et les mettre dans Annee
           const annees = response.data.map((element) => element.ANNEE);
-          // Supprimer les doublons si nécessaire et trier par ordre décroissant
           const anneesUniques = [...new Set(annees)].sort((a, b) => b - a);
           setAnnee(anneesUniques);
 
-          // Sélectionner la première année par défaut
           if (anneesUniques.length > 0) {
             setSelectedAnnee(anneesUniques[0]);
           }
         } else {
-          console.log("Aucun token disponible");
+          toast.error("Aucun token disponible");
         }
       } catch (error) {
-        console.error("Erreur lors de la récupération des congés annuels:", error);
+        toast.error("Erreur lors de la récupération des congés annuels");
         if (error.response) {
-          console.error("Status:", error.response.status);
-          console.error("Data:", error.response.data);
+          toast.error(`Erreur ${error.response.status}: ${error.response.data}`);
         }
       }
     };
@@ -66,6 +62,7 @@ export default function Profile() {
       setSelectedAnnee(value);
     }
   };
+
   const API_URL = "http://localhost:8000/api/modification";
 
   const [donneepers, setDonneepers] = useState({
@@ -80,12 +77,13 @@ export default function Profile() {
     CONTACT: user?.CONTACT || "",
     PHOTO_PROFIL: user?.PHOTO_PROFIL || "",
   });
+
   const [donneeMDP, setDonneeMDP] = useState({
     ANCIEN_MDP: "",
     new_MDP: "",
     confirm_MDP: "",
   });
-  // Fonction de validation du mot de passe
+
   const validatePassword = (password) => {
     const passwordRegex =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#\s?&]{8,}$/;
@@ -97,11 +95,10 @@ export default function Profile() {
   };
 
   const submitFormMDP = async () => {
-    // Validation du mot de passe
     if (!validatePassword(password)) {
       toast.error(
-        "Le nouveau mot de passe ne respecte pas les critères requis.\n" +
-          "Il doit contenir au moins :\n- 8 caractères\n- Une lettre majuscule\n- Une lettre minuscule\n- Un chiffre\n- Un caractère spécial (@$!%*#?&)"
+        "Le nouveau mot de passe ne respecte pas les critères requis :\n" +
+          "8 caractères, 1 majuscule, 1 minuscule, 1 chiffre, 1 caractère spécial."
       );
       return;
     }
@@ -110,8 +107,7 @@ export default function Profile() {
       toast.error("Les mots de passe ne correspondent pas.");
       return;
     }
-    console.log("submitFormMDP called with data:", donneeMDP);
-    console.log("Token:", token);
+
     setIsSubmitting(true);
 
     if (!token) {
@@ -124,33 +120,34 @@ export default function Profile() {
       const response = await axios.post("http://localhost:8000/api/verify-password", {
         ANCIEN_MDP: donneeMDP.ANCIEN_MDP,
       });
+
       if (!response.data.valid) {
         toast.error("L'ancien mot de passe est incorrect.");
         setIsSubmitting(false);
         return;
       }
-      const response1 = await axios.post("http://localhost:8000/api/change-password", donneeMDP);
-      console.log("Response from server:", response1.data);
 
+      await axios.post("http://localhost:8000/api/change-password", donneeMDP);
       toast.success("Mot de passe modifié avec succès");
+
       document.getElementById("my_modal").close();
       setIsSubmitting(false);
     } catch (error) {
-      console.error("Erreur lors de la modification du mot de passe :", error);
       setIsSubmitting(false);
 
       if (error.response?.status === 401) {
-        alert("Erreur d'authentification. Veuillez vous reconnecter.");
+        toast.error("Erreur d'authentification. Veuillez vous reconnecter.");
       } else if (error.response?.data?.errors) {
         const messages = Object.values(error.response.data.errors).flat().join("\n");
-        alert(`${messages}`);
+        toast.error(messages);
       } else {
-        alert(error.response?.data?.message || "Erreur lors de la modification du mot de passe.");
+        toast.error(
+          error.response?.data?.message || "Erreur lors de la modification du mot de passe."
+        );
       }
     }
   };
 
-  // Mettre à jour les données quand l'utilisateur change
   useEffect(() => {
     if (user) {
       setDonneepers({
@@ -168,18 +165,15 @@ export default function Profile() {
     }
   }, [user]);
 
-  // Fonction de validation
   const handleChange = (key, value) => {
     setDonneepers({ ...donneepers, [key]: value });
   };
 
   const submitForm = async () => {
-    console.log("submitForm called with data:", donneepers);
-    console.log("Token:", token);
     setIsSubmitting(true);
 
     if (!token) {
-      alert("Vous devez être connecté pour modifier votre profil");
+      toast.error("Vous devez être connecté pour modifier votre profil");
       setIsSubmitting(false);
       return;
     }
@@ -191,39 +185,32 @@ export default function Profile() {
       }
 
       const response = await axios.post(API_URL, formData);
-      console.log("Response from server:", response.data);
-
-      // Mettre à jour le contexte d'authentification avec les nouvelles données
       updateUser(response.data.token, response.data.personnel);
 
-      alert("Profil modifié avec succès");
+      toast.success("Profil modifié avec succès");
       document.getElementById("my_modal_3").close();
       setIsSubmitting(false);
 
-      // Optionnel : rafraîchir la page pour refléter les changements
       window.location.reload();
     } catch (error) {
-      console.error("Erreur lors de la modification du profil :", error);
       setIsSubmitting(false);
 
       if (error.response?.status === 401) {
-        alert("Erreur d'authentification. Veuillez vous reconnecter.");
+        toast.error("Erreur d'authentification. Veuillez vous reconnecter.");
       } else if (error.response?.data?.errors) {
         const messages = Object.values(error.response.data.errors).flat().join("\n");
-        alert(`${messages}`);
+        toast.error(messages);
       } else {
-        alert(error.response?.data?.message || "Erreur lors de la modification du profil.");
+        toast.error(error.response?.data?.message || "Erreur lors de la modification du profil.");
       }
     }
   };
 
   useEffect(() => {
-    // Validation de la correspondance des mots de passe
     if (confirmMDP.length > 0) {
       setIsValid(password === confirmMDP);
     }
 
-    // Validation du format du mot de passe
     if (password.length > 0) {
       setIsPasswordValid(validatePassword(password));
     } else {
@@ -232,9 +219,9 @@ export default function Profile() {
   }, [password, confirmMDP]);
 
   return (
-    <div className="card card-xs mx-8 h-full bg-base-100 pb-3 shadow-sm">
-      <div className="card-body ml-5 mr-5 h-full">
-        <div className="divEntete flex items-center gap-5">
+    <div className="h-full pb-3 mx-8 shadow-sm card card-xs bg-base-100">
+      <div className="h-full ml-5 mr-5 card-body">
+        <div className="flex items-center gap-5 divEntete">
           <div className="avatar">
             <div className="w-20 rounded-full ring-2 ring-primary ring-offset-2 ring-offset-base-100">
               <img
@@ -257,7 +244,7 @@ export default function Profile() {
             <dialog id="my_modal_3" className="modal">
               <div className="modal-box">
                 <button
-                  className="btn btn-ghost btn-sm btn-circle absolute right-2 top-2"
+                  className="absolute btn btn-ghost btn-sm btn-circle right-2 top-2"
                   onClick={() => document.getElementById("my_modal_3").close()}
                 >
                   ✕
@@ -270,12 +257,12 @@ export default function Profile() {
                 >
                   <div className="blocks-center">
                     <div className="ml-6 mr-6">
-                      <p className="labeConnex1 text-center">Modification du profil</p>
+                      <p className="text-center labeConnex1">Modification du profil</p>
 
                       {/* Première ligne : Nom + Prénom */}
                       <div className="flex gap-10">
                         <div className="flex-1">
-                          <label className="block text-left font-serif text-sm">Nom :</label>
+                          <label className="block font-serif text-sm text-left">Nom :</label>
                           <input
                             required
                             type="text"
@@ -290,7 +277,7 @@ export default function Profile() {
                           </p>
                         </div>
                         <div className="flex-1">
-                          <label className="block text-left font-serif text-sm">Prénom :</label>
+                          <label className="block font-serif text-sm text-left">Prénom :</label>
                           <input
                             required
                             type="text"
@@ -307,9 +294,9 @@ export default function Profile() {
                         </div>
                       </div>
 
-                      <div className="mb-5 flex gap-10">
+                      <div className="flex gap-10 mb-5">
                         <div className="flex-1">
-                          <label className="block text-left font-serif text-sm">Corps :</label>
+                          <label className="block font-serif text-sm text-left">Corps :</label>
                           <input
                             required
                             type="text"
@@ -320,7 +307,7 @@ export default function Profile() {
                           />
                         </div>
                         <div className="flex-1">
-                          <label className="block text-left font-serif text-sm">Grade :</label>
+                          <label className="block font-serif text-sm text-left">Grade :</label>
                           <input
                             required
                             type="text"
@@ -333,9 +320,9 @@ export default function Profile() {
                       </div>
 
                       {/* Troisième ligne : Grade + Fonction */}
-                      <div className="mb-5 flex gap-10">
+                      <div className="flex gap-10 mb-5">
                         <div className="flex-1">
-                          <label className="block text-left font-serif text-sm">Fonction :</label>
+                          <label className="block font-serif text-sm text-left">Fonction :</label>
                           <select
                             className="inputConnexion select select-info bg-gray-50"
                             required
@@ -351,7 +338,7 @@ export default function Profile() {
                           </select>
                         </div>
                         <div className="flex-1">
-                          <label className="block text-left font-serif text-sm">Division :</label>
+                          <label className="block font-serif text-sm text-left">Division :</label>
                           <select
                             className="inputConnexion select select-info bg-gray-50"
                             value={donneepers.DIVISION}
@@ -385,7 +372,7 @@ export default function Profile() {
                       {/* Quatrième ligne : Division + E-mail */}
                       <div className="flex gap-10">
                         <div className="flex-1">
-                          <label className="block text-left font-serif text-sm">E-mail :</label>
+                          <label className="block font-serif text-sm text-left">E-mail :</label>
                           <input
                             required
                             type="email"
@@ -400,9 +387,9 @@ export default function Profile() {
                           </div>
                         </div>
                         <div className="flex-1">
-                          <label className="block text-left font-serif text-sm">Contact :</label>
+                          <label className="block font-serif text-sm text-left">Contact :</label>
                           <div className="relative w-full">
-                            <span className="pointer-events-none absolute left-0 top-4 z-20 h-8 -translate-y-1/2 rounded-md border border-solid border-gray-400 bg-gray-100 pl-1 pt-1 text-sm">
+                            <span className="absolute left-0 z-20 h-8 pt-1 pl-1 text-sm -translate-y-1/2 bg-gray-100 border border-gray-400 border-solid rounded-md pointer-events-none top-4">
                               +261
                             </span>
                             <input
@@ -413,7 +400,7 @@ export default function Profile() {
                               value={donneepers.CONTACT}
                               onChange={(e) => handleChange("CONTACT", e.target.value)}
                               title="Seuls les chiffres sont autorisés (9 chiffres après +261)"
-                              className="inputConnexion1 validator input input-info z-10 w-full bg-gray-50 px-10 py-2"
+                              className="z-10 w-full px-10 py-2 inputConnexion1 validator input input-info bg-gray-50"
                               placeholder="Numéro sans indicatif"
                             />
 
@@ -423,9 +410,9 @@ export default function Profile() {
                       </div>
 
                       {/* Cinquième ligne : Contact + Photo */}
-                      <div className="relative mb-2 flex gap-10">
+                      <div className="relative flex gap-10 mb-2">
                         <div className="flex-1">
-                          <label className="block text-left font-serif text-sm">
+                          <label className="block font-serif text-sm text-left">
                             Photo de profil :
                           </label>
                           <input
@@ -437,7 +424,7 @@ export default function Profile() {
                                 handleChange("PHOTO_PROFIL", null);
                               }
                             }}
-                            className="input-info file-input h-8 w-48"
+                            className="w-48 h-8 input-info file-input"
                             accept=".jpg,.jpeg,.png,.gif"
                           />
                         </div>
@@ -448,7 +435,7 @@ export default function Profile() {
 
                       <button
                         type="button"
-                        className="btnConnexion mx-auto block"
+                        className="block mx-auto btnConnexion"
                         disabled={isSubmitting}
                         onClick={submitForm}
                       >
@@ -468,9 +455,9 @@ export default function Profile() {
             </button>
 
             <dialog id="my_modal" className="modal">
-              <div className="modal-box flex items-center justify-center p-8">
+              <div className="flex items-center justify-center p-8 modal-box">
                 <button
-                  className="btn btn-ghost btn-sm btn-circle absolute right-2 top-2"
+                  className="absolute btn btn-ghost btn-sm btn-circle right-2 top-2"
                   onClick={() => document.getElementById("my_modal").close()}
                 >
                   ✕
@@ -483,24 +470,24 @@ export default function Profile() {
                     submitFormMDP();
                   }}
                 >
-                  <p className="labeConnex1 mb-6 text-center text-lg">Changement du mot de passe</p>
+                  <p className="mb-6 text-lg text-center labeConnex1">Changement du mot de passe</p>
 
-                  <div className="ml-36 mr-10 flex flex-col">
+                  <div className="flex flex-col mr-10 ml-36">
                     <div className="mb-5">
-                      <label className="mb-1 block text-left font-serif text-sm">
+                      <label className="block mb-1 font-serif text-sm text-left">
                         Ancien mot de passe :
                       </label>
                       <input
                         required
                         type="password"
                         placeholder="Entrez votre ancien mot de passe"
-                        className="inputConnexion input input-info w-full bg-gray-50"
+                        className="w-full inputConnexion input input-info bg-gray-50"
                         onChange={(e) => handlechangeMPD("ANCIEN_MDP", e.target.value)}
                       />
                     </div>
 
                     <div>
-                      <label className="mb-1 block text-left font-serif text-sm">
+                      <label className="block mb-1 font-serif text-sm text-left">
                         Nouveau mot de passe :
                       </label>
                       <input
@@ -538,7 +525,7 @@ export default function Profile() {
                     </div>
 
                     <div>
-                      <label className="mb-1 block text-left font-serif text-sm">
+                      <label className="block mb-1 font-serif text-sm text-left">
                         Confirmer le nouveau mot de passe :
                       </label>
                       <input
@@ -577,7 +564,7 @@ export default function Profile() {
 
                   <button
                     type="button"
-                    className="btnConnexion mx-auto block"
+                    className="block mx-auto btnConnexion"
                     disabled={isSubmitting || !isPasswordValid || !isValid || password.length === 0}
                     onClick={submitFormMDP}
                   >
@@ -590,42 +577,42 @@ export default function Profile() {
         </div>
 
         <div className="mt-3">
-          <div className="divPorfil rounded-lg">
-            <label className="mb-2 block text-left font-serif text-sm">
+          <div className="rounded-lg divPorfil">
+            <label className="block mb-2 font-serif text-sm text-left">
               <span className="labelProfil">Matricule :</span>&emsp;
               <span className="text-black">{user?.IM}</span>
             </label>
-            <label className="mb-2 block text-left font-serif text-sm">
+            <label className="block mb-2 font-serif text-sm text-left">
               <span className="labelProfil">Fonction :</span>&emsp;
               <span className="text-black">{user?.FONCTION}</span>
             </label>
-            <label className="mb-2 block text-left font-serif text-sm">
+            <label className="block mb-2 font-serif text-sm text-left">
               <span className="labelProfil">Division :</span>&emsp;
               <span className="text-black">{user?.DIVISION}</span>
             </label>
-            <label className="mb-2 block text-left font-serif text-sm">
+            <label className="block mb-2 font-serif text-sm text-left">
               <span className="labelProfil">Corps :</span>&emsp;
               <span className="text-black">{user?.CORPS}</span>
             </label>
-            <label className="mb-2 block text-left font-serif text-sm">
+            <label className="block mb-2 font-serif text-sm text-left">
               <span className="labelProfil">Grade :</span>&emsp;
               <span className="text-black">{user?.GRADE}</span>
             </label>
-            <label className="mb-2 block text-left font-serif text-sm">
+            <label className="block mb-2 font-serif text-sm text-left">
               <span className="labelProfil">E-mail :</span>&emsp;
               <span className="text-black">{user?.EMAIL}</span>
             </label>
-            <label className="mb-2 block text-left font-serif text-sm">
+            <label className="block mb-2 font-serif text-sm text-left">
               <span className="labelProfil">Contact :</span>&emsp;
               <span className="text-black">{user?.CONTACT}</span>
             </label>
           </div>
 
-          <div className="divPorfil mt-4 rounded-lg">
-            <div className="mb-4 flex items-center">
+          <div className="mt-4 rounded-lg divPorfil">
+            <div className="flex items-center mb-4">
               <label className="labelProfil">Congé :</label>
               <select
-                className="select select-info ml-4 w-32"
+                className="w-32 ml-4 select select-info"
                 value={selectedAnnee}
                 onChange={(e) => {
                   toggleTous(e.target.value);

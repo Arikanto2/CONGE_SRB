@@ -28,6 +28,7 @@ class AccueilController extends Controller
         $Valid_div = Demande::join('personnel', 'conge_absence.IM', '=', 'personnel.IM')
             ->where('conge_absence.VALIDDIV', 'En attente')
             ->where('personnel.DIVISION', $division)
+            ->orderBy('conge_absence.id', 'asc')
             ->get([
                 'personnel.NOM',
                 'personnel.PRENOM',
@@ -44,6 +45,7 @@ class AccueilController extends Controller
         $Valid_chef = Demande::join('personnel', 'conge_absence.IM', '=', 'personnel.IM')
             ->where('conge_absence.VALIDDIV', 'Validé')
             ->where('conge_absence.VALIDCHEF', 'En attente')
+            ->orderBy('conge_absence.id', 'asc')
             ->get([
                 'personnel.NOM',
                 'personnel.PRENOM',
@@ -119,14 +121,14 @@ class AccueilController extends Controller
 
 
     public function update(Request $request, string $id) {
-        $user_im = $request->query('user_im');
-
         $fonction = $request->query('fonction');
 
         $action = $request->query('action');
 
-        $Total_conge = Conge_annuels::where('IM', $user_im)->sum('NBR_CONGE');
-        
+        $im = $request->query('IM');
+
+        $Total_conge = Conge_annuels::where('IM', $im)->sum('NBR_CONGE');
+
         if(!$fonction) {
             return response()->json(['message' => 'Fonction manquante'], 400);
         }
@@ -153,8 +155,18 @@ class AccueilController extends Controller
                 $demande->VALIDDIV = 'Validé';
             }elseif($fonction === 'Chef de service'){
                 $demande->VALIDCHEF = 'Validé';
+
                 $joursADebiter = $request->input('joursADebiter');
 
+                //// modification
+                if (!empty($joursADebiter) && is_array($joursADebiter)) {
+                    foreach ($joursADebiter as $item) {
+                        $solde = Conge_annuels::where('id', $item['id'])->firstOrFail();
+                        $solde-> NBR_CONGE -= $item['jours'];
+                        $solde->save();
+                    }
+                }
+                /// Insertion  
                 if (!empty($joursADebiter) && is_array($joursADebiter)) {
                     foreach ($joursADebiter as $item) {
                         decision::create([
