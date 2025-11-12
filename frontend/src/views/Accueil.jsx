@@ -142,6 +142,7 @@ export default function Accueil() {
     ],
   };
 
+
   const options = {
     responsive: true,
     maintainAspectRatio: false,
