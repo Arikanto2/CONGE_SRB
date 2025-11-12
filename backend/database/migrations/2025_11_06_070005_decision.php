@@ -14,6 +14,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_conge_absence')->nullable();
             $table->smallInteger('congeDebite')->nullable();
             $table->smallInteger('an')->nullable();
+            $table->integer('soldeApres')->nullable();
             $table->timestamps();
 
             $table->foreign('id_conge_absence')

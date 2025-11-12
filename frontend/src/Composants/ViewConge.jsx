@@ -10,6 +10,7 @@ export default function ViewConge({
   lieu,
   ref,
   joursADebiter,
+  Interim,
   decision,
 }) {
   return (
@@ -49,8 +50,8 @@ export default function ViewConge({
               <p className="font-medium"> {lieu} </p>
             </div>
             <div className="flex justify-between">
-              <p>Intérim :</p>
-              <p className="font-medium"></p>
+              <p>Intérim : </p>
+              <p className="font-medium">{Interim}</p>
             </div>
             <div className="flex justify-between">
               <p>Motif :</p>

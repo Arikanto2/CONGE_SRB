@@ -146,16 +146,16 @@ export default function Accueil() {
     ],
   };
 
-  const teste = () => {
-    Swal.fire({
-      icon: "success",
-      title: "Message clique !",
-      text: "Merci pour votre message, je vous répondrai bientôt.",
-      timer: 2000,
-      timerProgressBar: true,
-      showConfirmButton: false,
-    });
-  };
+  // const teste = () => {
+  //   Swal.fire({
+  //     icon: "success",
+  //     title: "Message clique !",
+  //     text: "Merci pour votre message, je vous répondrai bientôt.",
+  //     timer: 2000,
+  //     timerProgressBar: true,
+  //     showConfirmButton: false,
+  //   });
+  // };
 
   const options = {
     responsive: true,

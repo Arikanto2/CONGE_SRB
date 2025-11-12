@@ -13,7 +13,7 @@ class Decision extends Model
     protected $fillable = [
         'id_conge_absence',
         'congeDebite',
-        'an',
+        'an','soldeApres'
     ];  
     public function congeAbsence()
     {

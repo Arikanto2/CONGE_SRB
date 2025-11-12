@@ -6,8 +6,69 @@ import { useSearchParams } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../hooks/useAuth";
 import PDF from "../Composants/ViewConge.jsx";
+import DeuxiemePDF from "./PDF1.jsx";
+import { PDFDocument } from "pdf-lib";
+
+import { pdf } from "@react-pdf/renderer";
+import PDF1 from "./PDF.jsx"; // ton composant PDF que tu as refait
 
 export default function Demande() {
+  const [selectedConge, setSelectedConge] = useState([]);
+  const genererPDF = async (conge) => {
+  try {
+    if (!conge || !user) throw new Error("Données manquantes");
+
+    const nombreJours = calculerNombreJours(conge.DATEDEBUT, conge.DATEFIN);
+    const validation = iscongeValide(conge.VALIDCHEF, conge.VALIDDIV);
+
+    const documentPDF1 = (
+      <PDF1 conge={conge} nbrJR={nombreJours} validation={validation} user={user} />
+    );
+
+    const documentPDF2 = (
+      <DeuxiemePDF
+        user={user}
+        nbJour={nombreJours}
+        decision={decisionData}
+        conge={selectedConge}
+      />
+    );
+
+    // Générer les deux PDFs séparément
+    const blob1 = await pdf(documentPDF1).toBlob();
+    const blob2 = await pdf(documentPDF2).toBlob();
+
+    // Charger les deux dans pdf-lib
+    const pdfDoc1 = await PDFDocument.load(await blob1.arrayBuffer());
+    const pdfDoc2 = await PDFDocument.load(await blob2.arrayBuffer());
+
+    // Créer un nouveau PDF fusionné
+    const mergedPdf = await PDFDocument.create();
+
+    // Copier toutes les pages du premier PDF
+    const pages1 = await mergedPdf.copyPages(pdfDoc1, pdfDoc1.getPageIndices());
+    pages1.forEach((page) => mergedPdf.addPage(page));
+
+    // Copier toutes les pages du deuxième PDF
+    const pages2 = await mergedPdf.copyPages(pdfDoc2, pdfDoc2.getPageIndices());
+    pages2.forEach((page) => mergedPdf.addPage(page));
+
+    // Enregistrer le résultat final
+    const mergedBytes = await mergedPdf.save();
+    const mergedBlob = new Blob([mergedBytes], { type: "application/pdf" });
+    const mergedUrl = URL.createObjectURL(mergedBlob);
+
+    // Ouvrir le PDF final dans un nouvel onglet
+    window.open(mergedUrl);
+
+    // Nettoyer après 1 minute
+    setTimeout(() => URL.revokeObjectURL(mergedUrl), 60000);
+  } catch (error) {
+    console.error("Erreur lors de la génération du PDF :", error);
+    alert("Erreur : " + error.message);
+  }
+};
+
   const { user, token } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const [donneeDemande, setDonneeDemande] = useState({
@@ -34,8 +95,15 @@ export default function Demande() {
   const getDecision = async (id) => {
     const reponse = await axios.get(`http://localhost:8000/api/decision/${id}`);
     setDecisionData(reponse.data);
-
-  }
+    console.log("=== Décisions récupérées ===");
+    reponse.data.forEach((decision, index) => {
+      console.log(`Décision ${index + 1}:`);
+      Object.entries(decision).forEach(([key, value]) => {
+        console.log(`  ${key}: ${value}`);
+      });
+      console.log("------------------------------");
+    });
+  };
   const [getAlldemande, setGetAlldemande] = useState([]);
   const [checkbox, setCheckbox] = useState(false);
   const [categorieAbsence, setCategorieAbsence] = useState("");
@@ -791,7 +859,7 @@ export default function Demande() {
                 <th className="bg-base-200 text-center">Intérim</th>
                 <th className="bg-base-200 text-center">Validateur et Date de confirmation</th>
                 <th className="bg-base-200 text-center">Status</th>
-                <th className="bg-base-200 ">Aperçu</th>
+                <th className="bg-base-200">Aperçu</th>
               </tr>
             </thead>
             <tbody>
@@ -825,8 +893,10 @@ export default function Demande() {
                     <td className="">
                       <button
                         className="btnConnexion"
-                        onClick={() => {document.getElementById(`modal`).showModal();
+                        onClick={() => {
+                          document.getElementById(`modal`).showModal();
                           getDecision(conge.id);
+                          setSelectedConge(conge);
                         }}
                         title="Voir l'aperçu"
                       >
@@ -843,7 +913,7 @@ export default function Demande() {
 
                           <button
                             className="btn btn-primary btn-sm absolute left-14 top-3"
-                            onClick={() => window.print()}
+                            onClick={() => genererPDF(selectedConge)}
                           >
                             <Printer className="h-4 w-4 text-white" />
                           </button>
@@ -851,14 +921,15 @@ export default function Demande() {
                           <div className="mx-auto my-auto">
                             <div className="mx-14 mb-5 mt-14">
                               <PDF
-                                IM={conge.IM}
-                                NOM={conge.NOM}
-                                PRENOM={conge.PRENOM}
-                                DATEDEBUT={new Date(conge.DATEDEBUT).toLocaleDateString()}
-                                DATEFIN={new Date(conge.DATEFIN).toLocaleDateString()}
-                                motif={conge.MOTIF}
-                                lieu={conge.LIEU}
-                                ref={conge.Ref}
+                                IM={selectedConge.IM}
+                                NOM={selectedConge.NOM}
+                                PRENOM={selectedConge.PRENOM}
+                                DATEDEBUT={new Date(selectedConge.DATEDEBUT).toLocaleDateString()}
+                                DATEFIN={new Date(selectedConge.DATEFIN).toLocaleDateString()}
+                                motif={selectedConge.MOTIF}
+                                Interim={selectedConge.INTERIM}
+                                lieu={selectedConge.LIEU}
+                                ref={selectedConge.Ref}
                                 joursADebiter={[]}
                                 decision={decisionData}
                               />
