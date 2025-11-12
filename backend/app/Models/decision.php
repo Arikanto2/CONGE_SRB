@@ -14,6 +14,7 @@ class Decision extends Model
         'id_conge_absence',
         'congeDebite',
         'an',
+        'soldeApres',
     ];  
     public function congeAbsence()
     {

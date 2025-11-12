@@ -12,7 +12,7 @@ import {
 
 import { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
-import { toast } from "react-hot-toast"; // ✅ import du toast
+import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import PDF from "../Composants/ViewConge.jsx";
@@ -315,6 +315,7 @@ export default function Accueil() {
                                   <button
                                     className="btn btn-success btn-circle"
                                     onClick={async (e) => {
+                                      console.log(item.IM);
                                       e.preventDefault();
                                       const modal = document.getElementById(`modal_${index}`);
                                       modal.close();
@@ -333,7 +334,7 @@ export default function Accueil() {
                                       if (isConfirmed) {
                                         try {
                                           const response = await fetch(
-                                            `http://127.0.0.1:8000/api/Accueil/${item.id}?fonction=${user.FONCTION}&action=valider`,
+                                            `http://127.0.0.1:8000/api/Accueil/${item.id}?fonction=${user.FONCTION}&IM=${item.IM}&action=valider`,
                                             {
                                               method: "PUT",
                                               headers: { "Content-Type": "application/json" },
@@ -441,7 +442,6 @@ export default function Accueil() {
         </div>
       )}
 
-      {/* --- Boutons bas de page --- */}
       <div className="mb-12 mt-6 flex justify-center gap-6">
         <button
           className="btn btn-primary btn-outline"
