@@ -12,11 +12,11 @@ import {
 
 import { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
+import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
-
 import Swal from "sweetalert2";
 import PDF from "../Composants/ViewConge.jsx";
+import { useAuth } from "../hooks/useAuth";
 
 ChartJS.register(
   CategoryScale,
@@ -68,10 +68,7 @@ const arrowPlugin = {
 
 export default function Accueil() {
   const navigate = useNavigate();
-
   const { user } = useAuth();
-
-  console.log("Fonction de l'utilisateur :", user?.FONCTION);
 
   const isChefDivision = user?.FONCTION === "Chef de division";
   const isChefService = user?.FONCTION === "Chef de service";
@@ -86,8 +83,7 @@ export default function Accueil() {
   useEffect(() => {
     ChartJS.register(arrowPlugin);
 
-    if (!user?.IM) return;
-    if (!user?.FONCTION) return;
+    if (!user?.IM || !user?.FONCTION) return;
 
     const params = new URLSearchParams({
       user_im: user.IM,
@@ -146,16 +142,6 @@ export default function Accueil() {
     ],
   };
 
-  // const teste = () => {
-  //   Swal.fire({
-  //     icon: "success",
-  //     title: "Message clique !",
-  //     text: "Merci pour votre message, je vous répondrai bientôt.",
-  //     timer: 2000,
-  //     timerProgressBar: true,
-  //     showConfirmButton: false,
-  //   });
-  // };
 
   const options = {
     responsive: true,
@@ -166,9 +152,7 @@ export default function Accueil() {
     scales: {
       y: {
         beginAtZero: true,
-        ticks: {
-          stepSize: 5,
-        },
+        ticks: { stepSize: 5 },
         suggestedMax: Math.ceil(Math.max(...data.datasets[0].data) / 5) * 5,
       },
     },
@@ -193,6 +177,7 @@ export default function Accueil() {
     <div className="flex min-h-screen flex-col bg-base-200">
       <h1 className="mb-4 text-2xl font-bold">Bienvenue, {user?.NOM} </h1>
 
+      {/* --- Graphique + compteur --- */}
       <div className="flex w-full items-center gap-4 p-4">
         <div className="card h-60 w-2/3 bg-base-100 shadow-xl">
           <div className="card-body h-full p-2">
@@ -216,9 +201,10 @@ export default function Accueil() {
         </div>
       </div>
 
+      {/* --- Dernières demandes --- */}
       <div className="card mb-6 bg-base-100 shadow-xl">
         <div className="card-body">
-          <h2 className="card-title">Les 3 derniers demandes</h2>
+          <h2 className="card-title">Les 3 dernières demandes</h2>
           <ul className="ml-5 list-disc">
             {dernieresDemandes.length > 0 ? (
               dernieresDemandes.map((demande, index) => (
@@ -245,8 +231,9 @@ export default function Accueil() {
         </div>
       </div>
 
+      {/* --- Tableau validation --- */}
       {(isChefDivision || isChefService) && (
-        <div className="card ml-3 mr-3 mt-7 bg-base-100 shadow-xl">
+        <div className="card mx-3 mt-7 bg-base-100 shadow-xl">
           <div className="card-body">
             <div className="mb-5 flex items-center justify-between">
               <label className="input input-info h-10 w-64">
@@ -320,68 +307,63 @@ export default function Accueil() {
                                     lieu={item.LIEU}
                                     ref={item.Ref}
                                     joursADebiter={joursADebiter || []}
+                                    decision="accueil"
+                                    date={new Date().toLocaleDateString("fr-FR")}
                                   />
                                 </div>
+
                                 <div className="absolute right-0 mr-14 flex gap-3">
-                                  {/* Bouton Valider */}
                                   <button
                                     className="btn btn-success btn-circle"
                                     onClick={async (e) => {
+                                      console.log(item.IM);
                                       e.preventDefault();
-                                      const confirmer = window.confirm(
-                                        "Voulez-vous valider cette demande ?"
-                                      );
+                                      const modal = document.getElementById(`modal_${index}`);
+                                      modal.close();
 
-                                      if (!confirmer) return;
+                                      const { isConfirmed } = await Swal.fire({
+                                        title: "Voulez-vous valider cette demande ?",
+                                        icon: "question",
+                                        showCancelButton: true,
+                                        confirmButtonText: "Oui",
+                                        cancelButtonText: "Non",
+                                        confirmButtonColor: "#22c55e",
+                                        cancelButtonColor: "#ef4444",
+                                        background: "#f9fafb",
+                                      });
 
-                                      try {
-                                        const response = await fetch(
-                                          `http://127.0.0.1:8000/api/Accueil/${item.id}?fonction=${user.FONCTION}&action=valider`,
-                                          {
-                                            method: "PUT",
-                                            headers: {
-                                              "Content-Type": "application/json",
-                                            },
-                                            body: JSON.stringify({
-                                              joursADebiter: joursADebiter,
-                                            }),
+                                      if (isConfirmed) {
+                                        try {
+                                          const response = await fetch(
+                                            `http://127.0.0.1:8000/api/Accueil/${item.id}?fonction=${user.FONCTION}&IM=${item.IM}&action=valider`,
+                                            {
+                                              method: "PUT",
+                                              headers: { "Content-Type": "application/json" },
+                                              body: JSON.stringify({ joursADebiter }),
+                                            }
+                                          );
+
+                                          const result = await response.json();
+
+                                          if (response.ok) {
+                                            toast.success(result.message || "Demande validée !");
+                                            setValidationDiv((prev) =>
+                                              prev.filter((d) => d.id !== item.id)
+                                            );
+                                            setValidationChef((prev) =>
+                                              prev.filter((d) => d.id !== item.id)
+                                            );
+                                          } else {
+                                            toast.error(
+                                              result.message || "Erreur lors de la validation"
+                                            );
                                           }
-                                        );
-
-                                        const result = await response.json();
-
-                                        if (response.ok) {
-                                          const modal = document.getElementById(`modal_${index}`);
-                                          modal.close();
-                                          Swal.fire({
-                                            icon: "success",
-                                            title: "Demande valide",
-                                            text: result.message,
-                                            timer: 2000,
-                                            showConfirmButton: false,
-                                            timerProgressBar: true,
-                                          });
-
-                                          setValidationDiv((prev) =>
-                                            prev.filter((d) => d.id !== item.id)
-                                          );
-                                          setValidationChef((prev) =>
-                                            prev.filter((d) => d.id !== item.id)
-                                          );
-                                        } else {
-                                          Swal.fire({
-                                            icon: "error",
-                                            title: "Erreur",
-                                            text: result.message || "Une erreur est survenue",
-                                          });
+                                        } catch (error) {
+                                          console.error("Erreur:", error);
+                                          toast.error("Erreur de connexion au serveur");
                                         }
-                                      } catch (error) {
-                                        console.error("Erreur:", error);
-                                        Swal.fire({
-                                          icon: "error",
-                                          title: "Erreur de connexion",
-                                          text: "Impossible de contacter le serveur",
-                                        });
+                                      } else {
+                                        modal.showModal();
                                       }
                                     }}
                                   >
@@ -392,57 +374,49 @@ export default function Accueil() {
                                     className="btn btn-error btn-circle"
                                     onClick={async (e) => {
                                       e.preventDefault();
+                                      const modal = document.getElementById(`modal_${index}`);
+                                      modal.close();
 
-                                      const confirmer = window.confirm(
-                                        "Voulez-vous vraiment refuser cette demande ?"
-                                      );
-                                      if (!confirmer) return;
+                                      const { isConfirmed } = await Swal.fire({
+                                        title: "Voulez-vous vraiment refuser cette demande ?",
+                                        icon: "warning",
+                                        showCancelButton: true,
+                                        confirmButtonText: "Oui",
+                                        cancelButtonText: "Non",
+                                        confirmButtonColor: "#ef4444",
+                                        cancelButtonColor: "#22c55e",
+                                        background: "#f9fafb",
+                                      });
 
-                                      try {
-                                        const response = await fetch(
-                                          `http://127.0.0.1:8000/api/Accueil/${item.id}?fonction=${user.FONCTION}&action=rejeter`,
-                                          {
-                                            method: "PUT",
-                                            headers: {
-                                              "Content-Type": "application/json",
-                                            },
+                                      if (isConfirmed) {
+                                        try {
+                                          const response = await fetch(
+                                            `http://127.0.0.1:8000/api/Accueil/${item.id}?fonction=${user.FONCTION}&action=rejeter`,
+                                            {
+                                              method: "PUT",
+                                              headers: { "Content-Type": "application/json" },
+                                            }
+                                          );
+
+                                          const data = await response.json();
+
+                                          if (response.ok) {
+                                            toast.success(data.message || "Demande refusée !");
+                                            setValidationDiv((prev) =>
+                                              prev.filter((d) => d.id !== item.id)
+                                            );
+                                            setValidationChef((prev) =>
+                                              prev.filter((d) => d.id !== item.id)
+                                            );
+                                          } else {
+                                            toast.error(data.message || "Une erreur est survenue.");
                                           }
-                                        );
-
-                                        const data = await response.json();
-
-                                        if (response.ok) {
-                                          const modal = document.getElementById(`modal_${index}`);
-                                          modal.close();
-                                          Swal.fire({
-                                            icon: "success",
-                                            title: "Demande refusée",
-                                            text: data.message,
-                                            timer: 2000,
-                                            showConfirmButton: false,
-                                            timerProgressBar: true,
-                                          });
-
-                                          setValidationDiv((prev) =>
-                                            prev.filter((d) => d.id !== item.id)
-                                          );
-                                          setValidationChef((prev) =>
-                                            prev.filter((d) => d.id !== item.id)
-                                          );
-                                        } else {
-                                          Swal.fire({
-                                            icon: "error",
-                                            title: "Erreur",
-                                            text: data.message || "Une erreur est survenue.",
-                                          });
+                                        } catch (error) {
+                                          console.error("Erreur:", error);
+                                          toast.error("Erreur de connexion au serveur.");
                                         }
-                                      } catch (error) {
-                                        console.error("Erreur:", error);
-                                        Swal.fire({
-                                          icon: "error",
-                                          title: "Erreur de connexion",
-                                          text: "Impossible de contacter le serveur.",
-                                        });
+                                      } else {
+                                        modal.showModal();
                                       }
                                     }}
                                   >

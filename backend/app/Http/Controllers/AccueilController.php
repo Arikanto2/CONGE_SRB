@@ -28,6 +28,7 @@ class AccueilController extends Controller
         $Valid_div = Demande::join('personnel', 'conge_absence.IM', '=', 'personnel.IM')
             ->where('conge_absence.VALIDDIV', 'En attente')
             ->where('personnel.DIVISION', $division)
+            ->orderBy('conge_absence.id', 'asc')
             ->get([
                 'personnel.NOM',
                 'personnel.PRENOM',
@@ -38,12 +39,13 @@ class AccueilController extends Controller
                 'conge_absence.LIEU',
                 'conge_absence.Ref',
                 'conge_absence.id',
-                DB::raw('(conge_absence."DATEFIN" - conge_absence."DATEDEBUT") AS duree')
+                DB::raw('(conge_absence."DATEFIN" - conge_absence."DATEDEBUT") + 1 AS duree')
             ]);
 
         $Valid_chef = Demande::join('personnel', 'conge_absence.IM', '=', 'personnel.IM')
             ->where('conge_absence.VALIDDIV', 'Validé')
             ->where('conge_absence.VALIDCHEF', 'En attente')
+            ->orderBy('conge_absence.id', 'asc')
             ->get([
                 'personnel.NOM',
                 'personnel.PRENOM',
@@ -54,7 +56,7 @@ class AccueilController extends Controller
                 'conge_absence.LIEU',
                 'conge_absence.Ref',
                 'conge_absence.id',
-                DB::raw('(conge_absence."DATEFIN" - conge_absence."DATEDEBUT") AS duree')
+                DB::raw('(conge_absence."DATEFIN" - conge_absence."DATEDEBUT") + 1 AS duree')
             ]);
 
         /////// historique
@@ -76,7 +78,7 @@ class AccueilController extends Controller
             ->get();
 
         $demandeJours = Demande::where('Ref', $item_ref)
-            ->selectRaw('("DATEFIN" - "DATEDEBUT") AS nb_jrs')
+            ->selectRaw('("DATEFIN" - "DATEDEBUT") + 1 AS nb_jrs')
             ->value('nb_jrs');
         $joursADebiter = [];
 
@@ -122,7 +124,11 @@ class AccueilController extends Controller
         $fonction = $request->query('fonction');
 
         $action = $request->query('action');
-        
+
+        $im = $request->query('IM');
+
+        $Total_conge = Conge_annuels::where('IM', $im)->sum('NBR_CONGE');
+
         if(!$fonction) {
             return response()->json(['message' => 'Fonction manquante'], 400);
         }
@@ -149,17 +155,28 @@ class AccueilController extends Controller
                 $demande->VALIDDIV = 'Validé';
             }elseif($fonction === 'Chef de service'){
                 $demande->VALIDCHEF = 'Validé';
+
                 $joursADebiter = $request->input('joursADebiter');
 
-            if (!empty($joursADebiter) && is_array($joursADebiter)) {
-                foreach ($joursADebiter as $item) {
-                    decision::create([
-                        'id_conge_absence' => $id,
-                        'congeDebite' => $item['jours'],
-                        'an' => $item['annee'],
-                    ]);
+                //// modification
+                if (!empty($joursADebiter) && is_array($joursADebiter)) {
+                    foreach ($joursADebiter as $item) {
+                        $solde = Conge_annuels::where('id', $item['id'])->firstOrFail();
+                        $solde-> NBR_CONGE -= $item['jours'];
+                        $solde->save();
+                    }
                 }
-            }
+                /// Insertion  
+                if (!empty($joursADebiter) && is_array($joursADebiter)) {
+                    foreach ($joursADebiter as $item) {
+                        decision::create([
+                            'id_conge_absence' => $id,
+                            'congeDebite' => $item['jours'],
+                            'an' => $item['annee'],
+                            'soldeApres' => $Total_conge,
+                        ]);
+                    }
+                }
             } else{
                 return response()->json(['message' => 'Role non autorisé'], 403);
             }

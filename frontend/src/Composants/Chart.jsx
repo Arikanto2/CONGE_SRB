@@ -20,19 +20,26 @@ function addDays(d, n) {
 }
 
 const DEFAULT_COLORS = {
-  autorisation: "bg-purple-600",
-  conge: "bg-blue-600",
-  permission: "bg-pink-500",
-  mission: "bg-green-600",
-  formation: "bg-yellow-500",
-  repos_medical: "bg-red-500",
+  "Autorisation d'absence": "bg-purple-600",
+  Congé: "bg-blue-600",
+  Permission: "bg-pink-500",
+  Mission: "bg-green-600",
+  Formation: "bg-yellow-500",
+  "Repos médical": "bg-red-500",
   default: "bg-slate-600",
 };
+
+// Fonction pour normaliser la casse des statuts
+function getColorForStatus(status) {
+  if (!status) return DEFAULT_COLORS.default;
+  const normalized = status.trim().charAt(0).toUpperCase() + status.trim().slice(1).toLowerCase();
+  return DEFAULT_COLORS[normalized] || DEFAULT_COLORS.default;
+}
 
 export default function GanttChart({ tasks = [], dayWidth = 28 }) {
   const [filterStart, setFilterStart] = useState("");
   const [filterEnd, setFilterEnd] = useState("");
-  const [maxVisibleTasks, setMaxVisibleTasks] = useState(12); //nombre de tâches
+  const [maxVisibleTasks, setMaxVisibleTasks] = useState(12);
 
   const normalized = useMemo(() => {
     return tasks.map((t, i) => {
@@ -64,6 +71,7 @@ export default function GanttChart({ tasks = [], dayWidth = 28 }) {
     () => daysBetween(filteredMin, filteredMax) + 1,
     [filteredMin, filteredMax]
   );
+
   const dateToX = (d) => daysBetween(filteredMin, d) * dayWidth;
 
   const headers = useMemo(() => {
@@ -99,6 +107,7 @@ export default function GanttChart({ tasks = [], dayWidth = 28 }) {
       setMaxVisibleTasks(12);
     }
   };
+
   const [spinning, setSpinning] = useState(false);
 
   return (
@@ -141,6 +150,7 @@ export default function GanttChart({ tasks = [], dayWidth = 28 }) {
         style={{ maxHeight: TASK_HEIGHT * maxVisibleTasks + 80 }}
         onScroll={handleScroll}
       >
+        {/* Colonne des noms */}
         <div className="w-64 min-w-[16rem] border-r py-4">
           <div className="sticky top-0 z-10 flex h-12 items-center border-b bg-slate-50 px-3">
             <span className="text-sm text-slate-600">Noms / Tâches</span>
@@ -158,6 +168,7 @@ export default function GanttChart({ tasks = [], dayWidth = 28 }) {
           </div>
         </div>
 
+        {/* Grille Gantt */}
         <div className="flex-1 bg-white">
           <div style={{ width: totalDays * dayWidth }} className="min-w-[400px]">
             {/* Mois */}
@@ -204,7 +215,7 @@ export default function GanttChart({ tasks = [], dayWidth = 28 }) {
                     style={{ transform: `translateX(${dateToX(t._start)}px)` }}
                   >
                     <div
-                      className={`rounded-md ${DEFAULT_COLORS[t.status] || DEFAULT_COLORS.default}`}
+                      className={`rounded-md ${getColorForStatus(t.status)}`}
                       style={{
                         width: Math.max(8, t._duration * dayWidth - 6),
                         height: BAR_HEIGHT,
@@ -222,16 +233,18 @@ export default function GanttChart({ tasks = [], dayWidth = 28 }) {
   );
 }
 
-// --- Légende ---
 function Legend() {
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <LegendItem colorClass={DEFAULT_COLORS.autorisation} label="Autorisation d’absence" />
-      <LegendItem colorClass={DEFAULT_COLORS.conge} label="Congé" />
-      <LegendItem colorClass={DEFAULT_COLORS.permission} label="Permission" />
-      <LegendItem colorClass={DEFAULT_COLORS.mission} label="Mission" />
-      <LegendItem colorClass={DEFAULT_COLORS.formation} label="Formation" />
-      <LegendItem colorClass={DEFAULT_COLORS.repos_medical} label="Repos médical" />
+      <LegendItem
+        colorClass={DEFAULT_COLORS["Autorisation d'absence"]}
+        label="Autorisation d'absence"
+      />
+      <LegendItem colorClass={DEFAULT_COLORS["Congé"]} label="Congé" />
+      <LegendItem colorClass={DEFAULT_COLORS["Permission"]} label="Permission" />
+      <LegendItem colorClass={DEFAULT_COLORS["Mission"]} label="Mission" />
+      <LegendItem colorClass={DEFAULT_COLORS["Formation"]} label="Formation" />
+      <LegendItem colorClass={DEFAULT_COLORS["Repos médical"]} label="Repos médical" />
     </div>
   );
 }

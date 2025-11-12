@@ -1,16 +1,16 @@
-import "../Style/Demande.css";
-import { RefreshCcw, Printer } from "lucide-react";
 import { EyeIcon } from "@heroicons/react/24/solid";
-import { useState, useEffect, useCallback } from "react";
-import { useSearchParams } from "react-router-dom";
 import axios from "axios";
-import { useAuth } from "../hooks/useAuth";
+import { Printer, RefreshCcw } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import PDF from "../Composants/ViewConge.jsx";
+
 import DeuxiemePDF from "./PDF1.jsx";
 import { PDFDocument } from "pdf-lib";
 
 import { pdf } from "@react-pdf/renderer";
 import PDF1 from "./PDF.jsx"; // ton composant PDF que tu as refait
+
 
 export default function Demande() {
   const [selectedConge, setSelectedConge] = useState([]);
@@ -95,6 +95,7 @@ export default function Demande() {
   const getDecision = async (id) => {
     const reponse = await axios.get(`http://localhost:8000/api/decision/${id}`);
     setDecisionData(reponse.data);
+
     console.log("=== Décisions récupérées ===");
     reponse.data.forEach((decision, index) => {
       console.log(`Décision ${index + 1}:`);
@@ -103,6 +104,7 @@ export default function Demande() {
       });
       console.log("------------------------------");
     });
+
   };
   const [getAlldemande, setGetAlldemande] = useState([]);
   const [checkbox, setCheckbox] = useState(false);
@@ -921,6 +923,7 @@ export default function Demande() {
                           <div className="mx-auto my-auto">
                             <div className="mx-14 mb-5 mt-14">
                               <PDF
+
                                 IM={selectedConge.IM}
                                 NOM={selectedConge.NOM}
                                 PRENOM={selectedConge.PRENOM}
@@ -932,6 +935,7 @@ export default function Demande() {
                                 ref={selectedConge.Ref}
                                 joursADebiter={[]}
                                 decision={decisionData}
+
                               />
                             </div>
                           </div>

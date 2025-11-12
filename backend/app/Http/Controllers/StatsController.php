@@ -23,7 +23,7 @@ class StatsController extends Controller
             ->get();
 
         $tasks = $rows->map(function($r) {
-            $name = trim(($r->NOM ?? '') . ' ' . ($r->PRENOMS ?? ''));
+            $name = trim(($r->NOM ?? '') . ' ' . ($r->PRENOM ?? ''));
 
             $start = $r->DATEDEBUT ? Carbon::parse($r->DATEDEBUT)->format('Y-m-d') : null;
             $end   = $r->DATEFIN ? Carbon::parse($r->DATEFIN)->format('Y-m-d') : null;
