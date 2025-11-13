@@ -2,6 +2,7 @@ import { toast } from "react-hot-toast";
 import { NavLink } from "react-router-dom";
 import Swal from "sweetalert2";
 import logo1 from "../assets/logo1.jpg";
+import logo4 from "../assets/logo4.png";
 import logo2 from "../assets/logo2.jpg";
 import { useAuth } from "../hooks/useAuth";
 import "../Style/App.css";
@@ -59,7 +60,16 @@ export default function Navbar() {
         <div className="dropdown dropdown-end">
           <div tabIndex={0} role="button" className="avatar">
             <div className="w-12 rounded-full ring-2 ring-primary ring-offset-2 ring-offset-base-100">
-              <img src={`http://localhost:8000/storage/profile_photos/${user.PHOTO_PROFIL}`} />
+              <img
+                src={
+                  user?.PHOTO_PROFIL
+                    ? `http://localhost:8000/storage/profile_photos/${user.PHOTO_PROFIL}`
+                    : logo4
+                }
+                alt="Photo de profil"
+                onError={(e) => (e.target.src = logo4)}
+                className="h-12 w-12 rounded-full object-cover ring-2 ring-primary ring-offset-2 ring-offset-base-100"
+              />
             </div>
           </div>
           <ul
