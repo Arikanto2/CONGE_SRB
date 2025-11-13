@@ -4,6 +4,8 @@ import { Printer, RefreshCcw } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import PDF from "../Composants/ViewConge.jsx";
+import { useAuth } from "../hooks/useAuth";
+import  "../Style/Demande.css";
 
 import DeuxiemePDF from "./PDF1.jsx";
 import { PDFDocument } from "pdf-lib";
