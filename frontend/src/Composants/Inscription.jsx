@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 
 export default function Inscription({ activeDefil }) {
   const [password, setPassword] = useState("");
@@ -22,8 +23,8 @@ export default function Inscription({ activeDefil }) {
   });
 
   const submitInscription = async () => {
-    if (!isValid) {
-      alert("Les mots de passe ne correspondent pas !");
+    if (!isValid || password.trim() === "" || confirmMDP.trim() === "") {
+      toast.error("Les mots de passe ne correspondent pas ou sont invalides !");
       return;
     }
 
@@ -31,12 +32,12 @@ export default function Inscription({ activeDefil }) {
       try {
         const response = await axios.post("http://localhost:8000/api/verify-chef-service");
         if (response.data.exists) {
-          alert("Un chef de service existe déjà. Vous ne pouvez pas en créer un autre.");
+          toast.error("Un chef de service existe déjà. Vous ne pouvez pas en créer un autre.");
           return;
         }
       } catch (error) {
         console.error("Erreur lors de la vérification du chef de service:", error);
-        alert("Une erreur est survenue lors de la vérification du chef de service.");
+        toast.error("Une erreur est survenue lors de la vérification du chef de service.");
         return;
       }
     }
@@ -48,25 +49,17 @@ export default function Inscription({ activeDefil }) {
         });
         if (response.data.exists) {
           const chef = response.data.chef;
-          alert(
+          toast.error(
             `Un chef de division existe déjà pour la division "${donneepers.DIVISION}".\n\nChef actuel: ${chef.prenom} ${chef.nom} (IM: ${chef.im})\n\nVous ne pouvez pas créer un autre chef pour cette division.`
           );
           return;
         }
       } catch (error) {
         console.error("Erreur lors de la vérification du chef de division:", error);
-        alert("Une erreur est survenue lors de la vérification du chef de division.");
+        toast.error("Une erreur est survenue lors de la vérification du chef de division.");
         return;
       }
     }
-
-    console.log("=== DONNÉES ENVOYÉES ===");
-    console.log("donneepers:", donneepers);
-    console.log(
-      "Champs vides:",
-      Object.keys(donneepers).filter((key) => !donneepers[key])
-    );
-    console.log("========================");
 
     try {
       const formData = new FormData();
@@ -78,13 +71,11 @@ export default function Inscription({ activeDefil }) {
       if (selectedFile) {
         formData.append("PHOTO_PROFIL", selectedFile);
       }
-
-      const response = await axios.post(API_URL, formData, {
+      await axios.post(API_URL, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      alert("Inscription réussie !");
-      console.log("Réponse:", response.data);
+      toast.success("Inscription réussie !");
 
       setDonneepers({
         IM: "",
@@ -103,13 +94,12 @@ export default function Inscription({ activeDefil }) {
       setConfirmMDP("");
       setSelectedFile(null);
     } catch (err) {
-      console.error("=== ERREUR COMPLÈTE ===");
       console.error("Erreur:", err);
 
       if (err.response) {
         console.error("Status:", err.response.status);
         console.error("Headers:", err.response.headers);
-        console.error("Data:", err.response.data);
+        toast.error("Data:", err.response.data);
 
         if (err.response.status === 422 && err.response.data.errors) {
           const errors = err.response.data.errors;
@@ -122,18 +112,18 @@ export default function Inscription({ activeDefil }) {
             });
           });
 
-          alert("❌ " + errorMessages.join("\n\n"));
         } else {
-          alert(`Erreur ${err.response.status}: ${err.response.data.message || "Erreur inconnue"}`);
+          console.log(
+            `Erreur ${err.response.status}: ${err.response.data.message || "Erreur inconnue"}`
+          );
         }
       } else if (err.request) {
         console.error("Pas de réponse reçue:", err.request);
-        alert("Erreur de connexion: Aucune réponse du serveur");
+        toast.error("Erreur de connexion: Aucune réponse du serveur");
       } else {
         console.error("Erreur de configuration:", err.message);
-        alert(`Erreur: ${err.message}`);
+        console.log(`Erreur: ${err.message}`);
       }
-      console.error("=======================");
     }
   };
 
@@ -142,7 +132,7 @@ export default function Inscription({ activeDefil }) {
   }
 
   useEffect(() => {
-    if (confirmMDP.length > 0) {
+    if (confirmMDP.length > 0 || password.length > 0) {
       setIsValid(password === confirmMDP);
     } else {
       setIsValid(true);
@@ -171,9 +161,9 @@ export default function Inscription({ activeDefil }) {
                   value={donneepers.NOM}
                   className="inputConnexion validator input input-info bg-gray-50"
                   pattern="^[A-Za-z\séùèà]+$"
-                  minLength="6"
+                  minLength="2"
                   maxLength="30"
-                  title="Seules les lettres sont autorisées (6-30 caractères)"
+                  title="Seules les lettres sont autorisées (2-30 caractères)"
                   onChange={(e) => handleChange("NOM", e.target.value)}
                 />
                 <p className="legendMDP validator-hint">
@@ -348,8 +338,10 @@ export default function Inscription({ activeDefil }) {
                     setPassword(e.target.value);
                     handleChange("MDP", e.target.value);
                   }}
-                  className="inputConnexion validator input input-info bg-gray-50"
-                  pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%#*?&])[A-Za-z\d@$!%#\s*?&]{8,}$"
+                  className={`inputConnexion validator input input-info bg-gray-50 ${
+                    !isValid ? "border-red-500" : ""
+                  }`}
+                  pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%#*?&])[A-Za-z\d@$!%#*?& ]{8,}$"
                   title="Doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial"
                   minLength="8"
                   maxLength="20"
@@ -364,13 +356,16 @@ export default function Inscription({ activeDefil }) {
                   Confirmer le mot de passe :
                 </label>
                 <input
+                  required
                   type="password"
                   placeholder="Confirmez votre mot de passe"
                   value={confirmMDP}
                   onChange={(e) => setConfirmMDP(e.target.value)}
-                  className="inputConnexion input input-info bg-gray-50"
+                  className={`inputConnexion input input-info bg-gray-50 ${
+                    !isValid ? "border-red-500" : ""
+                  }`}
                 />
-                <p className="legendMDP mt-1">
+                <p className="legendMDP mt-1 text-red-600">
                   {isValid ? "" : "Les mots de passe ne correspondent pas."}
                 </p>
               </div>
