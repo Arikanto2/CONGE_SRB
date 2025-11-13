@@ -1,7 +1,7 @@
 import { Component } from "react";
-import "../Style/Login.css";
 import Inscription from "../Composants/Inscription.jsx";
 import Connexion from "../Composants/connexion.jsx";
+import "../Style/Login.css";
 import Logo2 from "../assets/Logo2.jpg";
 
 class Login extends Component {
@@ -24,7 +24,11 @@ class Login extends Component {
         this.toggleClasses(connexConteneur, [], ["pointer-events-none", "opacity-0"]);
         this.toggleClasses(inscriptionConteneur, ["pointer-events-none"], ["opacity-100"]);
 
-        this.toggleClasses(divDefilant, ["animate-defilement", "rounded-br-full", "rounded-tr-full"], ["animate-defilement1"]);
+        this.toggleClasses(
+          divDefilant,
+          ["animate-defilement", "rounded-br-full", "rounded-tr-full"],
+          ["animate-defilement1"]
+        );
       }, 2000);
     }
   };
@@ -39,9 +43,17 @@ class Login extends Component {
 
       setTimeout(() => {
         this.toggleClasses(connexConteneur, ["pointer-events-none", "opacity-0"]);
-        this.toggleClasses(inscriptionConteneur, ["opacity-100"], ["pointer-events-none", "opacity-0"]);
+        this.toggleClasses(
+          inscriptionConteneur,
+          ["opacity-100"],
+          ["pointer-events-none", "opacity-0"]
+        );
 
-        this.toggleClasses(divDefilant, ["animate-slideIn"], ["rounded-br-full", "rounded-tr-full", "animate-slideOut"]);
+        this.toggleClasses(
+          divDefilant,
+          ["animate-slideIn"],
+          ["rounded-br-full", "rounded-tr-full", "animate-slideOut"]
+        );
       }, 2000);
     }
   };
