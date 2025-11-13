@@ -219,9 +219,9 @@ export default function Profile() {
   }, [password, confirmMDP]);
 
   return (
-    <div className="h-full pb-3 mx-8 shadow-sm card card-xs bg-base-100">
-      <div className="h-full ml-5 mr-5 card-body">
-        <div className="flex items-center gap-5 divEntete">
+    <div className="card card-xs mx-8 h-full bg-base-100 pb-3 shadow-sm">
+      <div className="card-body ml-5 mr-5 h-full">
+        <div className="divEntete flex items-center gap-5">
           <div className="avatar">
             <div className="w-20 rounded-full ring-2 ring-primary ring-offset-2 ring-offset-base-100">
               <img
@@ -244,7 +244,7 @@ export default function Profile() {
             <dialog id="my_modal_3" className="modal">
               <div className="modal-box">
                 <button
-                  className="absolute btn btn-ghost btn-sm btn-circle right-2 top-2"
+                  className="btn btn-ghost btn-sm btn-circle absolute right-2 top-2"
                   onClick={() => document.getElementById("my_modal_3").close()}
                 >
                   ✕
@@ -257,12 +257,12 @@ export default function Profile() {
                 >
                   <div className="blocks-center">
                     <div className="ml-6 mr-6">
-                      <p className="text-center labeConnex1">Modification du profil</p>
+                      <p className="labeConnex1 text-center">Modification du profil</p>
 
                       {/* Première ligne : Nom + Prénom */}
                       <div className="flex gap-10">
                         <div className="flex-1">
-                          <label className="block font-serif text-sm text-left">Nom :</label>
+                          <label className="block text-left font-serif text-sm">Nom :</label>
                           <input
                             required
                             type="text"
@@ -277,7 +277,7 @@ export default function Profile() {
                           </p>
                         </div>
                         <div className="flex-1">
-                          <label className="block font-serif text-sm text-left">Prénom :</label>
+                          <label className="block text-left font-serif text-sm">Prénom :</label>
                           <input
                             required
                             type="text"
@@ -294,9 +294,9 @@ export default function Profile() {
                         </div>
                       </div>
 
-                      <div className="flex gap-10 mb-5">
+                      <div className="mb-5 flex gap-10">
                         <div className="flex-1">
-                          <label className="block font-serif text-sm text-left">Corps :</label>
+                          <label className="block text-left font-serif text-sm">Corps :</label>
                           <input
                             required
                             type="text"
@@ -307,7 +307,7 @@ export default function Profile() {
                           />
                         </div>
                         <div className="flex-1">
-                          <label className="block font-serif text-sm text-left">Grade :</label>
+                          <label className="block text-left font-serif text-sm">Grade :</label>
                           <input
                             required
                             type="text"
@@ -320,9 +320,9 @@ export default function Profile() {
                       </div>
 
                       {/* Troisième ligne : Grade + Fonction */}
-                      <div className="flex gap-10 mb-5">
+                      <div className="mb-5 flex gap-10">
                         <div className="flex-1">
-                          <label className="block font-serif text-sm text-left">Fonction :</label>
+                          <label className="block text-left font-serif text-sm">Fonction :</label>
                           <select
                             className="inputConnexion select select-info bg-gray-50"
                             required
@@ -338,7 +338,7 @@ export default function Profile() {
                           </select>
                         </div>
                         <div className="flex-1">
-                          <label className="block font-serif text-sm text-left">Division :</label>
+                          <label className="block text-left font-serif text-sm">Division :</label>
                           <select
                             className="inputConnexion select select-info bg-gray-50"
                             value={donneepers.DIVISION}
@@ -372,7 +372,7 @@ export default function Profile() {
                       {/* Quatrième ligne : Division + E-mail */}
                       <div className="flex gap-10">
                         <div className="flex-1">
-                          <label className="block font-serif text-sm text-left">E-mail :</label>
+                          <label className="block text-left font-serif text-sm">E-mail :</label>
                           <input
                             required
                             type="email"
@@ -387,9 +387,9 @@ export default function Profile() {
                           </div>
                         </div>
                         <div className="flex-1">
-                          <label className="block font-serif text-sm text-left">Contact :</label>
+                          <label className="block text-left font-serif text-sm">Contact :</label>
                           <div className="relative w-full">
-                            <span className="absolute left-0 z-20 h-8 pt-1 pl-1 text-sm -translate-y-1/2 bg-gray-100 border border-gray-400 border-solid rounded-md pointer-events-none top-4">
+                            <span className="pointer-events-none absolute left-0 top-4 z-20 h-8 -translate-y-1/2 rounded-md border border-solid border-gray-400 bg-gray-100 pl-1 pt-1 text-sm">
                               +261
                             </span>
                             <input
@@ -400,7 +400,7 @@ export default function Profile() {
                               value={donneepers.CONTACT}
                               onChange={(e) => handleChange("CONTACT", e.target.value)}
                               title="Seuls les chiffres sont autorisés (9 chiffres après +261)"
-                              className="z-10 w-full px-10 py-2 inputConnexion1 validator input input-info bg-gray-50"
+                              className="inputConnexion1 validator input input-info z-10 w-full bg-gray-50 px-10 py-2"
                               placeholder="Numéro sans indicatif"
                             />
 
@@ -410,9 +410,9 @@ export default function Profile() {
                       </div>
 
                       {/* Cinquième ligne : Contact + Photo */}
-                      <div className="relative flex gap-10 mb-2">
+                      <div className="relative mb-2 flex gap-10">
                         <div className="flex-1">
-                          <label className="block font-serif text-sm text-left">
+                          <label className="block text-left font-serif text-sm">
                             Photo de profil :
                           </label>
                           <input
@@ -424,7 +424,7 @@ export default function Profile() {
                                 handleChange("PHOTO_PROFIL", null);
                               }
                             }}
-                            className="w-48 h-8 input-info file-input"
+                            className="input-info file-input h-8 w-48"
                             accept=".jpg,.jpeg,.png,.gif"
                           />
                         </div>
@@ -435,7 +435,7 @@ export default function Profile() {
 
                       <button
                         type="button"
-                        className="block mx-auto btnConnexion"
+                        className="btnConnexion mx-auto block"
                         disabled={isSubmitting}
                         onClick={submitForm}
                       >
@@ -455,9 +455,9 @@ export default function Profile() {
             </button>
 
             <dialog id="my_modal" className="modal">
-              <div className="flex items-center justify-center p-8 modal-box">
+              <div className="modal-box flex items-center justify-center p-8">
                 <button
-                  className="absolute btn btn-ghost btn-sm btn-circle right-2 top-2"
+                  className="btn btn-ghost btn-sm btn-circle absolute right-2 top-2"
                   onClick={() => document.getElementById("my_modal").close()}
                 >
                   ✕
@@ -470,24 +470,24 @@ export default function Profile() {
                     submitFormMDP();
                   }}
                 >
-                  <p className="mb-6 text-lg text-center labeConnex1">Changement du mot de passe</p>
+                  <p className="labeConnex1 mb-6 text-center text-lg">Changement du mot de passe</p>
 
-                  <div className="flex flex-col mr-10 ml-36">
+                  <div className="ml-36 mr-10 flex flex-col">
                     <div className="mb-5">
-                      <label className="block mb-1 font-serif text-sm text-left">
+                      <label className="mb-1 block text-left font-serif text-sm">
                         Ancien mot de passe :
                       </label>
                       <input
                         required
                         type="password"
                         placeholder="Entrez votre ancien mot de passe"
-                        className="w-full inputConnexion input input-info bg-gray-50"
+                        className="inputConnexion input input-info w-full bg-gray-50"
                         onChange={(e) => handlechangeMPD("ANCIEN_MDP", e.target.value)}
                       />
                     </div>
 
                     <div>
-                      <label className="block mb-1 font-serif text-sm text-left">
+                      <label className="mb-1 block text-left font-serif text-sm">
                         Nouveau mot de passe :
                       </label>
                       <input
@@ -525,7 +525,7 @@ export default function Profile() {
                     </div>
 
                     <div>
-                      <label className="block mb-1 font-serif text-sm text-left">
+                      <label className="mb-1 block text-left font-serif text-sm">
                         Confirmer le nouveau mot de passe :
                       </label>
                       <input
@@ -564,7 +564,7 @@ export default function Profile() {
 
                   <button
                     type="button"
-                    className="block mx-auto btnConnexion"
+                    className="btnConnexion mx-auto block"
                     disabled={isSubmitting || !isPasswordValid || !isValid || password.length === 0}
                     onClick={submitFormMDP}
                   >
@@ -577,42 +577,42 @@ export default function Profile() {
         </div>
 
         <div className="mt-3">
-          <div className="rounded-lg divPorfil">
-            <label className="block mb-2 font-serif text-sm text-left">
+          <div className="divPorfil rounded-lg">
+            <label className="mb-2 block text-left font-serif text-sm">
               <span className="labelProfil">Matricule :</span>&emsp;
               <span className="text-black">{user?.IM}</span>
             </label>
-            <label className="block mb-2 font-serif text-sm text-left">
+            <label className="mb-2 block text-left font-serif text-sm">
               <span className="labelProfil">Fonction :</span>&emsp;
               <span className="text-black">{user?.FONCTION}</span>
             </label>
-            <label className="block mb-2 font-serif text-sm text-left">
+            <label className="mb-2 block text-left font-serif text-sm">
               <span className="labelProfil">Division :</span>&emsp;
               <span className="text-black">{user?.DIVISION}</span>
             </label>
-            <label className="block mb-2 font-serif text-sm text-left">
+            <label className="mb-2 block text-left font-serif text-sm">
               <span className="labelProfil">Corps :</span>&emsp;
               <span className="text-black">{user?.CORPS}</span>
             </label>
-            <label className="block mb-2 font-serif text-sm text-left">
+            <label className="mb-2 block text-left font-serif text-sm">
               <span className="labelProfil">Grade :</span>&emsp;
               <span className="text-black">{user?.GRADE}</span>
             </label>
-            <label className="block mb-2 font-serif text-sm text-left">
+            <label className="mb-2 block text-left font-serif text-sm">
               <span className="labelProfil">E-mail :</span>&emsp;
               <span className="text-black">{user?.EMAIL}</span>
             </label>
-            <label className="block mb-2 font-serif text-sm text-left">
+            <label className="mb-2 block text-left font-serif text-sm">
               <span className="labelProfil">Contact :</span>&emsp;
               <span className="text-black">{user?.CONTACT}</span>
             </label>
           </div>
 
-          <div className="mt-4 rounded-lg divPorfil">
-            <div className="flex items-center mb-4">
+          <div className="divPorfil mt-4 rounded-lg">
+            <div className="mb-4 flex items-center">
               <label className="labelProfil">Congé :</label>
               <select
-                className="w-32 ml-4 select select-info"
+                className="select select-info ml-4 w-32"
                 value={selectedAnnee}
                 onChange={(e) => {
                   toggleTous(e.target.value);

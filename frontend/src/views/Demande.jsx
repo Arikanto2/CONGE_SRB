@@ -2,74 +2,74 @@ import { EyeIcon } from "@heroicons/react/24/solid";
 import axios from "axios";
 import { Printer, RefreshCcw } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import { useSearchParams } from "react-router-dom";
 import PDF from "../Composants/ViewConge.jsx";
 import { useAuth } from "../hooks/useAuth";
-import  "../Style/Demande.css";
+import "../Style/Demande.css";
 
-import DeuxiemePDF from "./PDF1.jsx";
 import { PDFDocument } from "pdf-lib";
+import DeuxiemePDF from "./PDF1.jsx";
 
 import { pdf } from "@react-pdf/renderer";
-import PDF1 from "./PDF.jsx"; // ton composant PDF que tu as refait
-
+import PDF1 from "./PDF.jsx";
 
 export default function Demande() {
   const [selectedConge, setSelectedConge] = useState([]);
   const genererPDF = async (conge) => {
-  try {
-    if (!conge || !user) throw new Error("Données manquantes");
+    try {
+      if (!conge || !user) throw new Error("Données manquantes");
 
-    const nombreJours = calculerNombreJours(conge.DATEDEBUT, conge.DATEFIN);
-    const validation = iscongeValide(conge.VALIDCHEF, conge.VALIDDIV);
+      const nombreJours = calculerNombreJours(conge.DATEDEBUT, conge.DATEFIN);
+      const validation = iscongeValide(conge.VALIDCHEF, conge.VALIDDIV);
 
-    const documentPDF1 = (
-      <PDF1 conge={conge} nbrJR={nombreJours} validation={validation} user={user} />
-    );
+      const documentPDF1 = (
+        <PDF1 conge={conge} nbrJR={nombreJours} validation={validation} user={user} />
+      );
 
-    const documentPDF2 = (
-      <DeuxiemePDF
-        user={user}
-        nbJour={nombreJours}
-        decision={decisionData}
-        conge={selectedConge}
-      />
-    );
+      const documentPDF2 = (
+        <DeuxiemePDF
+          user={user}
+          nbJour={nombreJours}
+          decision={decisionData}
+          conge={selectedConge}
+        />
+      );
 
-    // Générer les deux PDFs séparément
-    const blob1 = await pdf(documentPDF1).toBlob();
-    const blob2 = await pdf(documentPDF2).toBlob();
+      // Générer les deux PDFs séparément
+      const blob1 = await pdf(documentPDF1).toBlob();
+      const blob2 = await pdf(documentPDF2).toBlob();
 
-    // Charger les deux dans pdf-lib
-    const pdfDoc1 = await PDFDocument.load(await blob1.arrayBuffer());
-    const pdfDoc2 = await PDFDocument.load(await blob2.arrayBuffer());
+      // Charger les deux dans pdf-lib
+      const pdfDoc1 = await PDFDocument.load(await blob1.arrayBuffer());
+      const pdfDoc2 = await PDFDocument.load(await blob2.arrayBuffer());
 
-    // Créer un nouveau PDF fusionné
-    const mergedPdf = await PDFDocument.create();
+      // Créer un nouveau PDF fusionné
+      const mergedPdf = await PDFDocument.create();
 
-    // Copier toutes les pages du premier PDF
-    const pages1 = await mergedPdf.copyPages(pdfDoc1, pdfDoc1.getPageIndices());
-    pages1.forEach((page) => mergedPdf.addPage(page));
+      // Copier toutes les pages du premier PDF
+      const pages1 = await mergedPdf.copyPages(pdfDoc1, pdfDoc1.getPageIndices());
+      pages1.forEach((page) => mergedPdf.addPage(page));
 
-    // Copier toutes les pages du deuxième PDF
-    const pages2 = await mergedPdf.copyPages(pdfDoc2, pdfDoc2.getPageIndices());
-    pages2.forEach((page) => mergedPdf.addPage(page));
+      // Copier toutes les pages du deuxième PDF
+      const pages2 = await mergedPdf.copyPages(pdfDoc2, pdfDoc2.getPageIndices());
+      pages2.forEach((page) => mergedPdf.addPage(page));
 
-    // Enregistrer le résultat final
-    const mergedBytes = await mergedPdf.save();
-    const mergedBlob = new Blob([mergedBytes], { type: "application/pdf" });
-    const mergedUrl = URL.createObjectURL(mergedBlob);
+      // Enregistrer le résultat final
+      const mergedBytes = await mergedPdf.save();
+      const mergedBlob = new Blob([mergedBytes], { type: "application/pdf" });
+      const mergedUrl = URL.createObjectURL(mergedBlob);
 
-    // Ouvrir le PDF final dans un nouvel onglet
-    window.open(mergedUrl);
+      // Ouvrir le PDF final dans un nouvel onglet
+      window.open(mergedUrl);
 
-    // Nettoyer après 1 minute
-    setTimeout(() => URL.revokeObjectURL(mergedUrl), 60000);
-  } catch (error) {
-    console.error("Erreur lors de la génération du PDF :", error);
-    alert("Erreur : " + error.message);
-  }
-};
+      // Nettoyer après 1 minute
+      setTimeout(() => URL.revokeObjectURL(mergedUrl), 60000);
+    } catch (error) {
+      toast.error("Erreur lors de la génération du PDF :", error);
+      toast.error("Erreur : " + error.message);
+    }
+  };
 
   const { user, token } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -97,16 +97,6 @@ export default function Demande() {
   const getDecision = async (id) => {
     const reponse = await axios.get(`http://localhost:8000/api/decision/${id}`);
     setDecisionData(reponse.data);
-
-    console.log("=== Décisions récupérées ===");
-    reponse.data.forEach((decision, index) => {
-      console.log(`Décision ${index + 1}:`);
-      Object.entries(decision).forEach(([key, value]) => {
-        console.log(`  ${key}: ${value}`);
-      });
-      console.log("------------------------------");
-    });
-
   };
   const [getAlldemande, setGetAlldemande] = useState([]);
   const [checkbox, setCheckbox] = useState(false);
@@ -125,13 +115,11 @@ export default function Demande() {
   const [isResetAnimating, setIsResetAnimating] = useState(false);
 
   const handleChange = (key, value) => {
-    console.log(`handleChange appelé: ${key} = ${value}`);
     setDonneeDemande((prev) => {
       const newData = {
         ...prev,
         [key]: value,
       };
-      console.log("Nouvelles données:", newData);
       return newData;
     });
     if (errors[key]) {
@@ -151,11 +139,9 @@ export default function Demande() {
           "Content-Type": "application/json",
         },
       });
-      console.log("Demandes récupérées:", response.data);
       setGetAlldemande(response.data || []);
     } catch (error) {
-      console.error("Erreur lors de la récupération des demandes:", error);
-      alert("Erreur lors de la récupération des demandes: " + error.message);
+      toast.error("Erreur lors de la récupération des demandes: " + error.message);
     }
   }, [token, user?.IM]);
 
@@ -227,13 +213,10 @@ export default function Demande() {
     };
 
     try {
-      console.log("Données envoyées:", donneeFinale);
-      console.log("Token:", token);
+      await axios.post("http://localhost:8000/api/faire-demande", donneeFinale);
 
-      const reponse = await axios.post("http://localhost:8000/api/faire-demande", donneeFinale);
+      toast.success("Demande envoyée avec succès");
 
-      console.log("Réponse reçue:", reponse.data);
-      alert(reponse.data.message);
       recupererSolde();
       fetchDemande();
       document.getElementById("my_modal_3").close();
@@ -255,21 +238,23 @@ export default function Demande() {
       setNbrJR(0);
       setErrors({});
     } catch (err) {
+      document.getElementById("my_modal_3").close();
+
       console.error("Erreur complète:", err);
       console.error("Erreur response:", err.response);
       console.error("Erreur status:", err.response?.status);
-      console.error("Erreur data:", err.response?.data);
+      toast.error("Erreur data:", err.response?.data);
 
       // Gestion des erreurs de validation du serveur
       if (err.response?.status === 422 && err.response?.data?.errors) {
         console.log("Erreurs de validation:", err.response.data.errors);
         setErrors(err.response.data.errors);
       } else if (err.response?.status === 400) {
-        alert(err.response.data.message);
+        console.log(err.response.data.message);
       } else if (err.response?.status === 401) {
-        alert("Erreur d'authentification. Veuillez vous reconnecter.");
+        console.log("Erreur d'authentification. Veuillez vous reconnecter.");
       } else {
-        alert(
+        console.log(
           "Erreur lors de l'envoi de la demande: " + (err.response?.data?.message || err.message)
         );
       }
@@ -350,7 +335,6 @@ export default function Demande() {
       const response = await axios.get(`http://localhost:8000/api/solde/${user.IM}`);
 
       const nouveauSolde = response.data.nbr_conge || 0;
-      console.log("Solde récupéré:", nouveauSolde);
       setSoldeConge(nouveauSolde);
     } catch (error) {
       console.error("Erreur lors de la récupération du solde:", error);
@@ -463,9 +447,6 @@ export default function Demande() {
       // Petit délai pour s'assurer que le DOM est prêt et que la page est chargée
       setTimeout(() => {
         ouvrirModalDemande();
-
-        // Optionnel : Afficher une notification discrète
-        console.log("Modal de demande ouvert automatiquement");
       }, 300);
 
       // Nettoyer le paramètre URL après avoir ouvert le modal
@@ -719,11 +700,9 @@ export default function Demande() {
                           className="checkbox h-5 w-5 border-blue-400 bg-blue-100 checked:bg-blue-600 checked:text-white"
                           checked={checkbox}
                           onChange={(e) => {
-                            console.log("Checkbox changé:", e.target.checked);
                             setCheckbox(e.target.checked);
                             if (!e.target.checked) {
                               handleChange("ABSENCE", "");
-                              console.log("ABSENCE vidé");
                             }
                           }}
                         />
@@ -732,7 +711,6 @@ export default function Demande() {
                         className="comboDemande select select-info w-52 bg-gray-50"
                         value={donneeDemande.ABSENCE}
                         onChange={(e) => {
-                          console.log("Demi-journée sélectionnée:", e.target.value);
                           handleChange("ABSENCE", e.target.value);
                         }}
                         disabled={!checkbox}
@@ -925,7 +903,6 @@ export default function Demande() {
                           <div className="mx-auto my-auto">
                             <div className="mx-14 mb-5 mt-14">
                               <PDF
-
                                 IM={selectedConge.IM}
                                 NOM={selectedConge.NOM}
                                 PRENOM={selectedConge.PRENOM}
@@ -937,7 +914,6 @@ export default function Demande() {
                                 ref={selectedConge.Ref}
                                 joursADebiter={[]}
                                 decision={decisionData}
-
                               />
                             </div>
                           </div>
