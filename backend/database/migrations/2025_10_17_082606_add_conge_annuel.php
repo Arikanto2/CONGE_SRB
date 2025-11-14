@@ -13,6 +13,9 @@ return new class extends Migration
             $table->integer('IM');
             $table->smallInteger('NBR_CONGE')->nullable();
             $table->string('ANNEE', 128)->nullable();
+            $table->smallInteger('NBR_Auto')->nullable();
+
+
             $table->timestamps();
         });
     }

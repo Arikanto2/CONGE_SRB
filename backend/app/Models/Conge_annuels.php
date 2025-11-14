@@ -11,6 +11,7 @@ class Conge_annuels extends Model
     protected $fillable = [
         'IM',
         'NBR_CONGE',
+        'NBR_Auto',
         'ANNEE',
     ];
     public $timestamps = true;
