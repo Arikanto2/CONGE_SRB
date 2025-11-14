@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
   headerContent: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 60,
+    marginBottom: 50,
   },
   logoBlock: {
     alignItems: "center",
@@ -75,8 +75,8 @@ const styles = StyleSheet.create({
   },
   textEnd: {
     textAlign: "right",
-    marginTop: 20,
-    marginBottom: 40,
+    marginTop: 15,
+    marginBottom: 20,
     
   },
 });

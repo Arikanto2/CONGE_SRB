@@ -6,7 +6,7 @@ import logo3 from "../assets/logo3.jpg";
 const styles = StyleSheet.create({
   page: {
     paddingTop: 20,
-    paddingBottom: 32,
+    paddingBottom: 40,
     paddingLeft: 40,
     paddingRight: 40,
     fontFamily: "Times-Roman",
@@ -108,7 +108,7 @@ export default function PDF({ conge, nbrJR, validation, user }) {
           <Text>Lieu de jouissance : {conge.LIEU || ""}.</Text>
         </View>
 
-        <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 50 }}>
+        <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 40 }}>
           <Text>L’intéressé(e)</Text>
           <View style={{ alignItems: "center"  }}>
             <Text>Le chef hiérarchique</Text>

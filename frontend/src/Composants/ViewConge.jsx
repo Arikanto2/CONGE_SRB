@@ -101,7 +101,7 @@ export default function ViewConge({
                 </div>
               ))
             ) : (
-              <p>Congé refusé ou en attente</p>
+            <div className=" text-center mt-14"><p>Congé refusé ou en attente</p></div>
             )}
           </div>
         </div>

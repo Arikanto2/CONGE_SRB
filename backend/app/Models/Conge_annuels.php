@@ -12,7 +12,7 @@ class Conge_annuels extends Model
         'IM',
         'NBR_CONGE',
         'NBR_Auto',
-        'ANNEE',
+        'ANNEE'
     ];
     public $timestamps = true;
     public function personnel()

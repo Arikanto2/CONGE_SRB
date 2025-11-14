@@ -21,6 +21,7 @@ class Demande extends Model
         'LIEU',
         'INTERIM',
         'ABSENCE',
+        
     ];
     public $timestamps = true;
     public function personnel()
