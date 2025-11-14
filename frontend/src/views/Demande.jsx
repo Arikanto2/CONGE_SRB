@@ -109,6 +109,7 @@ export default function Demande() {
   const [nbrJR, setNbrJR] = useState(0);
   const [errors, setErrors] = useState({});
   const [soldeConge, setSoldeConge] = useState(0);
+  const [soldeAuto, setSoldeAuto] = useState(0);
   const [alldemandeChange, setAlldemandeChange] = useState([]);
   const [filtreCategorie, setFiltreCategorie] = useState("");
   const [rechercheTexte, setRechercheTexte] = useState("");
@@ -184,8 +185,10 @@ export default function Demande() {
     }
     if (nbrJR <= 0) {
       newErrors.nbrJR = "Le nombre de jours doit être supérieur à zéro ";
-    } else if (nbrJR > 15) {
+    } else if (donneeDemande.CATEGORIE === "Congé" && nbrJR > 15) {
       newErrors.nbrJR = "Le nombre de jours ne peut pas dépasser 15 ";
+    }else if (donneeDemande.CATEGORIE === "Autorisation d'absence" && nbrJR > 3) {
+      newErrors.nbrJR = "Le nombre de jours ne peut pas dépasser 3 ";
     }
 
     // Validation du lieu
@@ -335,7 +338,9 @@ export default function Demande() {
       const response = await axios.get(`http://localhost:8000/api/solde/${user.IM}`);
 
       const nouveauSolde = response.data.nbr_conge || 0;
+      const nouveauSoldeAuto = response.data.nbrAuto || 0;
       setSoldeConge(nouveauSolde);
+      setSoldeAuto(nouveauSoldeAuto);
     } catch (error) {
       console.error("Erreur lors de la récupération du solde:", error);
     }
@@ -620,7 +625,7 @@ export default function Demande() {
                   <div className="mb-3 flex items-center justify-center gap-4">
                     <div className="flex items-center gap-4">
                       <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-lg font-semibold text-blue-700 shadow-md ring-2 ring-blue-500 ring-offset-2">
-                        {soldeConge}
+                        {donneeDemande["CATEGORIE"] == "Autorisation d'absence"? soldeAuto: soldeConge}
                       </div>
                       <span className="text-sm text-gray-600">Jours restants dans votre solde</span>
                     </div>
@@ -865,7 +870,7 @@ export default function Demande() {
                     <td className="text-center">
                       {conge.NOM_CHEF && conge.PRENOM_CHEF
                         ? `${conge.NOM_CHEF} ${conge.PRENOM_CHEF}`
-                        : "Non assigné"}
+                        : "Préfet"}
                       <br />
                       {new Date(conge.updated_at).toLocaleDateString("fr-FR")}
                     </td>
@@ -914,6 +919,9 @@ export default function Demande() {
                                 ref={selectedConge.Ref}
                                 joursADebiter={[]}
                                 decision={decisionData}
+                                date={new Date(selectedConge.updated_at).toLocaleDateString(
+                                  "fr-FR"
+                                )}
                               />
                             </div>
                           </div>

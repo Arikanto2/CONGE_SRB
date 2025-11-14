@@ -112,38 +112,28 @@ class ProfilController extends Controller
             if ($nb_jour <= 0) {
                 return response()->json(['message' => 'La date de fin doit être postérieure à la date de début.'], 400);
             }
+            if ($validatedData['CATEGORIE'] == "Autorisation d'absence") {
+                if ($nb_jour > 3) {
+                    return response()->json(['message' => 'Le nombre de jours pour une autorisation d\'absence ne peut pas dépasser 3 jours.'], 400);
+                }
+            }
             $totalSolde = Conge_annuels::where('IM', $validatedData['IM'])->sum('NBR_CONGE');
-            if ($totalSolde < $nb_jour) {
-                return response()->json(['message' => 'Solde de congé annuel insuffisant. Vous avez ' . $totalSolde . ' jour(s) disponible(s).'], 400);
+            $soldeAuto = Conge_annuels::where('IM', $validatedData['IM'])
+                ->where('ANNEE', date('Y'))
+                ->value('NBR_Auto');
+            if ($validatedData['CATEGORIE'] == 'Congé') {
+                if ($nb_jour > $totalSolde) {
+                    return response()->json(['message' => 'Solde de congé annuel insuffisant.'], 400);
+                }
+            } elseif ($validatedData['CATEGORIE'] == 'Autorisation d\'absence') {
+                if ($nb_jour > $soldeAuto) {
+                    return response()->json(['message' => 'Solde d\'autorisation insuffisant.'], 400);
+                }
             }
             $fonction = Personnel::where('IM', $validatedData['IM'])->value('FONCTION');
-            if ($fonction === 'Chef de division') {
+            if ($fonction != 'Personnel') {
                 $validatedData['VALIDDIV'] = 'Validé';
                 $validatedData['VALIDCHEF'] = 'En attente';
-            } else if ($fonction === 'Chef de service') {
-                $validatedData['VALIDDIV'] = 'Validé';
-                $validatedData['VALIDCHEF'] = 'Validé';
-
-                // Déduire les jours du solde de congé pour les chefs de service
-                $congeAnnuel = Conge_annuels::where('IM', $validatedData['IM'])
-                    ->where('NBR_CONGE', '>', 0)
-                    ->orderBy('ANNEE', 'desc')
-                    ->get();
-
-                $joursRestants = $nb_jour;
-                foreach ($congeAnnuel as $conge) {
-                    if ($joursRestants <= 0) break;
-
-                    if ($conge->NBR_CONGE >= $joursRestants) {
-                        $conge->NBR_CONGE -= $joursRestants;
-                        $conge->save();
-                        $joursRestants = 0;
-                    } else {
-                        $joursRestants -= $conge->NBR_CONGE;
-                        $conge->NBR_CONGE = 0;
-                        $conge->save();
-                    }
-                }
             } else {
                 $validatedData['VALIDDIV'] = 'En attente';
                 $validatedData['VALIDCHEF'] = 'En attente';
@@ -172,7 +162,10 @@ class ProfilController extends Controller
     public function getSolde($id)
     {
         $n = Conge_annuels::where('IM', $id)->sum('NBR_CONGE');
-        return response()->json(['nbr_conge' => $n], 200);
+        $nb = Conge_annuels::where('IM', $id)
+            ->where('ANNEE', date('Y'))
+            ->value('NBR_Auto');
+        return response()->json(['nbr_conge' => $n, 'nbrAuto' => $nb], 200);
     }
 
     public function getAlldemande($id)
@@ -186,7 +179,7 @@ class ProfilController extends Controller
                 'personnel.PRENOM',
                 'chef.NOM as NOM_CHEF',
                 'chef.PRENOM as PRENOM_CHEF'
-            )
+            )->orderBy('conge_absence.created_at', 'desc')
             ->get();
 
         return response()->json($demandes, 200);
@@ -195,5 +188,17 @@ class ProfilController extends Controller
     {
         $decision = Decision::where('id_conge_absence', $id)->get();
         return response()->json($decision, 200);
+    }
+    public function createCongeAnnuel()
+    {
+        $IM = Personnel::select('IM')->get();
+        foreach ($IM as $personne) {
+            Conge_annuels::create([
+                'IM' => $personne->IM,
+                'ANNEE' => date('Y'),
+                'NBR_CONGE' => 30,
+                'NBR_Auto' => 15,
+            ]);
+        }
     }
 }
