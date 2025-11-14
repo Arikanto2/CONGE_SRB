@@ -142,7 +142,6 @@ export default function Accueil() {
     ],
   };
 
-
   const options = {
     responsive: true,
     maintainAspectRatio: false,
@@ -231,7 +230,6 @@ export default function Accueil() {
         </div>
       </div>
 
-      {/* --- Tableau validation --- */}
       {(isChefDivision || isChefService) && (
         <div className="card mx-3 mt-7 bg-base-100 shadow-xl">
           <div className="card-body">

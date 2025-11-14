@@ -80,25 +80,45 @@ class AccueilController extends Controller
         $demandeJours = Demande::where('Ref', $item_ref)
             ->selectRaw('("DATEFIN" - "DATEDEBUT") + 1 AS nb_jrs')
             ->value('nb_jrs');
+
+        $demande = Demande::where('Ref', $item_ref)->first();
+
         $joursADebiter = [];
 
-        foreach ($congeAnnuel as $conge) {
-            if ($demandeJours <= 0) break;
+        if ($demande) {
+            if ($demande->CATEGORIE === 'Congé' && $demande->TYPE === 'Congé annuel') {
+                foreach ($congeAnnuel as $conge) {
+                    if ($demandeJours <= 0) break;
 
-            $reste = $conge->NBR_CONGE;
+                    $reste = $conge->NBR_CONGE;
+                    if ($reste <= 0) continue;
 
-            if ($reste <= 0) continue;
+                    $debiter = min($reste, $demandeJours);
 
-            $debiter = min($reste, $demandeJours);
+                    $joursADebiter[] = [
+                        'id' => $conge->id,
+                        'annee' => $conge->ANNEE,
+                        'jours' => $debiter
+                    ];
 
-            $joursADebiter[] = [
-                'id' => $conge->id,
-                'annee' => $conge->ANNEE,
-                'jours' => $debiter
-            ];
+                    $demandeJours -= $debiter;
+                }
+            }
 
-            $demandeJours -= $debiter;
+            if ($demande->CATEGORIE === "Autorisation d'absence") {
+                $congeFirst = $congeAnnuel->where('ANNEE', date('Y'))->first();
+
+                if ($congeFirst) {
+                    $joursADebiter[] = [
+                        'id' => $congeFirst->id,
+                        'annee' => $congeFirst->ANNEE,
+                        'jours' => min($demandeJours, $congeFirst->NBR_Auto)
+                    ];
+                }
+            }
+
         }
+
         return response()->json([
             'joursADebiter' => $joursADebiter,
             'congeAnnuel' => $demandeJours,
@@ -121,53 +141,65 @@ class AccueilController extends Controller
 
 
     public function update(Request $request, string $id) {
+
         $fonction = $request->query('fonction');
-
         $action = $request->query('action');
-
         $im = $request->query('IM');
-
-        $Total_conge = Conge_annuels::where('IM', $im)->sum('NBR_CONGE');
 
         if(!$fonction) {
             return response()->json(['message' => 'Fonction manquante'], 400);
         }
-    
-        $demande = Demande::findOrFail($id);
 
+        $demande = Demande::findOrFail($id);
+        $categorie = $demande->CATEGORIE;
+        $type = $demande->TYPE;
+
+        $Total_conge = Conge_annuels::where('IM', $im)->sum('NBR_CONGE');
+        $Total_auto = Conge_annuels::where('IM', $im)
+            ->where('ANNEE', date('Y'))
+            ->value('NBR_Auto');
+
+        // --- REJET ---
         if ($action === 'rejeter') {
+
             if($fonction === 'Chef de division'){
                 $demande->VALIDDIV = 'Refusé';
                 $demande->VALIDCHEF = 'Refusé';
-            }elseif($fonction === 'Chef de service'){
+            }
+            elseif($fonction === 'Chef de service'){
                 $demande->VALIDCHEF = 'Refusé';
-            } else{
+            }
+            else{
                 return response()->json(['message' => 'Role non autorisé'], 403);
             }
-    
+
             $demande->save();
-    
-            return response()->json([
-                'message' => 'Demande Refusée.'
-            ]);
-        } else{
-            if($fonction === 'Chef de division'){
-                $demande->VALIDDIV = 'Validé';
-            }elseif($fonction === 'Chef de service'){
-                $demande->VALIDCHEF = 'Validé';
 
-                $joursADebiter = $request->input('joursADebiter');
+            return response()->json(['message' => 'Demande Refusée.']);
+        }
 
-                //// modification
-                if (!empty($joursADebiter) && is_array($joursADebiter)) {
+        // --- VALIDATION ---
+        if($fonction === 'Chef de division'){
+            $demande->VALIDDIV = 'Validé';
+        }
+        elseif($fonction === 'Chef de service'){
+
+            $demande->VALIDCHEF = 'Validé';
+            $joursADebiter = $request->input('joursADebiter');
+
+            // Congé annuel
+            if ($categorie === 'Congé' && $type === 'Congé annuel') {
+
+                if (!empty($joursADebiter)) {
+
+                    // modification
                     foreach ($joursADebiter as $item) {
-                        $solde = Conge_annuels::where('id', $item['id'])->firstOrFail();
-                        $solde-> NBR_CONGE -= $item['jours'];
+                        $solde = Conge_annuels::findOrFail($item['id']);
+                        $solde->NBR_CONGE -= $item['jours'];
                         $solde->save();
                     }
-                }
-                /// Insertion  
-                if (!empty($joursADebiter) && is_array($joursADebiter)) {
+
+                    // insertion
                     foreach ($joursADebiter as $item) {
                         decision::create([
                             'id_conge_absence' => $id,
@@ -177,23 +209,44 @@ class AccueilController extends Controller
                         ]);
                     }
                 }
-            } else{
-                return response()->json(['message' => 'Role non autorisé'], 403);
             }
 
-            $demande->save();
+            // Autorisation d'absence
+            if($categorie === "Autorisation d'absence"){
 
-            if($fonction === 'Chef de division'){
-                return response()->json([
-                    'message' => 'Demande validée.',
-                ]);
-            }elseif($fonction === 'Chef de service'){
-                return response()->json([
-                    'message' => 'Demande validée et decision enregistrée.',
-                ]);
-            }        
+                if (!empty($joursADebiter)) {
+
+                    foreach ($joursADebiter as $item) {
+                        $solde = Conge_annuels::findOrFail($item['id']);
+                        $solde->NBR_Auto -= $item['jours'];
+                        $solde->save();
+                    }
+
+                    foreach ($joursADebiter as $item) {
+                        decision::create([
+                            'id_conge_absence' => $id,
+                            'congeDebite' => $item['jours'],
+                            'an' => $item['annee'],
+                            'soldeApres' => $Total_auto,
+                        ]);
+                    }
+                }
+            }
+
         }
+        else{
+            return response()->json(['message' => 'Role non autorisé'], 403);
+        }
+
+        $demande->save();
+
+        if($fonction === 'Chef de division'){
+            return response()->json(['message' => 'Demande validée.']);
+        }
+
+        return response()->json(['message' => 'Demande validée et décision enregistrée.']);
     }
+
 
 
     public function destroy(string $id) {}
