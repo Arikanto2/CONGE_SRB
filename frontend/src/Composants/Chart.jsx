@@ -64,7 +64,19 @@ export default function GanttChart({ tasks = [], dayWidth = 28 }) {
   }, [filterStart, filterEnd, minDate, maxDate]);
 
   const visibleTasks = useMemo(() => {
-    return normalized.filter((t) => t._end >= filteredMin && t._start <= filteredMax);
+    return normalized
+      .filter((t) => t._end >= filteredMin && t._start <= filteredMax)
+      .map((t) => {
+        const clippedStart = t._start < filteredMin ? filteredMin : t._start;
+        const clippedEnd = t._end > filteredMax ? filteredMax : t._end;
+
+        return {
+          ...t,
+          _visibleStart: clippedStart,
+          _visibleEnd: clippedEnd,
+          _visibleDuration: daysBetween(clippedStart, clippedEnd) + 1,
+        };
+      });
   }, [normalized, filteredMin, filteredMax]);
 
   const totalDays = useMemo(
@@ -137,6 +149,7 @@ export default function GanttChart({ tasks = [], dayWidth = 28 }) {
           <label className="text-sm text-slate-600">Au :</label>
           <input
             type="date"
+            min={filterStart || undefined}
             className="rounded border px-2 py-1 text-sm"
             value={filterEnd}
             onChange={(e) => setFilterEnd(e.target.value)}
@@ -212,12 +225,12 @@ export default function GanttChart({ tasks = [], dayWidth = 28 }) {
                   </div>
                   <div
                     className="absolute left-0 top-1"
-                    style={{ transform: `translateX(${dateToX(t._start)}px)` }}
+                    style={{ transform: `translateX(${dateToX(t._visibleStart)}px)` }}
                   >
                     <div
                       className={`rounded-md ${getColorForStatus(t.status)}`}
                       style={{
-                        width: Math.max(8, t._duration * dayWidth - 6),
+                        width: Math.max(8, t._visibleDuration * dayWidth - 6),
                         height: BAR_HEIGHT,
                       }}
                       title={`${t.name}: ${t.start} → ${t.end}`}
