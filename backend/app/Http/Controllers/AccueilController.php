@@ -105,7 +105,7 @@ class AccueilController extends Controller
                 }
             }
 
-            if ($demande->CATEGORIE === "Autorisation d'absence") {
+            elseif ($demande->CATEGORIE === "Autorisation d'absence") {
                 $congeFirst = $congeAnnuel->where('ANNEE', date('Y'))->first();
 
                 if ($congeFirst) {
@@ -115,6 +115,17 @@ class AccueilController extends Controller
                         'jours' => min($demandeJours, $congeFirst->NBR_Auto)
                     ];
                 }
+            }
+            else{
+                $congeAnnuel = $congeAnnuel->sortByDesc('ANNEE')->values();
+
+                $conge = $congeAnnuel->first();
+                
+                $joursADebiter[] = [
+                    'id' => $conge->id,
+                    'annee' => $conge->ANNEE,
+                    'jours' => $demandeJours
+                ];
             }
 
         }
@@ -159,7 +170,6 @@ class AccueilController extends Controller
             ->where('ANNEE', date('Y'))
             ->value('NBR_Auto');
 
-        // --- REJET ---
         if ($action === 'rejeter') {
 
             if($fonction === 'Chef de division'){
@@ -178,7 +188,6 @@ class AccueilController extends Controller
             return response()->json(['message' => 'Demande Refusée.']);
         }
 
-        // --- VALIDATION ---
         if($fonction === 'Chef de division'){
             $demande->VALIDDIV = 'Validé';
         }
@@ -187,7 +196,6 @@ class AccueilController extends Controller
             $demande->VALIDCHEF = 'Validé';
             $joursADebiter = $request->input('joursADebiter');
 
-            // Congé annuel
             if ($categorie === 'Congé' && $type === 'Congé annuel') {
 
                 if (!empty($joursADebiter)) {
@@ -210,9 +218,7 @@ class AccueilController extends Controller
                     }
                 }
             }
-
-            // Autorisation d'absence
-            if($categorie === "Autorisation d'absence"){
+            elseif($categorie === "Autorisation d'absence"){
 
                 if (!empty($joursADebiter)) {
 
@@ -231,8 +237,16 @@ class AccueilController extends Controller
                         ]);
                     }
                 }
+            }else{
+                foreach ($joursADebiter as $item) {
+                    decision::create([
+                        'id_conge_absence' => $id,
+                        'congeDebite' => $item['jours'],
+                        'an' => $item['annee'],
+                        'soldeApres' => $Total_conge,
+                    ]);
+                }
             }
-
         }
         else{
             return response()->json(['message' => 'Role non autorisé'], 403);
