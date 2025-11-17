@@ -444,7 +444,7 @@ export default function Accueil() {
           Faire une demande
         </button>
         <button className="btn btn-outline" onClick={() => navigate("/Statistique")}>
-          Voir mon historique
+          Vue globale des congés
         </button>
       </div>
     </div>
