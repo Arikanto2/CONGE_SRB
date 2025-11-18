@@ -1,10 +1,8 @@
-
-
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useAuth } from "../hooks/useAuth";
 import logo4 from "../assets/logo4.png";
+import { useAuth } from "../hooks/useAuth";
 import "../Style/Login.css";
 
 export default function Profile() {
@@ -22,9 +20,9 @@ export default function Profile() {
   const { user, token, updateUser } = useAuth();
   useEffect(() => {
     if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     } else {
-      delete axios.defaults.headers.common['Authorization'];
+      delete axios.defaults.headers.common["Authorization"];
     }
   }, [token]);
 
@@ -663,26 +661,25 @@ export default function Profile() {
                 <p className="labelProfil">Solde acquis</p>
                 <p className="valueConge">{isTous ? Annee.length * 30 + " Jours" : "30 jours"}</p>
               </div>
+
               <div className="flex-1">
                 <p className="labelProfil">Jours utilisés</p>
-                <p className="valueConge">
-                  <p className="valueConge">
-                    {congeSelectionne?.NBR_CONGE
-                      ? 30 - congeSelectionne.NBR_CONGE
-                      : _congeAnnuel.reduce(
-                          (somme, element) =>
-                            somme + (element.NBR_CONGE ? 30 - element.NBR_CONGE : 0),
-                          0
-                        )}
-                  </p>
-                </p>
+                <div className="valueConge">
+                  {isTous
+                    ? _congeAnnuel.reduce(
+                        (somme, element) => somme + (30 - (element.NBR_CONGE ?? 0)),
+                        0
+                      )
+                    : 30 - (congeSelectionne?.NBR_CONGE ?? 0)}
+                </div>
               </div>
+
               <div className="flex-1">
                 <p className="labelProfil">Solde restant</p>
                 <p className="valueConge">
-                  {congeSelectionne?.NBR_CONGE
-                    ? congeSelectionne.NBR_CONGE
-                    : _congeAnnuel.reduce((somme, element) => somme + (element.NBR_CONGE || 0), 0)}
+                  {isTous
+                    ? _congeAnnuel.reduce((somme, element) => somme + (element.NBR_CONGE ?? 0), 0)
+                    : (congeSelectionne?.NBR_CONGE ?? 0)}
                 </p>
               </div>
             </div>
