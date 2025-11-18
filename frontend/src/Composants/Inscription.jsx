@@ -27,6 +27,19 @@ export default function Inscription({ activeDefil }) {
       toast.error("Les mots de passe ne correspondent pas ou sont invalides !");
       return;
     }
+    if(donneepers.IM.trim() === "" || donneepers.NOM.trim() === "" || donneepers.PRENOM.trim() === "" || donneepers.CORPS.trim() === "" || donneepers.GRADE.trim() === "" || donneepers.FONCTION.trim() === "" || donneepers.DIVISION.trim() === "" || donneepers.EMAIL.trim() === "" || donneepers.CONTACT.trim() === "" || donneepers.MDP.trim() === ""){
+      toast.error("Veuillez remplir tous les champs obligatoires !");
+      return;
+    }
+    if (!/^[0-9]{6}$/.test(donneepers.IM)) {
+      toast.error("Le matricule doit contenir exactement 6 chiffres.");
+      return;
+    }
+    if (!/^[0-9]{9}$/.test(donneepers.CONTACT)) {
+      toast.error("Le contact doit contenir exactement 9 chiffres.");
+      return;
+    }
+    
 
     if (donneepers.FONCTION === "Chef de service") {
       try {
@@ -76,6 +89,8 @@ export default function Inscription({ activeDefil }) {
       });
 
       toast.success("Inscription réussie !");
+      
+
 
       setDonneepers({
         IM: "",
@@ -199,8 +214,7 @@ export default function Inscription({ activeDefil }) {
                   placeholder="Entrez votre matricule"
                   value={donneepers.IM}
                   className="inputConnexion validator input input-info bg-gray-50"
-                  minLength="6"
-                  maxLength="6"
+                  pattern="^[0-9]{6}$"
                   title="Seuls les chiffres sont autorisés (6 chiffres requis)"
                   onChange={(e) => handleChange("IM", e.target.value)}
                 />
@@ -303,8 +317,7 @@ export default function Inscription({ activeDefil }) {
                     required
                     type="number"
                     value={donneepers.CONTACT}
-                    minLength="9"
-                    maxLength="9"
+                    pattern="^[0-9]{9}$"
                     title="Seuls les chiffres sont autorisés (9 chiffres requis)"
                     className="inputConnexion1 validator input input-info z-10 w-full bg-gray-50"
                     placeholder="Numéro sans indicatif"

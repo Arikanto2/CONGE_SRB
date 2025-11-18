@@ -106,6 +106,12 @@ class InscriptionController extends Controller
         Log::info('Données finales avant création du personnel:', $validated);
 
         $personnel = Personnel::create($validated);
+        Conge_annuels::create([
+            'IM' => $personnel->IM,
+            'ANNEE' => date('Y'),
+            'NBR_CONGE' => 30,
+            'NBR_Auto' => 15,
+        ]);
 
         // Appeler l'assignation automatique après la création
         try {
