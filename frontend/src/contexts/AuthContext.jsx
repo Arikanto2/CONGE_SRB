@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { AuthContext } from "./AuthContextDefinition";
+import { Navigate } from "react-router-dom";
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
@@ -30,7 +31,11 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticated(false);
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    window.location.href = "/";
+    Navigate("/login");
+    // setTimeout(() => {
+    //   toast.success("Déconnexion réussie !");
+    // }, 5000);
+
   }, [token]);
 
   const login = async (credentials) => {
