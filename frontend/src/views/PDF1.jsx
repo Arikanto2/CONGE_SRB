@@ -98,7 +98,7 @@ export default function PDF1({ user, nbJour, decision = [], conge }) {
   const convertNumber = (num) => new FrenchNumbersToWords("fr").convert(num).fullText;
   const jourRestant = () =>{
     if (decision.length > 0) {
-      if(conge.CATEGORIE === "Congé" || conge.CATEGORIE === "Autorisation d'absence"){
+      if(conge.TYPE === "Congé annuel" || conge.CATEGORIE === "Autorisation d'absence"){
         return decision[0].soldeApres - nbJour;
       } else {
         return decision[0].soldeApres;

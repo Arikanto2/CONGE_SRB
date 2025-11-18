@@ -185,7 +185,7 @@ export default function Demande() {
     }
     if (nbrJR <= 0) {
       newErrors.nbrJR = "Le nombre de jours doit être supérieur à zéro ";
-    } else if (donneeDemande.CATEGORIE === "Congé" && nbrJR > 15) {
+    } else if (donneeDemande.TYPE === "Congé annuel" && nbrJR > 15) {
       newErrors.nbrJR = "Le nombre de jours ne peut pas dépasser 15 ";
     } else if (donneeDemande.CATEGORIE === "Autorisation d'absence" && nbrJR > 3) {
       newErrors.nbrJR = "Le nombre de jours ne peut pas dépasser 3 ";
@@ -445,16 +445,14 @@ export default function Demande() {
     document.getElementById("my_modal_3")?.showModal();
   };
 
-  // UseEffect pour ouvrir le modal si le paramètre URL openModal=true est présent
   useEffect(() => {
     const openModal = searchParams.get("openModal");
     if (openModal === "true") {
-      // Petit délai pour s'assurer que le DOM est prêt et que la page est chargée
       setTimeout(() => {
         ouvrirModalDemande();
       }, 300);
+      3;
 
-      // Nettoyer le paramètre URL après avoir ouvert le modal
       setSearchParams({});
     }
   }, [searchParams, setSearchParams]);
@@ -532,7 +530,6 @@ export default function Demande() {
     setFiltreCategorie("");
     setRechercheTexte("");
 
-    // Arrêter l'animation après 1 seconde
     setTimeout(() => {
       setIsResetAnimating(false);
     }, 1000);
@@ -920,9 +917,7 @@ export default function Demande() {
                                 lieu={selectedConge.LIEU}
                                 ref={selectedConge.Ref}
                                 joursADebiter={decisionData || []}
-
-                                decision= 'demande'
-
+                                decision="demande"
                                 date={new Date(selectedConge.updated_at).toLocaleDateString(
                                   "fr-FR"
                                 )}
