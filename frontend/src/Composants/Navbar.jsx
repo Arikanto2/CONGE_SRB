@@ -2,8 +2,8 @@ import { toast } from "react-hot-toast";
 import { NavLink } from "react-router-dom";
 import Swal from "sweetalert2";
 import logo1 from "../assets/logo1.jpg";
-import logo4 from "../assets/logo4.png";
 import logo2 from "../assets/logo2.jpg";
+import logo4 from "../assets/logo4.png";
 import { useAuth } from "../hooks/useAuth";
 import "../Style/App.css";
 
@@ -53,7 +53,7 @@ export default function Navbar() {
             to="/statistique"
             className={({ isActive }) => `menuLink flex-1 ${isActive ? "activeLink" : ""}`}
           >
-            Historique
+            Planning
           </NavLink>
         </div>
 

@@ -187,7 +187,7 @@ export default function Demande() {
       newErrors.nbrJR = "Le nombre de jours doit être supérieur à zéro ";
     } else if (donneeDemande.CATEGORIE === "Congé" && nbrJR > 15) {
       newErrors.nbrJR = "Le nombre de jours ne peut pas dépasser 15 ";
-    }else if (donneeDemande.CATEGORIE === "Autorisation d'absence" && nbrJR > 3) {
+    } else if (donneeDemande.CATEGORIE === "Autorisation d'absence" && nbrJR > 3) {
       newErrors.nbrJR = "Le nombre de jours ne peut pas dépasser 3 ";
     }
 
@@ -625,7 +625,9 @@ export default function Demande() {
                   <div className="mb-3 flex items-center justify-center gap-4">
                     <div className="flex items-center gap-4">
                       <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-lg font-semibold text-blue-700 shadow-md ring-2 ring-blue-500 ring-offset-2">
-                        {donneeDemande["CATEGORIE"] == "Autorisation d'absence"? soldeAuto: soldeConge}
+                        {donneeDemande["CATEGORIE"] == "Autorisation d'absence"
+                          ? soldeAuto
+                          : soldeConge}
                       </div>
                       <span className="text-sm text-gray-600">Jours restants dans votre solde</span>
                     </div>
@@ -918,7 +920,9 @@ export default function Demande() {
                                 lieu={selectedConge.LIEU}
                                 ref={selectedConge.Ref}
                                 joursADebiter={decisionData || []}
+
                                 decision= 'demande'
+
                                 date={new Date(selectedConge.updated_at).toLocaleDateString(
                                   "fr-FR"
                                 )}

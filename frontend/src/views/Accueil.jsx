@@ -173,12 +173,10 @@ export default function Accueil() {
       })
       .catch((error) => console.error("Erreur:", error));
   };
-
   return (
     <div className="flex min-h-screen flex-col bg-base-200">
       <h1 className="mb-4 text-2xl font-bold">Bienvenue, {user?.NOM} </h1>
 
-      {/* --- Graphique + compteur --- */}
       <div className="flex w-full items-center gap-4 p-4">
         <div className="card h-60 w-2/3 bg-base-100 shadow-xl">
           <div className="card-body h-full p-2">
@@ -202,7 +200,6 @@ export default function Accueil() {
         </div>
       </div>
 
-      {/* --- Dernières demandes --- */}
       <div className="card mb-6 bg-base-100 shadow-xl">
         <div className="card-body">
           <h2 className="card-title">Les 3 dernières demandes</h2>
@@ -286,7 +283,6 @@ export default function Accueil() {
                           >
                             👁️
                           </button>
-
                           <dialog id={`modal_${index}`} className="modal">
                             <div className="modal-box relative h-[85vh] max-w-full overflow-y-auto p-0">
                               <form method="dialog">
@@ -316,7 +312,6 @@ export default function Accueil() {
                                   <button
                                     className="btn btn-success btn-circle"
                                     onClick={async (e) => {
-                                      console.log(item.IM);
                                       e.preventDefault();
                                       const modal = document.getElementById(`modal_${index}`);
                                       modal.close();
@@ -451,7 +446,7 @@ export default function Accueil() {
           Faire une demande
         </button>
         <button className="btn btn-outline" onClick={() => navigate("/Statistique")}>
-          Voir mon historique
+          Vue globale des congés
         </button>
       </div>
     </div>
