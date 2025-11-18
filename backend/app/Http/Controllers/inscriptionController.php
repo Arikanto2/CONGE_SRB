@@ -192,7 +192,7 @@ class InscriptionController extends Controller
         $personnel = Personnel::where('IM', $credentials['IM'])->first();
 
         if (!$personnel || !Hash::check($credentials['MDP'], $personnel->MDP)) {
-            return response()->json(['message' => 'Identifiants incorrects'], 401);
+            return response()->json(['message' => 'Identifiant ou mot de passe incorrect'], 401);
         }
 
         try {

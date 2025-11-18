@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserIcon, LockClosedIcon, EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 import { useAuth } from "../hooks/useAuth";
+import toast from "react-hot-toast";
 
 export default function Connexion({ activeDefil }) {
   const navigate = useNavigate();
@@ -10,7 +11,8 @@ export default function Connexion({ activeDefil }) {
   const [IM, setIM] = useState("");
   const [MDP, setMDP] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  
+  
 
   const togglePassword = () => {
     setShowPassword(!showPassword);
@@ -18,7 +20,7 @@ export default function Connexion({ activeDefil }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setError(""); // Clear error when user types
+     // Clear error when user types
     if (name === "IM") setIM(value);
     else if (name === "MDP") setMDP(value);
   };
@@ -27,23 +29,26 @@ export default function Connexion({ activeDefil }) {
     e.preventDefault();
 
     if (!IM || !MDP) {
-      setError("Veuillez remplir tous les champs.");
+      toast.error("Veuillez remplir tous les champs.");
       return;
     }
 
     setLoading(true);
-    setError("");
+    
 
     try {
       const result = await login({ IM, MDP });
 
       if (result.success) {
         navigate("/Accueil");
+        toast.success("Connexion réussie !");
       } else {
-        setError(result.error || "Erreur de connexion");
+        
+        toast.error(result.error || "Erreur de connexion");
       }
     } catch (err) {
-      setError("Erreur de connexion au serveur.");
+      
+      toast.error("Erreur de connexion au serveur.");
       console.error("Erreur de connexion:", err);
     } finally {
       setLoading(false);
@@ -55,12 +60,6 @@ export default function Connexion({ activeDefil }) {
       <form onSubmit={handleSubmit}>
         <div>
           <p className="labeConnex mb-7 text-center">Connexion</p>
-
-          {error && (
-            <div className="mb-4 rounded-md border border-red-200 bg-red-50 p-3">
-              <p className="text-sm text-red-700">{error}</p>
-            </div>
-          )}
 
           <div className="mb-4">
             <label className="text-m block text-left font-serif">Identifiant:</label>

@@ -1,4 +1,4 @@
-import { toast } from "react-hot-toast";
+
 import { NavLink } from "react-router-dom";
 import Swal from "sweetalert2";
 import logo1 from "../assets/logo1.jpg";
@@ -25,7 +25,7 @@ export default function Navbar() {
     }).then((result) => {
       if (result.isConfirmed) {
         logout();
-        toast.success("Déconnexion réussie 👋");
+        
       }
     });
   };
