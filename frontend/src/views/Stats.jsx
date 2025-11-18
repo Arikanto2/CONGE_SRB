@@ -18,7 +18,9 @@ export default function Stats() {
       {tasks.length > 0 ? (
         <GanttChart tasks={tasks} dayWidth={28} />
       ) : (
-        <p className="p-4 text-slate-600">Chargement des données...</p>
+        <div className="flex h-64 flex-col items-center justify-center">
+          <div className="mb-4 h-10 w-10 animate-spin rounded-full border-4 border-blue-500 border-t-transparent"></div>
+        </div>
       )}
     </div>
   );
