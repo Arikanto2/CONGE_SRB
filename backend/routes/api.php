@@ -13,7 +13,7 @@ Route::middleware(['cors'])->group(function () {
     Route::post('/login', [InscriptionController::class, 'login']);
     Route::post('/verify-chef-service', [InscriptionController::class, 'verifyChefService']);
     Route::post('/verify-chef-division', [InscriptionController::class, 'verifyChefDivision']);
-
+    Route::post('/creat-conge-annuel', [ProfilController::class, 'createCongeAnnuel']);
 
 
     Route::resource('Accueil', AccueilController::class );
@@ -31,5 +31,6 @@ Route::middleware(['cors'])->group(function () {
         Route::get('/solde/{id}', [ProfilController::class, 'getSolde']);
         Route::get('/all-demande/{id}', [ProfilController::class, 'getAlldemande']);
         Route::get('/decision/{id}', [ProfilController::class, 'getDecision']);
+        
     });
 });

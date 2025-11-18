@@ -96,6 +96,16 @@ export default function PDF1({ user, nbJour, decision = [], conge }) {
     dateString ? new Date(dateString).toLocaleDateString("fr-FR") : "";
 
   const convertNumber = (num) => new FrenchNumbersToWords("fr").convert(num).fullText;
+  const jourRestant = () =>{
+    if (decision.length > 0) {
+      if(conge.CATEGORIE === "Congé" || conge.CATEGORIE === "Autorisation d'absence"){
+        return decision[0].soldeApres - nbJour;
+      } else {
+        return decision[0].soldeApres;
+      }
+    }
+    return 0;
+  }
 
   return (
     <Document>
@@ -152,8 +162,8 @@ export default function PDF1({ user, nbJour, decision = [], conge }) {
             </Text>
             <Text style={styles.listItem}>
               • Droit de congé restant :{" "}
-              {convertNumber(decision.length > 0 ? decision[0].soldeApres - nbJour : 0)} (
-              {decision.length > 0 ? decision[0].soldeApres - nbJour : 0}) jours
+              {convertNumber(jourRestant())} (
+              {jourRestant()}) jours
             </Text>
           </View>
         </View>

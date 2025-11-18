@@ -1,7 +1,8 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import "./Style/App.css";
-
+import axios from "axios";
+import { useEffect } from "react";
 import Layout from "./Composants/Layout.jsx";
 import ProtectedRoute from "./Composants/ProtectedRoute.jsx";
 import ToastProvider from "./Composants/Toaster";
@@ -12,10 +13,29 @@ import PDF from "./views/PDF.jsx";
 import PDF1 from "./views/PDF1.jsx";
 import Profile from "./views/Profile.jsx";
 import Stats from "./views/Stats.jsx";
-
 import "@fontsource/viaoda-libre";
 
 function App() {
+  useEffect(() => {
+    
+    
+    const creatConge = async () => {
+      const date = new Date();
+      const isPremierJanvier = date.getDate() === 1 && date.getMonth() === 0;
+
+      if (!isPremierJanvier) {
+        return;
+      }
+      try {
+         await axios.post("http://localhost:8000/api/creat-conge-annuel");
+      
+      } catch (error) {
+        console.error("Erreur lors de la création des congés annuels :", error);
+      }
+    };
+
+    creatConge();
+  }, []);
   return (
     <AuthProvider>
       <BrowserRouter>

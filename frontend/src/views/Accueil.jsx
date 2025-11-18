@@ -89,6 +89,7 @@ export default function Accueil() {
       user_im: user.IM,
       division: user.DIVISION,
     });
+    
 
     fetch(`http://127.0.0.1:8000/api/Accueil?${params.toString()}`)
       .then((res) => res.json())
@@ -104,6 +105,7 @@ export default function Accueil() {
   }, [user]);
 
   const Validation = isChefDivision ? ValidationDiv : isChefService ? ValidationChef : [];
+  
 
   const congesMensuels = Array(12).fill(0);
 

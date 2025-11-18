@@ -31,13 +31,12 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "bold",
   },
-  
+
   section: {
     marginBottom: 10,
     fontSize: 11,
-    
   },
-  
+
   bold: {
     fontWeight: "bold",
   },
@@ -69,7 +68,10 @@ export default function PDF({ conge, nbrJR, validation, user }) {
 
         <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 40 }}>
           <View style={styles.section}>
-            <Image src={logo} style={{ height: 100, width: 115, marginBottom: 10, alignSelf: "center"}} />
+            <Image
+              src={logo}
+              style={{ height: 100, width: 115, marginBottom: 10, alignSelf: "center" }}
+            />
             <View style={{ alignItems: "center" }}>
               <Text>MINISTÈRE DE L’ÉCONOMIE ET DES FINANCES</Text>
               <Text>SECRÉTARIAT GÉNÉRAL</Text>
@@ -85,9 +87,7 @@ export default function PDF({ conge, nbrJR, validation, user }) {
           </Text>
         </View>
 
-        <Text style={styles.demande}>
-          DEMANDE D’AUTORISATION D’ABSENCE
-        </Text>
+        <Text style={styles.demande}>DEMANDE D’AUTORISATION D’ABSENCE</Text>
 
         <View style={styles.section}>
           <Text>n° 218564-MEF/SG/DGBF/DB/SRB-HAUTE MATSIATRA</Text>
@@ -104,13 +104,17 @@ export default function PDF({ conge, nbrJR, validation, user }) {
             À compter du {formatDate(conge.DATEDEBUT)} au {formatDate(conge.DATEFIN)}.
           </Text>
           <Text>Suppléant : {conge.INTERIM || ""}</Text>
-          <Text>Motif : {conge.MOTIF || ""}.</Text>
+          <Text>
+            Motif : {conge.MOTIF} ({conge.CATEGORIE}
+            {conge.ABSENCE ? " - demi-journée " + conge.ABSENCE : ""}).
+          </Text>
+
           <Text>Lieu de jouissance : {conge.LIEU || ""}.</Text>
         </View>
 
         <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 40 }}>
           <Text>L’intéressé(e)</Text>
-          <View style={{ alignItems: "center"  }}>
+          <View style={{ alignItems: "center" }}>
             <Text>Le chef hiérarchique</Text>
             <Text>{validation || "En attente"}</Text>
           </View>

@@ -917,8 +917,8 @@ export default function Demande() {
                                 Interim={selectedConge.INTERIM}
                                 lieu={selectedConge.LIEU}
                                 ref={selectedConge.Ref}
-                                joursADebiter={[]}
-                                decision={decisionData}
+                                joursADebiter={decisionData || []}
+                                decision= 'demande'
                                 date={new Date(selectedConge.updated_at).toLocaleDateString(
                                   "fr-FR"
                                 )}

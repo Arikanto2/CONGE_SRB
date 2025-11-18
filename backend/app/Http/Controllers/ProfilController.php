@@ -191,14 +191,29 @@ class ProfilController extends Controller
     }
     public function createCongeAnnuel()
     {
-        $IM = Personnel::select('IM')->get();
-        foreach ($IM as $personne) {
-            Conge_annuels::create([
-                'IM' => $personne->IM,
-                'ANNEE' => date('Y'),
-                'NBR_CONGE' => 30,
-                'NBR_Auto' => 15,
-            ]);
+        $annee = date('Y');
+        $IMs = Personnel::select('IM')->get();
+        $created = 0;
+
+        foreach ($IMs as $personne) {
+            // Vérifier si déjà créé
+            $existe = Conge_annuels::where('IM', $personne->IM)
+                ->where('ANNEE', $annee)
+                ->exists();
+
+            if (!$existe) {
+                Conge_annuels::create([
+                    'IM' => $personne->IM,
+                    'ANNEE' => $annee,
+                    'NBR_CONGE' => 30,
+                    'NBR_Auto' => 15,
+                ]);
+                $created++;
+            }
         }
+
+        
+        return response()->json(['message' => "Congés annuels créés pour {$created} personnels pour l'année {$annee}."], 201);
     }
+    
 }
