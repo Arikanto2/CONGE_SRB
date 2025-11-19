@@ -17,7 +17,7 @@ class InscriptionController extends Controller
 
         // Règles de validation
         $rules = [
-            'IM' => ['required', 'unique:personnel,IM'],
+            'IM' => ['required', 'unique:personnel,IM', 'max:6', 'min:6'],
             'IM_CHEF' => ['nullable', 'exists:personnel,IM'], // Frontend envoie IM_CHEF
             'NOM' => ['required', 'string', 'max:128'],
             'PRENOM' => ['required', 'string', 'max:128'],
@@ -25,7 +25,7 @@ class InscriptionController extends Controller
             'CORPS' => ['required', 'string', 'max:128'],
             'GRADE' => ['required', 'string', 'max:128'],
             'FONCTION' => ['required', 'string', 'max:32'],
-            'CONTACT' => ['required', 'string', 'max:128'],
+            'CONTACT' => ['required', 'string', 'max:9', 'min:9'],
             'DIVISION' => ['required', 'string', 'max:128'],
             'MDP' => ['required', 'string', 'min:8'],
         ];
@@ -46,6 +46,8 @@ class InscriptionController extends Controller
             'DIVISION.required' => 'La division est obligatoire.',
             'MDP.required' => 'Le mot de passe est obligatoire.',
             'MDP.min' => 'Le mot de passe doit contenir au moins 8 caractères.',
+            'IM.min' => 'L\'IM doit contenir exactement 6 caractères.',
+            'IM.max' => 'L\'IM doit contenir exactement 6 caractères.',
         ];
 
         // Validation avec messages personnalisés
@@ -295,7 +297,7 @@ class InscriptionController extends Controller
             'CORPS' => ['required', 'string', 'max:128'],
             'GRADE' => ['required', 'string', 'max:128'],
             'FONCTION' => ['required', 'string', 'max:32'],
-            'CONTACT' => ['required', 'string', 'max:128'],
+            'CONTACT' => ['required', 'string', 'max:9', 'min:9'],
             'DIVISION' => ['required', 'string', 'max:128'],
             'PHOTO_PROFIL' => ['nullable', 'file', 'image'],
             'MDP' => ['nullable', 'string', 'min:8'],
@@ -312,6 +314,8 @@ class InscriptionController extends Controller
             'GRADE.required' => 'Le grade est obligatoire.',
             'FONCTION.required' => 'La fonction est obligatoire.',
             'CONTACT.required' => 'Le contact est obligatoire.',
+            'CONTACT.min' => 'Le contact doit contenir au moins 9 chiffres.',
+            'CONTACT.max' => 'Le contact ne peut pas dépasser 9 chiffres.',
             'DIVISION.required' => 'La division est obligatoire.',
         ];
 
