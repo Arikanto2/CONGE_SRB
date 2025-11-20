@@ -1,128 +1,116 @@
-.loging{
-    height: 85vh;
-    width: 85vh;
-    box-shadow: 10px 10px 15px rgba(0,0,0,0.1);
-    border-radius: 3%;
-    
+.loging {
+  height: 85vh;
+  width: 85vh;
+  box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.1);
+  border-radius: 3%;
 }
 
-.connexConteneur{
-    top: 20vh;
-    right: 8vh;
+.connexConteneur {
+  top: 20vh;
+  right: 8vh;
 }
-.labeConnex{
-    font-family: 'Viaoda Libre', serif;
-    font-size: x-large;
-    margin-bottom: 7vh;
+.labeConnex {
+  font-family: "Viaoda Libre", serif;
+  font-size: x-large;
+  margin-bottom: 7vh;
 }
-.labeSRB{
-    font-family: 'Viaoda Libre', serif;
-    font-size: 18px;
-    color: #03303b;
-}
-
-.labeConnex1{
-    font-family: 'Viaoda Libre', serif;
-    font-size: x-large;
-    margin-bottom: 2vh;
-}
-.inputConnexion{
-    
-    height: 5vh;
-    padding: 1vh;
-    border: 1px solid #D1D5DB;
-    border-radius: 5px;
-    outline: none;
-    width: 30vh;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
-
-    
-    
-}
-input{
-    font-size: 12px;
-    font-family: serif;
-}
-.inputConnexion1{
-    width: 100%;
-    height: 5vh;
-    border: 1px solid #D1D5DB;
-    border-radius: 5px;
-    outline: none;
-    padding-left: 6vh;
-    width: 30vh;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
-    
-    
-}
-.inputConnexion:focus{
-
-    background-color: white;
-    
-
-}
-.inputConnexion1:focus{
-    border-color: #3B82F6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
-    background-color: white;
-    
-
+.labeSRB {
+  font-family: "Viaoda Libre", serif;
+  font-size: 18px;
+  color: #03303b;
 }
 
-.btnConnexion{
-    background: linear-gradient(to right,#3B82F6, #06B6D4);
-    color: white;
-    padding: 0.5vh 2vh;
-    border-radius: 2px;
-    font-size: 13px;
-    font-family: serif;
+.labeConnex1 {
+  font-family: "Viaoda Libre", serif;
+  font-size: x-large;
+  margin-bottom: 2vh;
 }
-.btnConnexion:hover{
-    color: rgb(32, 32, 32);
-    background: linear-gradient(to right,#4886e9, #3cbad0);
-    transition: all 1s;
-    
+.inputConnexion {
+  height: 5vh;
+  padding: 1vh;
+  border: 1px solid #d1d5db;
+  border-radius: 5px;
+  outline: none;
+  width: 30vh;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-.divDefilant{
-    background: linear-gradient(to right,#3B82F6, #06B6D4);
-    
+input {
+  font-size: 12px;
+  font-family: serif;
 }
-.retourConnexion{
-    font-size: 10px;
-    color: #03222a;
+.inputConnexion1 {
+  width: 100%;
+  height: 5vh;
+  border: 1px solid #d1d5db;
+  border-radius: 5px;
+  outline: none;
+  padding-left: 6vh;
+  width: 30vh;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-.retourConnexion:hover{
-    font-size: 10px;
-    color: #3B82F6;
-    
+.inputConnexion:focus {
+  background-color: white;
 }
-option{
-    font-size: 12px;
-    font-family: serif;
+.inputConnexion1:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+  background-color: white;
 }
-select{
-    font-size: 12px;
-    font-family: serif;
+
+.btnConnexion {
+  background: linear-gradient(to right, #3b82f6, #06b6d4);
+  color: white;
+  padding: 0.5vh 2vh;
+  border-radius: 2px;
+  font-size: 13px;
+  font-family: serif;
 }
-.inscriptionLink{
-    font-size: 10px;
-    color: #053b48;
-    cursor: pointer;
+.btnConnexion:hover {
+  color: rgb(32, 32, 32);
+  background: linear-gradient(to right, #4886e9, #3cbad0);
+  transition: all 1s;
 }
-.inscriptionLink:hover{
-    color: #3B82F6;
-    
+.divDefilant {
+  background: linear-gradient(to right, #3b82f6, #06b6d4);
+}
+.retourConnexion {
+  font-size: 10px;
+  color: #03222a;
+}
+.retourConnexion:hover {
+  font-size: 10px;
+  color: #3b82f6;
+}
+option {
+  font-size: 12px;
+  font-family: serif;
+}
+select {
+  font-size: 12px;
+  font-family: serif;
+}
+.inscriptionLink {
+  font-size: 10px;
+  color: #053b48;
+  cursor: pointer;
+}
+.inscriptionLink:hover {
+  color: #3b82f6;
 }
 .logo2 {
-    width: 50px;
-    height: 50px;
-    object-fit: cover;
-    border-radius: 10%; /* ou 50% si tu veux un rond */
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 10%; /* ou 50% si tu veux un rond */
 }
 @keyframes defilement {
-  from { width: 50%;  }
-  to { width: 100%;
-border-radius: 0%; }
+  from {
+    width: 50%;
+  }
+  to {
+    width: 100%;
+    border-radius: 0%;
+  }
 }
 @keyframes defilement1 {
   from {
@@ -139,7 +127,7 @@ border-radius: 0%; }
   }
 }
 @keyframes slideIn {
-    from {
+  from {
     left: 100%;
     width: 0;
     border-bottom-left-radius: 9999px;
@@ -151,19 +139,16 @@ border-radius: 0%; }
     border-bottom-right-radius: 0%;
     border-top-right-radius: 0%;
   }
-  
 }
 
 @keyframes slideOut {
-  from {width: 100%;
+  from {
+    width: 100%;
+  }
+  to {
+    width: 50%;
+  }
 }
-  to {  
-width: 50%;  }
-    
-}
-
-
-
 
 .animate-defilement {
   animation: defilement 2s ease forwards;
@@ -171,11 +156,14 @@ width: 50%;  }
 .animate-defilement1 {
   animation: defilement1 2s ease forwards;
 }
-.animate-slideIn { animation: slideIn 2s ease forwards; }
-.animate-slideOut { animation: slideOut 2s ease forwards; }
+.animate-slideIn {
+  animation: slideIn 2s ease forwards;
+}
+.animate-slideOut {
+  animation: slideOut 2s ease forwards;
+}
 
-.legendMDP{
-    font-size: 8px;
-    color: red !important;
-    
+.legendMDP {
+  font-size: 8px;
+  color: red !important;
 }
