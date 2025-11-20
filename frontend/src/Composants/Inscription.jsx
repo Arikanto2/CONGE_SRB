@@ -92,8 +92,27 @@ export default function InscriptionMultiStep({ activeDefil }) {
       await axios.post(API_URL, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      toast.success("Inscription réussie ! Bienvenue !");
+
+      toast.success("Inscription ");
       activeDefil?.();
+
+      setDonneepers({
+        IM: "",
+        NOM: "",
+        PRENOM: "",
+        CORPS: "",
+        GRADE: "",
+        FONCTION: "",
+        DIVISION: "",
+        EMAIL: "",
+        CONTACT: "",
+        PHOTO_PROFIL: "",
+        MDP: "",
+      });
+      setPassword("");
+      setConfirmMDP("");
+      setSelectedFile(null);
+
     } catch (err) {
       toast.error(err.response?.data?.message || "Erreur d'inscription");
     }
