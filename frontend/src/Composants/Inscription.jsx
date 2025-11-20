@@ -1,14 +1,15 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { CheckCircle, Eye, EyeOff, Upload } from "lucide-react";
+import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 
-export default function Inscription({ activeDefil }) {
-  const [password, setPassword] = useState("");
-  const [confirmMDP, setConfirmMDP] = useState("");
-  const [isValid, setIsValid] = useState(true);
+export default function InscriptionMultiStep({ activeDefil }) {
+  const [step, setStep] = useState(1);
   const [selectedFile, setSelectedFile] = useState(null);
-  const API_URL = "http://localhost:8000/api/inscription";
-  const [donneepers, setDonneepers] = useState({
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  const [donnees, setDonnees] = useState({
     IM: "",
     NOM: "",
     PRENOM: "",
@@ -18,384 +19,351 @@ export default function Inscription({ activeDefil }) {
     DIVISION: "",
     EMAIL: "",
     CONTACT: "",
-    PHOTO_PROFIL: "",
-    MDP: "",
   });
 
-  const submitInscription = async () => {
-    if (!isValid || password.trim() === "" || confirmMDP.trim() === "") {
-      toast.error("Les mots de passe ne correspondent pas ou sont invalides !");
-      return;
-    }
-    if(donneepers.IM.trim() === "" || donneepers.NOM.trim() === "" || donneepers.PRENOM.trim() === "" || donneepers.CORPS.trim() === "" || donneepers.GRADE.trim() === "" || donneepers.FONCTION.trim() === "" || donneepers.DIVISION.trim() === "" || donneepers.EMAIL.trim() === "" || donneepers.CONTACT.trim() === "" || donneepers.MDP.trim() === ""){
-      toast.error("Veuillez remplir tous les champs obligatoires !");
-      return;
-    }
-    if (!/^[0-9]{6}$/.test(donneepers.IM)) {
-      toast.error("Le matricule doit contenir exactement 6 chiffres.");
-      return;
-    }
-    if (!/^[0-9]{9}$/.test(donneepers.CONTACT)) {
-      toast.error("Le contact doit contenir exactement 9 chiffres.");
-      return;
-    }
-    
+  const [password, setPassword] = useState("");
+  const [confirmMDP, setConfirmMDP] = useState("");
 
-    if (donneepers.FONCTION === "Chef de service") {
-      try {
-        const response = await axios.post("http://localhost:8000/api/verify-chef-service");
-        if (response.data.exists) {
-          toast.error("Un chef de service existe déjà. Vous ne pouvez pas en créer un autre.");
-          return;
-        }
-      } catch (error) {
-        console.error("Erreur lors de la vérification du chef de service:", error);
-        toast.error("Une erreur est survenue lors de la vérification du chef de service.");
-        return;
-      }
-    }
+  const API_URL = "http://localhost:8000/api/inscription";
 
-    if (donneepers.FONCTION === "Chef de division") {
-      try {
-        const response = await axios.post("http://localhost:8000/api/verify-chef-division", {
-          DIVISION: donneepers.DIVISION,
-        });
-        if (response.data.exists) {
-          const chef = response.data.chef;
-          toast.error(
-            `Un chef de division existe déjà pour la division "${donneepers.DIVISION}".\n\nChef actuel: ${chef.prenom} ${chef.nom} (IM: ${chef.im})\n\nVous ne pouvez pas créer un autre chef pour cette division.`
-          );
-          return;
-        }
-      } catch (error) {
-        console.error("Erreur lors de la vérification du chef de division:", error);
-        toast.error("Une erreur est survenue lors de la vérification du chef de division.");
-        return;
-      }
+  const handleChange = (field, value) => {
+    setDonnees((prev) => ({ ...prev, [field]: value }));
+  };
+
+  // 5 étapes exactement comme tu veux
+  const steps = [
+    { id: 1, title: "Informations personnelles" },
+    { id: 2, title: "Corps & Grade" },
+    { id: 3, title: "Rôle & Division" },
+    { id: 4, title: "Contact & Photo" },
+    { id: 5, title: "Sécurité" },
+  ];
+
+  const nextStep = () => step < 5 && setStep(step + 1);
+  const prevStep = () => step > 1 && setStep(step - 1);
+
+  const validateStep = () => {
+    switch (step) {
+      case 1:
+        if (!donnees.NOM || !donnees.PRENOM || !donnees.IM)
+          return toast.error("Nom, prénom et matricule sont obligatoires.");
+        if (!/^\d{6}$/.test(donnees.IM)) return toast.error("Matricule : exactement 6 chiffres.");
+        break;
+      case 2:
+        if (!donnees.CORPS || !donnees.GRADE)
+          return toast.error("Corps et grade sont obligatoires.");
+        break;
+      case 3:
+        if (!donnees.FONCTION || !donnees.DIVISION)
+          return toast.error("Veuillez sélectionner fonction et division.");
+        break;
+      case 4:
+        if (!donnees.EMAIL || !donnees.CONTACT)
+          return toast.error("Email et contact obligatoires.");
+        if (!/^\d{9}$/.test(donnees.CONTACT)) return toast.error("Contact : 9 chiffres requis.");
+        if (!/^\S+@\S+\.\S+$/.test(donnees.EMAIL)) return toast.error("Email invalide.");
+        break;
+      case 5:
+        if (password !== confirmMDP) return toast.error("Les mots de passe ne correspondent pas.");
+        if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}/.test(password))
+          return toast.error("Mot de passe faible : 8+ caractères, majuscule, chiffre, spécial.");
+        break;
+      default:
+        break;
     }
+    return true;
+  };
+
+  const handleNext = () => validateStep() && nextStep();
+
+  const handleSubmit = async () => {
+    if (!validateStep()) return;
+
+    const formData = new FormData();
+    Object.entries(donnees).forEach(([k, v]) => formData.append(k, v));
+    if (selectedFile) formData.append("PHOTO_PROFIL", selectedFile);
+    formData.append("MDP", password);
 
     try {
-      const formData = new FormData();
-      Object.keys(donneepers).forEach((key) => {
-        if (key !== "PHOTO_PROFIL") {
-          formData.append(key, donneepers[key]);
-        }
-      });
-      if (selectedFile) {
-        formData.append("PHOTO_PROFIL", selectedFile);
+      for (let pair of formData.entries()) {
+        console.log(pair[0], pair[1]);
       }
+
       await axios.post(API_URL, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-
-      toast.success("Inscription réussie !");
-      
-
-
-      setDonneepers({
-        IM: "",
-        NOM: "",
-        PRENOM: "",
-        CORPS: "",
-        GRADE: "",
-        FONCTION: "",
-        DIVISION: "",
-        EMAIL: "",
-        CONTACT: "",
-        PHOTO_PROFIL: "",
-        MDP: "",
-      });
-      setPassword("");
-      setConfirmMDP("");
-      setSelectedFile(null);
+      toast.success("Inscription réussie ! Bienvenue !");
+      activeDefil?.();
     } catch (err) {
-      console.error("Erreur:", err);
-
-      if (err.response) {
-        console.error("Status:", err.response.status);
-        console.error("Headers:", err.response.headers);
-        toast.error("Data:", err.response.data);
-
-        if (err.response.status === 422 && err.response.data.errors) {
-          const errors = err.response.data.errors;
-          console.error("Erreurs de validation:", errors);
-
-          let errorMessages = [];
-          Object.keys(errors).forEach((field) => {
-            errors[field].forEach((error) => {
-              errorMessages.push(error);
-            });
-          });
-
-        } else {
-          console.log(
-            `Erreur ${err.response.status}: ${err.response.data.message || "Erreur inconnue"}`
-          );
-        }
-      } else if (err.request) {
-        console.error("Pas de réponse reçue:", err.request);
-        toast.error("Erreur de connexion: Aucune réponse du serveur");
-      } else {
-        console.error("Erreur de configuration:", err.message);
-        console.log(`Erreur: ${err.message}`);
-      }
+      toast.error(err.response?.data?.message || "Erreur d'inscription");
     }
   };
 
-  function handleChange(key, value) {
-    setDonneepers({ ...donneepers, [key]: value });
-  }
-
-  useEffect(() => {
-    if (confirmMDP.length > 0 || password.length > 0) {
-      setIsValid(password === confirmMDP);
-    } else {
-      setIsValid(true);
-    }
-  }, [password, confirmMDP]);
-
   return (
-    <>
-      <div className="blocks-center">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            submitInscription();
-          }}
-        >
-          <div className="ml-14 mr-14">
-            <p className="labeConnex1 text-center">Inscription</p>
-
-            <div className="flex gap-10">
-              <div className="flex-1">
-                <label className="block text-left font-serif text-sm">Nom :</label>
-                <input
-                  required
-                  type="text"
-                  placeholder="Entrez votre nom"
-                  value={donneepers.NOM}
-                  className="inputConnexion validator input input-info bg-gray-50"
-                  pattern="^[A-Za-z\séùèà]+$"
-                  minLength="2"
-                  maxLength="30"
-                  title="Seules les lettres sont autorisées (2-30 caractères)"
-                  onChange={(e) => handleChange("NOM", e.target.value)}
-                />
-                <p className="legendMDP validator-hint">
-                  Seules les lettres sont autorisées (6 à 30 caractères)
-                </p>
-              </div>
-              <div className="flex-1">
-                <label className="block text-left font-serif text-sm">Prénom :</label>
-                <input
-                  required
-                  type="text"
-                  placeholder="Entrez votre prénom"
-                  value={donneepers.PRENOM}
-                  className="inputConnexion validator input input-info bg-gray-50"
-                  pattern="^[A-Za-z\séùèà]+$"
-                  minLength="2"
-                  maxLength="30"
-                  title="Seules les lettres sont autorisées (2-30 caractères)"
-                  onChange={(e) => handleChange("PRENOM", e.target.value)}
-                />
-                <p className="legendMDP validator-hint">
-                  Seules les lettres sont autorisées (2 à 30 caractères)
-                </p>
-              </div>
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-sky-50 to-blue-100 px-4 py-8">
+      <div className="w-full max-w-2xl">
+        <div className="overflow-hidden rounded-3xl bg-white/90 shadow-2xl backdrop-blur-sm">
+          {/* Header avec 5 étapes */}
+          <div className="bg-gradient-to-r from-blue-500 to-cyan-500 p-6 text-white">
+            <h2 className="mb-6 text-center text-2xl font-bold">Inscription</h2>
+            <div className="flex items-center justify-center gap-3">
+              {steps.map((s, i) => (
+                <React.Fragment key={s.id}>
+                  <div className="flex flex-col items-center">
+                    <div
+                      className={`flex h-11 w-11 items-center justify-center rounded-full text-lg font-bold transition-all ${
+                        step >= s.id ? "bg-white text-blue-600" : "bg-white/40 text-white/80"
+                      }`}
+                    >
+                      {step > s.id ? "✓" : s.id}
+                    </div>
+                    <p className="mt-2 max-w-28 text-center text-[11px] leading-tight">{s.title}</p>
+                  </div>
+                  {i < steps.length - 1 && (
+                    <div className={`h-1 w-12 ${step > s.id + 1 ? "bg-white" : "bg-white/40"}`} />
+                  )}
+                </React.Fragment>
+              ))}
             </div>
+          </div>
 
-            <div className="flex gap-10">
-              <div className="flex-1">
-                <label className="block text-left font-serif text-sm">Matricule :</label>
-                <input
-                  type="number"
-                  required
-                  placeholder="Entrez votre matricule"
-                  value={donneepers.IM}
-                  className="inputConnexion validator input input-info bg-gray-50"
-                  pattern="^[0-9]{6}$"
-                  title="Seuls les chiffres sont autorisés (6 chiffres requis)"
-                  onChange={(e) => handleChange("IM", e.target.value)}
-                />
-                <p className="legendMDP validator-hint">6 chiffres requis.</p>
-              </div>
-              <div className="flex-1">
-                <label className="block text-left font-serif text-sm">Corps :</label>
-                <input
-                  required
-                  type="text"
-                  placeholder="Entrez votre corps"
-                  value={donneepers.CORPS}
-                  className="inputConnexion input input-info bg-gray-50"
-                  onChange={(e) => handleChange("CORPS", e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div className="mb-2 flex gap-10">
-              <div className="flex-1">
-                <label className="block text-left font-serif text-sm">Grade :</label>
-                <input
-                  required
-                  type="text"
-                  placeholder="Entrez votre grade"
-                  value={donneepers.GRADE}
-                  className="inputConnexion input input-info bg-gray-50"
-                  onChange={(e) => handleChange("GRADE", e.target.value)}
-                />
-              </div>
-              <div className="flex-1">
-                <label className="block text-left font-serif text-sm">Fonction :</label>
-                <select
-                  className="inputConnexion select select-info bg-gray-50"
-                  required
-                  value={donneepers.FONCTION}
-                  onChange={(e) => handleChange("FONCTION", e.target.value)}
-                >
-                  <option value="" disabled>
-                    Sélectionnez votre fonction
-                  </option>
-                  <option value="Chef de service">Chef de service</option>
-                  <option value="Chef de division">Chef de division</option>
-                  <option value="Personnel">Personnel</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="flex gap-10">
-              <div className="flex-1">
-                <label className="block text-left font-serif text-sm">Division :</label>
-                <select
-                  className="inputConnexion select select-info bg-gray-50"
-                  required
-                  value={donneepers.DIVISION}
-                  onChange={(e) => handleChange("DIVISION", e.target.value)}
-                >
-                  <option value="" disabled>
-                    Sélectionnez une division
-                  </option>
-                  <option value="Bureau du Secrétariat">Bureau du Secrétariat</option>
-                  <option value="Cellule d'appui et coordination">
-                    Cellule d'appui et coordination
-                  </option>
-                  <option value="Bureau des affaires administratifs et financières">
-                    Bureau des affaires administratifs et financières
-                  </option>
-                  <option value="Patrimoine de l'état">Patrimoine de l'état</option>
-                  <option value="Chargée de finances locales et des EPN">
-                    Chargée de finances locales et des EPN
-                  </option>
-                  <option value="Exécution budgetaire et remboursement des frais médicaux">
-                    Exécution budgetaire et remboursement des frais médicaux
-                  </option>
-                  <option value="Centre informatique régional">Centre informatique régional</option>
-                </select>
-              </div>
-              <div className="flex-1">
-                <label className="block text-left font-serif text-sm">E-mail :</label>
-                <input
-                  required
-                  type="email"
-                  placeholder="exemple@domaine.com"
-                  value={donneepers.EMAIL}
-                  className="inputConnexion validator input input-info bg-gray-50"
-                  onChange={(e) => handleChange("EMAIL", e.target.value)}
-                />
-                <div className="legendMDP validator-hint">Adresse e-mail invalide</div>
-              </div>
-            </div>
-
-            <div className="relative flex gap-10">
-              <div className="flex-1">
-                <label className="block text-left font-serif text-sm">Contact :</label>
-                <div className="relative w-full">
-                  <span className="pointer-events-none absolute left-0 top-4 z-20 h-8 -translate-y-1/2 rounded-md border border-solid border-gray-400 bg-gray-100 pl-1 pt-1 text-sm">
-                    +261
-                  </span>
-                  <input
-                    required
-                    type="number"
-                    value={donneepers.CONTACT}
-                    pattern="^[0-9]{9}$"
-                    title="Seuls les chiffres sont autorisés (9 chiffres requis)"
-                    className="inputConnexion1 validator input input-info z-10 w-full bg-gray-50"
-                    placeholder="Numéro sans indicatif"
-                    onChange={(e) => handleChange("CONTACT", e.target.value)}
-                  />
-                  <p className="legendMDP validator-hint">9 chiffres requis.</p>
+          {/* Contenu */}
+          <div className="p-8 md:p-12">
+            <form onSubmit={(e) => e.preventDefault()} className="space-y-8">
+              {/* ÉTAPE 1 : Infos perso (sans Corps & Grade) */}
+              {step === 1 && (
+                <div>
+                  <h3 className="mb-8 text-xl font-bold text-blue-700">
+                    Informations personnelles
+                  </h3>
+                  <div className="grid gap-6 md:grid-cols-2">
+                    <input
+                      placeholder="Nom"
+                      value={donnees.NOM}
+                      onChange={(e) => handleChange("NOM", e.target.value)}
+                      className="rounded-xl border border-gray-200 px-5 py-4 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                    />
+                    <input
+                      placeholder="Prénom"
+                      value={donnees.PRENOM}
+                      onChange={(e) => handleChange("PRENOM", e.target.value)}
+                      className="rounded-xl border border-gray-200 px-5 py-4 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                    />
+                    <input
+                      placeholder="Matricule (6 chiffres)"
+                      maxLength={6}
+                      value={donnees.IM}
+                      onChange={(e) => handleChange("IM", e.target.value.replace(/\D/g, ""))}
+                      className="rounded-xl border border-gray-200 px-5 py-4 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 md:col-span-2"
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className="flex-1">
-                <label className="block text-left font-serif text-sm">Photo de profil :</label>
-                <input
-                  type="file"
-                  className="input-info file-input h-8 w-48"
-                  accept=".jpg,.jpeg,.png,.gif"
-                  onChange={(e) => {
-                    setSelectedFile(e.target.files[0]);
-                  }}
-                />
-              </div>
-            </div>
+              )}
 
-            <div className="flex gap-10">
-              <div className="flex-1">
-                <label className="block text-left font-serif text-sm">Mot de passe :</label>
-                <input
-                  required
-                  type="password"
-                  placeholder="Entrez votre mot de passe"
-                  value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                    handleChange("MDP", e.target.value);
-                  }}
-                  className={`inputConnexion validator input input-info bg-gray-50 ${
-                    !isValid ? "border-red-500" : ""
-                  }`}
-                  pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%#*?&])[A-Za-z\d@$!%#*?& ]{8,}$"
-                  title="Doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial"
-                  minLength="8"
-                  maxLength="20"
-                />
-                <p className="legendMDP validator-hint">
-                  Doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et
-                  un caractère spécial
-                </p>
-              </div>
-              <div className="flex-1">
-                <label className="block text-left font-serif text-sm">
-                  Confirmer le mot de passe :
-                </label>
-                <input
-                  required
-                  type="password"
-                  placeholder="Confirmez votre mot de passe"
-                  value={confirmMDP}
-                  onChange={(e) => setConfirmMDP(e.target.value)}
-                  className={`inputConnexion input input-info bg-gray-50 ${
-                    !isValid ? "border-red-500" : ""
-                  }`}
-                />
-                <p className="legendMDP mt-1 text-red-600">
-                  {isValid ? "" : "Les mots de passe ne correspondent pas."}
-                </p>
-              </div>
-            </div>
+              {/* ÉTAPE 2 : Corps & Grade (nouvelle étape dédiée) */}
+              {step === 2 && (
+                <div>
+                  <h3 className="mb-8 text-xl font-bold text-blue-700">Corps & Grade</h3>
+                  <div className="grid gap-6 md:grid-cols-2">
+                    <input
+                      placeholder="Corps"
+                      value={donnees.CORPS}
+                      onChange={(e) => handleChange("CORPS", e.target.value)}
+                      className="rounded-xl border border-gray-200 px-5 py-4 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                    />
+                    <input
+                      placeholder="Grade"
+                      value={donnees.GRADE}
+                      onChange={(e) => handleChange("GRADE", e.target.value)}
+                      className="rounded-xl border border-gray-200 px-5 py-4 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                    />
+                  </div>
+                </div>
+              )}
 
-            <button className="btnConnexion mx-auto block" type="submit">
-              S'inscrire
-            </button>
+              {/* ÉTAPE 3 : Rôle & Division */}
+              {step === 3 && (
+                <div>
+                  <h3 className="mb-8 text-xl font-bold text-blue-700">Rôle & Division</h3>
+                  <div className="grid gap-6 md:grid-cols-2">
+                    <select
+                      value={donnees.FONCTION}
+                      onChange={(e) => handleChange("FONCTION", e.target.value)}
+                      className="rounded-xl border border-gray-200 px-5 py-4 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                    >
+                      <option value="" disabled>
+                        Sélectionner fonction...
+                      </option>
+                      <option>Chef de service</option>
+                      <option>Chef de division</option>
+                      <option>Personnel</option>
+                    </select>
+                    <select
+                      value={donnees.DIVISION}
+                      onChange={(e) => handleChange("DIVISION", e.target.value)}
+                      className="rounded-xl border border-gray-200 px-5 py-4 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                    >
+                      <option value="" disabled>
+                        Sélectionner division...
+                      </option>
+                      <option>Bureau du Secrétariat</option>
+                      <option>Cellule d'appui et coordination</option>
+                      <option>Bureau des affaires administratifs et financières</option>
+                      <option>Patrimoine de l'état</option>
+                      <option>Chargée de finances locales et des EPN</option>
+                      <option>Exécution budgetaire et remboursement des frais médicaux</option>
+                      <option>Centre informatique régional</option>
+                    </select>
+                  </div>
+                </div>
+              )}
+
+              {/* ÉTAPE 4 : Contact & Photo */}
+              {step === 4 && (
+                <div>
+                  <h3 className="mb-8 text-xl font-bold text-blue-700">Contact & Photo</h3>
+                  <div className="grid gap-6 md:grid-cols-2">
+                    <input
+                      type="email"
+                      placeholder="Email"
+                      value={donnees.EMAIL}
+                      onChange={(e) => handleChange("EMAIL", e.target.value)}
+                      className="rounded-xl border border-gray-200 px-5 py-4 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                    />
+                    <div className="flex">
+                      <span className="inline-flex items-center rounded-l-xl border border-r-0 border-gray-200 bg-gray-100 px-5 text-gray-600">
+                        +261
+                      </span>
+                      <input
+                        placeholder="34 123 45 67"
+                        maxLength={9}
+                        value={donnees.CONTACT}
+                        onChange={(e) => handleChange("CONTACT", e.target.value.replace(/\D/g, ""))}
+                        className="flex-1 rounded-r-xl border border-gray-200 px-5 py-4 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="inline-flex cursor-pointer items-center gap-3 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 px-8 py-4 text-white transition hover:shadow-lg">
+                        <Upload size={20} />
+                        Choisir une photo (optionnel)
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+                          className="hidden"
+                        />
+                      </label>
+
+                      {/* Optionnel : afficher juste le nom du fichier sélectionné */}
+                      {selectedFile && (
+                        <p className="mt-3 text-center text-sm text-gray-600">
+                          Fichier sélectionné :{" "}
+                          <span className="font-medium">{selectedFile.name}</span>
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* ÉTAPE 5 : Sécurité (mot de passe) - CHECK VERT À DROITE DE L'ŒIL, EN DEHORS */}
+              {step === 5 && (
+                <div>
+                  <h3 className="mb-8 text-center text-xl font-bold text-blue-700">Sécurité</h3>
+
+                  <div className="grid gap-6 md:grid-cols-2">
+                    {/* Champ Mot de passe */}
+                    <div className="relative">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Mot de passe"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="w-full rounded-xl border border-gray-200 px-5 py-4 pr-12 outline-none transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 transition hover:text-gray-700"
+                      >
+                        {showPassword ? <EyeOff size={22} /> : <Eye size={22} />}
+                      </button>
+                    </div>
+
+                    {/* Champ Confirmer + Check vert à droite de l'œil */}
+                    <div className="relative">
+                      <input
+                        type={showConfirm ? "text" : "password"}
+                        placeholder="Confirmer"
+                        value={confirmMDP}
+                        onChange={(e) => setConfirmMDP(e.target.value)}
+                        className={`w-full rounded-xl border px-5 py-4 pr-16 outline-none transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-100 ${
+                          password && confirmMDP
+                            ? password === confirmMDP
+                              ? "border-green-500 ring-4 ring-green-100"
+                              : "border-red-400 ring-4 ring-red-100"
+                            : "border-gray-200"
+                        }`}
+                      />
+
+                      {/* Bouton œil (à droite dans l'input) */}
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirm(!showConfirm)}
+                        className="absolute right-4 top-1/2 z-10 -translate-y-1/2 text-gray-500 transition hover:text-gray-700"
+                      >
+                        {showConfirm ? <EyeOff size={22} /> : <Eye size={22} />}
+                      </button>
+
+                      {/* Check vert À DROITE DE L'ŒIL, EN DEHORS de l'input */}
+                      {password && confirmMDP && password === confirmMDP && (
+                        <div className="pointer-events-none absolute right-[-3rem] top-1/2 -translate-y-1/2">
+                          <CheckCircle className="text-green-500 drop-shadow-md" size={36} />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Boutons */}
+              <div className="flex items-center justify-between pt-8">
+                <button
+                  type="button"
+                  onClick={prevStep}
+                  disabled={step === 1}
+                  className="rounded-xl bg-gray-200 px-8 py-4 font-medium text-gray-600 disabled:opacity-50"
+                >
+                  Précédent
+                </button>
+
+                {step === 5 ? (
+                  <button
+                    onClick={handleSubmit}
+                    className="transform rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 px-12 py-4 font-bold text-white shadow-lg transition hover:scale-105 hover:shadow-xl"
+                  >
+                    Finaliser l'inscription
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleNext}
+                    className="transform rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 px-12 py-4 font-bold text-white shadow-lg transition hover:scale-105 hover:shadow-xl"
+                  >
+                    Suivant
+                  </button>
+                )}
+              </div>
+            </form>
+
             <p
-              className="retourConnexion mx-auto w-28 cursor-pointer text-center font-serif transition duration-1000 hover:underline"
               onClick={activeDefil}
+              className="mt-8 cursor-pointer text-center font-medium text-blue-600 hover:underline"
             >
               J'ai déjà un compte
             </p>
           </div>
-        </form>
+        </div>
       </div>
-    </>
+    </div>
   );
 }
