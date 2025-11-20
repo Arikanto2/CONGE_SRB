@@ -89,6 +89,8 @@ export default function Inscription({ activeDefil }) {
       });
 
       toast.success("Inscription réussie !");
+      activeDefil();
+
       
 
 
