@@ -206,6 +206,7 @@ export default function Profile() {
           }
           // Si ce n'est pas un fichier, on ne l'envoie pas du tout
         } else {
+          
           formData.append(key, donneepers[key]);
         }
       }
