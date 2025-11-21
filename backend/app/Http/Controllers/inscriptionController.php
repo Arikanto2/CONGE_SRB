@@ -25,7 +25,7 @@ class InscriptionController extends Controller
             'CORPS' => ['required', 'string', 'max:128'],
             'GRADE' => ['required', 'string', 'max:128'],
             'FONCTION' => ['required', 'string', 'max:32'],
-            'CONTACT' => ['required', 'string', 'max:9', 'min:9'],
+            'CONTACT' => ['required', 'string', 'max:10', 'min:10'],
             'DIVISION' => ['required', 'string', 'max:128'],
             'MDP' => ['required', 'string', 'min:8'],
         ];
@@ -300,7 +300,7 @@ class InscriptionController extends Controller
             'CORPS' => ['required', 'string', 'max:128'],
             'GRADE' => ['required', 'string', 'max:128'],
             'FONCTION' => ['required', 'string', 'max:32'],
-            'CONTACT' => ['required', 'string', 'max:9', 'min:9'],
+            'CONTACT' => ['required', 'string', 'max:10', 'min:10'],
             'DIVISION' => ['required', 'string', 'max:128'],
             'PHOTO_PROFIL' => ['nullable', 'file', 'image'],
             'MDP' => ['nullable', 'string', 'min:8'],
@@ -317,8 +317,8 @@ class InscriptionController extends Controller
             'GRADE.required' => 'Le grade est obligatoire.',
             'FONCTION.required' => 'La fonction est obligatoire.',
             'CONTACT.required' => 'Le contact est obligatoire.',
-            'CONTACT.min' => 'Le contact doit contenir au moins 9 chiffres.',
-            'CONTACT.max' => 'Le contact ne peut pas dépasser 9 chiffres.',
+            'CONTACT.min' => 'Le contact doit contenir au moins 10 chiffres.',
+            'CONTACT.max' => 'Le contact ne peut pas dépasser 10 chiffres.',
             'DIVISION.required' => 'La division est obligatoire.',
         ];
 

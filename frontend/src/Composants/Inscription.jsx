@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CheckCircle, Eye, EyeOff, Upload } from "lucide-react";
+import { Eye, EyeOff, Upload } from "lucide-react";
 import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 
@@ -105,7 +105,10 @@ export default function InscriptionMultiStep({ activeDefil }) {
           return false;
         }
         if (!/^\d{10}$/.test(donnees.CONTACT)) {
+
           toast.error("Contact : 10 chiffres requis.");
+
+
           return false;
         }
         break;
@@ -223,13 +226,13 @@ export default function InscriptionMultiStep({ activeDefil }) {
   };
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-sky-50 to-blue-100 px-4 py-8">
+    <div className="flex min-h-screen px-4 py-8 bg-gradient-to-br from-sky-50 to-blue-100">
       <div className="w-full max-w-2xl">
         <div className="bg-white/90">
           {/* Header avec 5 étapes */}
-          <div className="bg-gradient-to-r from-blue-500 to-cyan-500 px-6 py-5 text-white">
+          <div className="px-6 py-5 text-white bg-gradient-to-r from-blue-500 to-cyan-500">
             <div className="py-5">
-              <h2 className="labeSRB5 text-center font-bold">Inscription</h2>
+              <h2 className="font-bold text-center labeSRB5">Inscription</h2>
             </div>
             <div className="flex items-center justify-between gap-2">
               {steps.map((s, i) => (
@@ -253,7 +256,7 @@ export default function InscriptionMultiStep({ activeDefil }) {
           </div>
 
           {/* Contenu */}
-          <div className="h-96 max-h-96 px-12 py-6">
+          <div className="px-12 py-6 h-96 max-h-96">
             <form onSubmit={(e) => e.preventDefault()}>
               {/* ÉTAPE 1 : Infos perso (sans Corps & Grade) */}
               {step === 1 && (
@@ -296,16 +299,19 @@ export default function InscriptionMultiStep({ activeDefil }) {
                     </div>
                     <div>
                       <input
-                        type="number"
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]{6}"
+                        maxLength={6}
                         placeholder="Matricule (6 chiffres)"
                         value={donnees.IM}
                         className="validator input input-info bg-gray-50"
-                        pattern="^[0-9]{6}$"
-                        min={6}
-                        max={6}
-                        title="Seuls les chiffres sont autorisés (6 chiffres requis)"
-                        onChange={(e) => handleChange("IM", e.target.value)}
+                        onChange={(e) => {
+                          const onlyNums = e.target.value.replace(/\D/g, "");
+                          handleChange("IM", onlyNums);
+                        }}
                       />
+
                       <p className="legendMDP validator-hint">6 chiffres requis.</p>
                     </div>
                   </div>
@@ -431,19 +437,27 @@ export default function InscriptionMultiStep({ activeDefil }) {
                           </g>
                         </svg>
                         <input
-                          type="number"
+
+                          type="text"
+                          inputMode="numeric"
                           maxLength={10}
                           value={donnees.CONTACT}
-                          title="Seuls les chiffres sont autorisés (10 chiffres requis)"
-                          className="validator z-10 w-full bg-gray-50"
-                          placeholder="034 12 345 67"
-                          onChange={(e) => handleChange("CONTACT", e.target.value)}
+                          className="z-10 w-full validator bg-gray-50"
+                          placeholder="Numéro sans indicatif"
+                          title="Seuls les chiffres sont autorisés (9 chiffres requis)"
+                          onChange={(e) => {
+                            const onlyNums = e.target.value.replace(/\D/g, "");
+                            handleChange("CONTACT", onlyNums);
+                          }}
+
                         />
                       </div>
                       <p className="legendMDP validator-hint"> Doit contenir que des chiffres</p>
                     </div>
-                    <div className="flex w-full justify-center gap-3 md:col-span-2">
-                      <label className="inline-flex cursor-pointer items-center gap-3 rounded-sm bg-gradient-to-r from-blue-500 to-cyan-500 px-5 py-2 text-white transition hover:shadow-lg">
+
+                    <div className="flex justify-center w-full md:col-span-2">
+                      <label className="inline-flex items-center gap-3 px-5 py-2 text-white transition rounded-sm cursor-pointer bg-gradient-to-r from-blue-500 to-cyan-500 hover:shadow-lg">
+
                         <Upload size={20} />
                         Choisir une photo (optionnel)
                         <input
@@ -493,7 +507,7 @@ export default function InscriptionMultiStep({ activeDefil }) {
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-2 top-5 z-10 -translate-y-1/2 text-gray-500 transition hover:text-gray-700"
+                        className="absolute z-10 text-gray-500 transition -translate-y-1/2 right-2 top-5 hover:text-gray-700"
                       >
                         {showPassword ? <EyeOff size={22} /> : <Eye size={22} />}
                       </button>
@@ -513,7 +527,7 @@ export default function InscriptionMultiStep({ activeDefil }) {
                           }}
                           className="input input-info bg-gray-50"
                         />
-                        <p className="legendMDP mt-1 text-red-600">
+                        <p className="mt-1 text-red-600 legendMDP">
                           {isValid && confirmMDP ? "Les mots de passe ne correspondent pas." : ""}
                         </p>
                       </div>
@@ -522,7 +536,7 @@ export default function InscriptionMultiStep({ activeDefil }) {
                       <button
                         type="button"
                         onClick={() => setShowConfirm(!showConfirm)}
-                        className="absolute right-2 top-5 z-10 -translate-y-1/2 text-gray-500 transition hover:text-gray-700"
+                        className="absolute z-10 text-gray-500 transition -translate-y-1/2 right-2 top-5 hover:text-gray-700"
                       >
                         {showConfirm ? <EyeOff size={22} /> : <Eye size={22} />}
                       </button>
@@ -539,7 +553,7 @@ export default function InscriptionMultiStep({ activeDefil }) {
                   type="button"
                   onClick={prevStep}
                   disabled={step === 1}
-                  className="btn btn-outline w-24"
+                  className="w-24 btn btn-outline"
                 >
                   Précédent
                 </button>
@@ -547,7 +561,7 @@ export default function InscriptionMultiStep({ activeDefil }) {
                 {step === 5 ? (
                   <button
                     onClick={handleSubmit}
-                    className="btn btn-soft transform bg-gradient-to-r from-blue-500 to-cyan-500 font-bold text-white transition duration-300 ease-in-out hover:scale-105 hover:from-blue-600 hover:to-cyan-600 hover:shadow-lg"
+                    className="font-bold text-white transition duration-300 ease-in-out transform btn btn-soft bg-gradient-to-r from-blue-500 to-cyan-500 hover:scale-105 hover:from-blue-600 hover:to-cyan-600 hover:shadow-lg"
                   >
                     Finaliser l'inscription
                   </button>
@@ -555,7 +569,7 @@ export default function InscriptionMultiStep({ activeDefil }) {
                   <button
                     type="button"
                     onClick={handleNext}
-                    className="btn btn-soft w-24 transform bg-gradient-to-r from-blue-500 to-cyan-500 font-bold text-white transition duration-300 ease-in-out hover:scale-105 hover:from-blue-600 hover:to-cyan-600 hover:shadow-lg"
+                    className="w-24 font-bold text-white transition duration-300 ease-in-out transform btn btn-soft bg-gradient-to-r from-blue-500 to-cyan-500 hover:scale-105 hover:from-blue-600 hover:to-cyan-600 hover:shadow-lg"
                   >
                     Suivant
                   </button>
@@ -564,7 +578,7 @@ export default function InscriptionMultiStep({ activeDefil }) {
             </form>
 
             <p
-              className="retourConnexion mx-auto mt-7 w-32 cursor-pointer text-center font-serif hover:underline"
+              className="w-32 mx-auto font-serif text-center cursor-pointer retourConnexion mt-7 hover:underline"
               onClick={activeDefil}
             >
               J'ai déjà un compte

@@ -59,17 +59,22 @@ class AccueilController extends Controller
                 DB::raw('(conge_absence."DATEFIN" - conge_absence."DATEDEBUT") + 1 AS duree')
             ]);
 
-        /////// historique
+        /////////// historique
+
+        $anneeLocale = date('Y');
+
         $congesParMois = DB::table('conge_absence')
-            ->selectRaw('
+                ->selectRaw('
                     EXTRACT(MONTH FROM "DATEDEBUT")::INT AS mois,
                     COUNT(*) AS total_conges
                 ')
-            ->where('VALIDCHEF', 'Validé')
-            ->groupByRaw('EXTRACT(MONTH FROM "DATEDEBUT")')
-            ->orderByRaw('EXTRACT(MONTH FROM "DATEDEBUT")')
-            ->get();
+                ->where('VALIDCHEF', 'Validé')
+                ->whereRaw('EXTRACT(YEAR FROM "DATEDEBUT") = ?', [$anneeLocale])
+                ->groupByRaw('EXTRACT(MONTH FROM "DATEDEBUT")')
+                ->orderByRaw('EXTRACT(MONTH FROM "DATEDEBUT")')
+                ->get();
 
+        /////////////
         $item_user = $request->query('item_im');
         $item_ref = $request->query('item_ref');
 
