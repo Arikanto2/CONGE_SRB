@@ -19,6 +19,11 @@
   font-size: 18px;
   color: #03303b;
 }
+.labeSRB5 {
+  font-family: "Viaoda Libre", serif;
+  font-size: 4vh;
+  color:white;
+}
 
 .labeConnex1 {
   font-family: "Viaoda Libre", serif;
@@ -74,11 +79,11 @@ input {
   background: linear-gradient(to right, #3b82f6, #06b6d4);
 }
 .retourConnexion {
-  font-size: 10px;
+  font-size: 14px;
   color: #03222a;
 }
 .retourConnexion:hover {
-  font-size: 10px;
+  font-size: 13px;
   color: #3b82f6;
 }
 option {

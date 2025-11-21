@@ -16,6 +16,7 @@ export default function Profile() {
   const [Annee, setAnnee] = useState([]);
   const [selectedAnnee, setSelectedAnnee] = useState("");
   const [congeSelectionne, setCongeSelectionne] = useState(null);
+  const [isChefSelected, setIsChefSelected] = useState(false);
 
   const { user, token, updateUser } = useAuth();
   useEffect(() => {
@@ -31,7 +32,9 @@ export default function Profile() {
       const conge = _congeAnnuel.find((c) => c.ANNEE === selectedAnnee);
       setCongeSelectionne(conge || null);
     }
-  }, [selectedAnnee, _congeAnnuel]);
+    if(user?.FONCTION === "Chef de service") {
+      setIsChefSelected(true);}
+  }, [selectedAnnee, _congeAnnuel, user]);
 
   useEffect(() => {
     const fetchCongeAnnuel = async () => {
@@ -175,6 +178,11 @@ export default function Profile() {
 
   const handleChange = (key, value) => {
     setDonneepers({ ...donneepers, [key]: value });
+    if (key === "FONCTION" && value === "Chef de service") {
+      setIsChefSelected(true);
+    } else if (key === "FONCTION") {
+      setIsChefSelected(false);
+    }
   };
 
   const submitForm = async () => {
@@ -367,6 +375,7 @@ export default function Profile() {
                             value={donneepers.DIVISION}
                             onChange={(e) => handleChange("DIVISION", e.target.value)}
                             required
+                            disabled={isChefSelected}
                           >
                             <option value="" disabled>
                               Sélectionnez une division
