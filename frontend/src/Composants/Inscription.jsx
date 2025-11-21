@@ -105,7 +105,10 @@ export default function InscriptionMultiStep({ activeDefil }) {
           return false;
         }
         if (!/^\d{10}$/.test(donnees.CONTACT)) {
-          toast.error("Contact : 9 chiffres requis.");
+
+          toast.error("Contact : 10 chiffres requis.");
+
+
           return false;
         }
         break;
@@ -140,6 +143,7 @@ export default function InscriptionMultiStep({ activeDefil }) {
 
   const handleNext = () => {
     if (validateStep()) {
+      console.log("Données actuelles :", donnees);
       nextStep();
     }
   };
@@ -433,6 +437,7 @@ export default function InscriptionMultiStep({ activeDefil }) {
                           </g>
                         </svg>
                         <input
+
                           type="text"
                           inputMode="numeric"
                           maxLength={10}
@@ -444,12 +449,15 @@ export default function InscriptionMultiStep({ activeDefil }) {
                             const onlyNums = e.target.value.replace(/\D/g, "");
                             handleChange("CONTACT", onlyNums);
                           }}
+
                         />
                       </div>
                       <p className="legendMDP validator-hint"> Doit contenir que des chiffres</p>
                     </div>
+
                     <div className="flex justify-center w-full md:col-span-2">
                       <label className="inline-flex items-center gap-3 px-5 py-2 text-white transition rounded-sm cursor-pointer bg-gradient-to-r from-blue-500 to-cyan-500 hover:shadow-lg">
+
                         <Upload size={20} />
                         Choisir une photo (optionnel)
                         <input
@@ -459,6 +467,11 @@ export default function InscriptionMultiStep({ activeDefil }) {
                           className="hidden"
                         />
                       </label>
+                      {selectedFile && (
+                        <div className="flex items-center">
+                          <CheckCircle className="text-green-500" size={20} />
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
