@@ -104,8 +104,8 @@ export default function InscriptionMultiStep({ activeDefil }) {
           toast.error("Email invalide.");
           return false;
         }
-        if (!/^\d{9}$/.test(donnees.CONTACT)) {
-          toast.error("Contact : 9 chiffres requis.");
+        if (!/^\d{10}$/.test(donnees.CONTACT)) {
+          toast.error("Contact : 10 chiffres requis.");
           return false;
         }
         break;
@@ -140,6 +140,7 @@ export default function InscriptionMultiStep({ activeDefil }) {
 
   const handleNext = () => {
     if (validateStep()) {
+      console.log("Données actuelles :", donnees);
       nextStep();
     }
   };
@@ -431,17 +432,17 @@ export default function InscriptionMultiStep({ activeDefil }) {
                         </svg>
                         <input
                           type="number"
+                          maxLength={10}
                           value={donnees.CONTACT}
-                          pattern="^[0-9]{9}$"
-                          title="Seuls les chiffres sont autorisés (9 chiffres requis)"
+                          title="Seuls les chiffres sont autorisés (10 chiffres requis)"
                           className="validator z-10 w-full bg-gray-50"
-                          placeholder="Numéro sans indicatif"
+                          placeholder="034 12 345 67"
                           onChange={(e) => handleChange("CONTACT", e.target.value)}
                         />
                       </div>
                       <p className="legendMDP validator-hint"> Doit contenir que des chiffres</p>
                     </div>
-                    <div className="flex w-full justify-center md:col-span-2">
+                    <div className="flex w-full justify-center gap-3 md:col-span-2">
                       <label className="inline-flex cursor-pointer items-center gap-3 rounded-sm bg-gradient-to-r from-blue-500 to-cyan-500 px-5 py-2 text-white transition hover:shadow-lg">
                         <Upload size={20} />
                         Choisir une photo (optionnel)
@@ -452,6 +453,11 @@ export default function InscriptionMultiStep({ activeDefil }) {
                           className="hidden"
                         />
                       </label>
+                      {selectedFile && (
+                        <div className="flex items-center">
+                          <CheckCircle className="text-green-500" size={20} />
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
