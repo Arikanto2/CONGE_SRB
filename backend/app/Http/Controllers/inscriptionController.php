@@ -26,7 +26,13 @@ class InscriptionController extends Controller
             'GRADE' => ['required', 'string', 'max:128'],
             'FONCTION' => ['required', 'string', 'max:32'],
             'CONTACT' => ['required', 'string', 'max:10', 'min:10'],
-            'DIVISION' => ['required', 'string', 'max:128'],
+            'DIVISION' => [
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->FONCTION !== 'Chef de service' && empty($value)) {
+                        $fail('La division est obligatoire pour ce type de fonction.');
+                    }
+                }
+            ],
             'MDP' => ['required', 'string', 'min:8'],
         ];
 
@@ -90,7 +96,7 @@ class InscriptionController extends Controller
         } else {
             $validated['PHOTO_PROFIL'] = null;
         }
-        if($validated['FONCTION'] === 'Chef de service') {
+        if ($validated['FONCTION'] === 'Chef de service') {
             $validated['DIVISION'] = '';
         }
 
@@ -301,7 +307,13 @@ class InscriptionController extends Controller
             'GRADE' => ['required', 'string', 'max:128'],
             'FONCTION' => ['required', 'string', 'max:32'],
             'CONTACT' => ['required', 'string', 'max:10', 'min:10'],
-            'DIVISION' => ['required', 'string', 'max:128'],
+            'DIVISION' => [
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->FONCTION !== 'Chef de service' && empty($value)) {
+                        $fail('La division est obligatoire pour ce type de fonction.');
+                    }
+                }
+            ],
             'PHOTO_PROFIL' => ['nullable', 'file', 'image'],
             'MDP' => ['nullable', 'string', 'min:8'],
         ];
@@ -406,6 +418,9 @@ class InscriptionController extends Controller
         unset($validated['IM_ANC']);
 
         try {
+            if ($validated['FONCTION'] === 'Chef de service') {
+                $validated['DIVISION'] = null;
+            }
             $personnel->update($validated);
             Log::info('Profil modifié avec succès:', ['personnel_id' => $personnel->id]);
 

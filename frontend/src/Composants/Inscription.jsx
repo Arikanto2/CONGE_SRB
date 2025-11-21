@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Eye, EyeOff, Upload } from "lucide-react";
+import { CheckCircle ,Eye, EyeOff, Upload } from "lucide-react";
 import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 
@@ -221,7 +221,18 @@ export default function InscriptionMultiStep({ activeDefil }) {
       setConfirmMDP("");
       setSelectedFile(null);
     } catch (err) {
-      toast.error(err.response?.data?.message || "Erreur d'inscription");
+      console.error("Erreur complète:", err.response); // Afficher toute la réponse
+      console.error("Message d'erreur:", err.response?.data?.message);
+      console.error("Erreurs de validation:", err.response?.data?.errors);
+      
+      // Afficher les erreurs spécifiques
+      if (err.response?.data?.errors) {
+        Object.entries(err.response.data.errors).forEach(([field, messages]) => {
+          messages.forEach(message => toast.error(`${field}: ${message}`));
+        });
+      } else {
+        toast.error(err.response?.data?.message || "Erreur d'inscription");
+      }
     }
   };
 
@@ -455,7 +466,7 @@ export default function InscriptionMultiStep({ activeDefil }) {
                       <p className="legendMDP validator-hint"> Doit contenir que des chiffres</p>
                     </div>
 
-                    <div className="flex justify-center w-full md:col-span-2">
+                    <div className="flex justify-center w-full md:col-span-2 gap-3">
                       <label className="inline-flex items-center gap-3 px-5 py-2 text-white transition rounded-sm cursor-pointer bg-gradient-to-r from-blue-500 to-cyan-500 hover:shadow-lg">
 
                         <Upload size={20} />
