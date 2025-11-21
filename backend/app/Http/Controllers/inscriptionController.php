@@ -90,6 +90,9 @@ class InscriptionController extends Controller
         } else {
             $validated['PHOTO_PROFIL'] = null;
         }
+        if($validated['FONCTION'] === 'Chef de service') {
+            $validated['DIVISION'] = '';
+        }
 
 
         if (!empty($validated['MDP'])) {
